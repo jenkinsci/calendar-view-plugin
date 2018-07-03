@@ -63,6 +63,11 @@ public class CalendarView extends ListView {
         super(name);
     }
 
+    @Override
+    public boolean isAutomaticRefreshEnabled() {
+        return false;
+    }
+
     public List<Event> getEvents() throws ParseException {
         StaplerRequest request = Stapler.getCurrentRequest();
 
