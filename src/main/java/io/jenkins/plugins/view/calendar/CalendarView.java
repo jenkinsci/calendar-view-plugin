@@ -15,6 +15,8 @@ import hudson.Extension;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,6 +26,11 @@ public class CalendarView extends ListView {
 
     private static final String FORMAT_DATE = "yyyy-MM-dd";
     private static final String FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss";
+
+
+    public static enum CalendarViewType {
+       MONTH, WEEK, DAY;
+    }
 
     public static class Event {
         private TopLevelItem item;
@@ -58,14 +65,31 @@ public class CalendarView extends ListView {
         }
     }
 
+
+    private CalendarViewType calendarViewType = CalendarViewType.WEEK;
+
     @DataBoundConstructor
     public CalendarView(String name) {
         super(name);
     }
 
+    public CalendarViewType getCalendarViewType() {
+        return calendarViewType;
+    }
+
+    public void setCalendarViewType(CalendarViewType calendarViewType) {
+        this.calendarViewType = calendarViewType;
+    }
+
     @Override
     public boolean isAutomaticRefreshEnabled() {
         return false;
+    }
+
+    @Override
+    protected void submit(StaplerRequest req) throws ServletException, Descriptor.FormException, IOException {
+        super.submit(req);
+        setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
     }
 
     public List<Event> getEvents() throws ParseException {

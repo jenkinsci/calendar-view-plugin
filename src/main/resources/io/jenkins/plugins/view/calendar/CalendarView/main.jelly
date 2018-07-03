@@ -9,14 +9,15 @@
 
     <div class="pane-frame">
        <div id="calendar-view">
-
        </div>
-
-       <j:forEach var="item" items="${it.items}">
-          ${item.name}
-       </j:forEach>
     </div>
 
     <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/calendar-view.css" />
+    <script>
+       CalendarViewOptions = {
+         defaultView: '${it.calendarViewType}',
+       };
+    </script>
     <script type="text/javascript" src="${rootURL}/plugin/calendar-view/calendar-view.js"></script>
+
 </j:jelly>

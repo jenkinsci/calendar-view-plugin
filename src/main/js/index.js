@@ -9,13 +9,33 @@ import { parseHashParams, serializeHashParams } from './hashParams.js';
 
 const hashParams = parseHashParams(window.location.hash);
 
-console.log(hashParams);
-
 $(function() {
   const calendar = $('#calendar-view').fullCalendar({
      events: 'events',
-     defaultView: hashParams['view'] || 'month',
+     defaultView: hashParams['view'] || CalendarViewOptions.defaultView,
      defaultDate: hashParams['date'] || moment(),
+     header: {
+        left: 'MONTH WEEK DAY',
+        center: 'title',
+        right: 'today prev next',
+     },
+     views: {
+        MONTH: {
+            type: 'month',
+            buttonText: 'month',
+        },
+        WEEK: {
+            type: 'agendaWeek',
+            buttonText: 'week',
+            allDaySlot: false
+        },
+        DAY: {
+            type: 'agenda',
+            buttonText: 'day',
+            allDaySlot: false,
+            duration: { days: 1 }
+        }
+     },
      viewRender: function(view, element) {
         window.location = serializeHashParams({date: view.calendar.currentDate.format('YYYY-MM-DD'), type: view.type});
      }
