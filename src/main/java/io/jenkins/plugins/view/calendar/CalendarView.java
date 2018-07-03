@@ -81,12 +81,6 @@ public class CalendarView extends ListView {
                         events.add(new Event(item, next));
                         time = next.getTimeInMillis() + 1000 * 60;
                     }
-                    if (next.compareTo(start) >= 0) {
-                       System.out.println("less than start");
-                    }
-                    if (next.compareTo(end) < 0) {
-                       System.out.println("greater than end");
-                    }
                 }
             }
         }
