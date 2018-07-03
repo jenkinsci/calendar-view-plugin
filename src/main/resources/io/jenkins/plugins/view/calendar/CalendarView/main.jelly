@@ -1,0 +1,22 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <j:set var="views" value="${it.owner.views}" />
+    <j:set var="currentView" value="${it}" />
+
+    <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}" />
+    <j:set var="jobs" value="${it.jobs}"/>
+
+    <div class="pane-frame">
+       <div id="calendar-view">
+
+       </div>
+
+       <j:forEach var="item" items="${it.items}">
+          ${item.name}
+       </j:forEach>
+    </div>
+
+    <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/calendar-view.css" />
+    <script type="text/javascript" src="${rootURL}/plugin/calendar-view/calendar-view.js"></script>
+</j:jelly>

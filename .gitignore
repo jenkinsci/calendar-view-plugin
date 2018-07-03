@@ -1,0 +1,10 @@
+.idea
+*.iml
+
+node
+node_modules
+src/main/webapp/js/lib
+
+work
+target
+bin

@@ -1,0 +1,29 @@
+.fc-toolbar {
+  background: #eee;
+  height:3em;
+  border-bottom: 1px solid #ddd;
+  padding:3px;
+}
+
+.fc-left {
+  line-height:2.2em;
+}
+
+.fc-toolbar.fc-header-toolbar {
+  margin-bottom:0px;
+}
+
+.fc-toolbar .fc-clear {
+  clear:none;
+}
+
+.fc-view-container {
+  padding:5px;
+}
+
+a .fc-content,
+a:active .fc-content,
+a:visited .fc-content
+{
+  color:white;
+}
