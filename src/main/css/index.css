@@ -21,9 +21,9 @@
   padding:5px;
 }
 
-a .fc-content,
-a:active .fc-content,
-a:visited .fc-content
-{
+.fc-event-container a,
+.fc-event-container a:link,
+.fc-event-container a:active,
+.fc-event-container a:visited {
   color:white;
 }
