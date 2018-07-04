@@ -289,18 +289,6 @@ public class CalendarView extends ListView {
         return cronTabs;
     }
 
-
-
-    public List<TopLevelItem> getCronJobs(ItemGroup root) {
-        List<TopLevelItem> scheduledJobs = new ArrayList<TopLevelItem>();
-        for (TopLevelItem item: Functions.getAllTopLevelItems(root)) {
-           if (!getCronTriggers(item).isEmpty()) {
-               scheduledJobs.add(item);
-           }
-        }
-        return scheduledJobs;
-    }
-
     private List<Trigger> getCronTriggers(TopLevelItem item) {
         List<Trigger> triggers = new ArrayList<Trigger>();
         if (!(item instanceof AbstractProject)) {

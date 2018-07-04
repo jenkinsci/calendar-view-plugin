@@ -52,7 +52,7 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 
         <f:entry title="${%Jobs}">
             <div class="listview-jobs">
-                <j:forEach var="job" items="${it.getCronJobs(it.ownerItemGroup)}">
+                <j:forEach var="job" items="${h.getAllTopLevelItems(it.ownerItemGroup)}">
                     <j:set var="spanClass" value=""/>
                     <j:set var="spanStyle" value=""/>
                     <j:if test="${job.parent!=it.ownerItemGroup}">
