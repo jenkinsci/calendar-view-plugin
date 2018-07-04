@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
+import hudson.scheduler.CronTabList;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -243,6 +244,7 @@ public class CalendarView extends ListView {
             line = line.trim();
 
             if (lineNumber == 1 && line.startsWith("TZ=")) {
+                timezone = CronTabList.getValidTimezone(line.replace("TZ=",""));
                 continue;
             }
 
