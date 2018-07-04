@@ -27,3 +27,30 @@
 .fc-event-container a:visited {
   color:white;
 }
+
+.fc-event {
+  background-color: #888888;
+  border-color: #777777;
+}
+
+.fc-event.event-success {
+  background-color: #008000;
+  border-color: #007700;
+}
+
+.fc-event.event-failure {
+  background-color: #ff0000;
+  border-color: #cc0000;
+}
+
+.fc-event.event-unstable {
+  background-color: #a6982b;
+  border-color: #968b3c;
+}
+
+.fc-event.event-future {
+  background-color: #3a87ad;
+  border-color: #3a87ad;
+}
+
+

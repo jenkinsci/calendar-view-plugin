@@ -5,6 +5,7 @@ import hudson.Functions;
 import hudson.model.*;
 import hudson.scheduler.CronTab;
 import hudson.triggers.Trigger;
+import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,10 +36,39 @@ public class CalendarView extends ListView {
     public static class Event {
         private TopLevelItem item;
         private Calendar start;
+        private Calendar end;
+        private EventType type;
+        private String title;
+        private String url;
 
-        public Event(TopLevelItem item, Calendar start)  {
+        public Event(TopLevelItem item, Calendar start, long durationInMillis)  {
             this.item = item;
+            this.type = EventType.FUTURE;
+            this.title = item.getFullDisplayName();
+            this.url = item.getUrl();
             this.start = start;
+            initEnd(durationInMillis);
+        }
+
+        public Event(TopLevelItem item, Run build) {
+            this.item = item;
+            this.type = EventType.fromResult(build.getResult());
+            this.title = build.getFullDisplayName();
+            this.url = build.getUrl();
+            this.start = Calendar.getInstance();
+            this.start.setTimeInMillis(build.getStartTimeInMillis());
+            initEnd(build.getDuration());
+        }
+
+        private void initEnd(long durationInMillis) {
+            // duration needs to be at least 1sec otherwise
+            // fullcalendar will not properly display the event
+            if (durationInMillis < 1000) {
+                durationInMillis = 1000;
+            }
+            this.end = Calendar.getInstance();
+            this.end.setTime(this.start.getTime());
+            this.end.add(Calendar.SECOND, (int)(durationInMillis / 1000));
         }
 
         public TopLevelItem getItem() {
@@ -54,14 +84,53 @@ public class CalendarView extends ListView {
         }
 
         public Calendar getEnd() {
-            Calendar end = Calendar.getInstance();
-            end.setTime(start.getTime());
-            end.add(Calendar.HOUR, 1);
-            return end;
+            return this.end;
         }
 
         public String getEndAsISO8601() {
             return new SimpleDateFormat(FORMAT_ISO8601).format(getEnd().getTime());
+        }
+
+        public EventType getType() {
+            return this.type;
+        }
+
+        public String getTypeAsClassName() {
+            return "event-" + type.name().toLowerCase();
+        }
+
+        public String getUrl() {
+            return this.url;
+        }
+
+        public String getTitle() {
+            return this.title;
+        }
+    }
+
+    public static enum EventType {
+        FAILURE, SUCCESS, UNSTABLE, ABORTED, NOT_BUILT, FUTURE;
+
+        public static EventType fromResult(Result result) {
+            if (result == null) {
+                return null;
+            }
+            if (result.equals(Result.SUCCESS)) {
+                return SUCCESS;
+            }
+            if (result.equals(Result.FAILURE)) {
+                return FAILURE;
+            }
+            if (result.equals(Result.UNSTABLE)) {
+                return ABORTED;
+            }
+            if (result.equals(Result.NOT_BUILT)) {
+                return NOT_BUILT;
+            }
+            if (result.equals(Result.ABORTED)) {
+                return ABORTED;
+            }
+            return null;
         }
     }
 
@@ -97,19 +166,54 @@ public class CalendarView extends ListView {
 
         Calendar start = getCalendarFromRequestParameter("start");
         Calendar end = getCalendarFromRequestParameter("end");
+        Calendar now = Calendar.getInstance();
 
         List<Event> events = new ArrayList<Event>();
+        if (now.compareTo(start) < 0) {
+            events.addAll(getFutureEvents(start, end));
+        } else if (now.compareTo(end) > 0) {
+            events.addAll(getPastEvents(start, end));
+        } else {
+            events.addAll(getPastEvents(start, now));
+            events.addAll(getFutureEvents(now, end));
+        }
+        return events;
+    }
+
+    private List<Event> getFutureEvents(Calendar start, Calendar end) {
+        List<Event> events = new ArrayList<Event>();
         for (TopLevelItem item: getItems()) {
+            if (!(item instanceof AbstractProject)) {
+               continue;
+            }
+            long durationInMillis = ((AbstractProject)item).getEstimatedDuration();
             List<Trigger> triggers = getCronTriggers(item);
             for (Trigger trigger: triggers) {
                 List<CronTab> cronTabs = getCronTabs(trigger);
                 for (CronTab cronTab: cronTabs) {
-                    long time = start.getTimeInMillis();
+                    long timeInMillis = start.getTimeInMillis();
                     Calendar next;
-                    while ((next = cronTab.ceil(time)) != null && next.compareTo(start) >= 0 && next.compareTo(end) < 0) {
-                        events.add(new Event(item, next));
-                        time = next.getTimeInMillis() + 1000 * 60;
+                    while ((next = cronTab.ceil(timeInMillis)) != null && next.compareTo(start) >= 0 && next.compareTo(end) < 0) {
+                        events.add(new Event(item, next, durationInMillis));
+                        timeInMillis = next.getTimeInMillis() + 1000 * 60;
                     }
+                }
+            }
+        }
+        return events;
+    }
+
+    private List<Event> getPastEvents(Calendar start, Calendar end) {
+        List<Event> events = new ArrayList<Event>();
+        for (TopLevelItem item: getItems()) {
+            if (!(item instanceof Job)) {
+                continue;
+            }
+            RunList<Run> builds = ((Job) item).getBuilds();
+            for (Run build : builds) {
+                Event event = new Event(item, build);
+                if (event.getStart().compareTo(start) >= 0 && event.getEnd().compareTo(end) < 0) {
+                    events.add(event);
                 }
             }
         }
@@ -171,11 +275,13 @@ public class CalendarView extends ListView {
 
     private List<Trigger> getCronTriggers(TopLevelItem item) {
         List<Trigger> triggers = new ArrayList<Trigger>();
-        if (item instanceof FreeStyleProject) {
-            for (Trigger<?> trigger : ((FreeStyleProject) item).getTriggers().values()) {
-                if (StringUtils.isNotBlank(trigger.getSpec())) {
-                    triggers.add(trigger);
-                }
+        if (!(item instanceof AbstractProject)) {
+            return triggers;
+        }
+        Collection<Trigger<?>> itemTriggers = ((AbstractProject) item).getTriggers().values();
+        for (Trigger<?> trigger: itemTriggers) {
+            if (StringUtils.isNotBlank(trigger.getSpec())) {
+                triggers.add(trigger);
             }
         }
         return triggers;

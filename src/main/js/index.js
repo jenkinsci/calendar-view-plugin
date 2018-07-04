@@ -27,13 +27,15 @@ $(function() {
         WEEK: {
             type: 'agendaWeek',
             buttonText: 'week',
-            allDaySlot: false
+            allDaySlot: false,
+            agendaEventMinHeight: 20,
         },
         DAY: {
             type: 'agenda',
             buttonText: 'day',
             allDaySlot: false,
-            duration: { days: 1 }
+            agendaEventMinHeight: 20,
+            duration: { days: 1 },
         }
      },
      viewRender: function(view, element) {

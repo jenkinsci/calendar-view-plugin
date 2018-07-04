@@ -5,11 +5,12 @@
   <j:forEach var="event" items="${it.events}" varStatus="loop">
   {
     "id": "${event.item.url}",
-    "title": "${it.jsonEscape(event.item.name)}",
+    "title": "${it.jsonEscape(event.title)}",
     "allDay": false,
-    "url": "${it.rootUrl}${event.item.url}",
+    "url": "${it.rootUrl}${event.url}",
     "start": "${event.startAsISO8601}",
-    "end": "${event.endAsISO8601}"
+    "end": "${event.endAsISO8601}",
+    "className": "${event.typeAsClassName}"
   }<j:if test="${!loop.last}">,</j:if>
   </j:forEach>
 ]
