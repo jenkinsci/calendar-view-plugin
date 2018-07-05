@@ -149,7 +149,7 @@ public class CalendarView extends ListView {
                 return FAILURE;
             }
             if (result.equals(Result.UNSTABLE)) {
-                return ABORTED;
+                return UNSTABLE;
             }
             if (result.equals(Result.NOT_BUILT)) {
                 return NOT_BUILT;
