@@ -27,5 +27,5 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 
 <?jelly escape-by-default='true'?>
 <div>
-    ${%blurb}
+    ${%Shows past and future builds in a calendar view. You can choose the jobs whose builds are included.}
 </div>

@@ -29,7 +29,7 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
     <f:section title="${%Calendar Options}">
-        <f:entry title="${%Calendar type}" field="calendarViewType">
+        <f:entry title="${%Default View}" field="calendarViewType">
             <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}"/>${%Month}
             <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}"/>${%Week}
             <f:radio name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}"/>${%Day}

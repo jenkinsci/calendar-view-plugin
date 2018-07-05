@@ -39,12 +39,7 @@ $(function() {
      },
      slotLabelFormat: 'HH:mm',
      timeFormat: 'HH:mm',
-     buttonText: {
-        today: 'heute',
-        MONTH: 'month',
-        WEEK: 'week',
-        DAY: 'day'
-     },
+     buttonText: CalendarViewOptions.buttonText,
      viewRender: function(view, element) {
         window.location = serializeHashParams({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
      }

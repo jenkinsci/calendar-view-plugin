@@ -40,6 +40,12 @@ THE SOFTWARE.
     <script>
        CalendarViewOptions = {
          defaultView: '${it.calendarViewType}',
+         buttonText: {
+           today: "${%today}",
+           MONTH: "${%month}",
+           WEEK: "${%week}",
+           DAY: "${%day}",
+         }
        };
     </script>
     <script type="text/javascript" src="${rootURL}/plugin/calendar-view/calendar-view.js"></script>
