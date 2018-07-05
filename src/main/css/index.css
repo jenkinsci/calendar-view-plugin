@@ -26,6 +26,14 @@
 .fc-event-container a:active,
 .fc-event-container a:visited {
   color:white;
+  text-decoration: none;
+}
+
+.fc-event-container a.event-future,
+.fc-event-container a.event-future:link,
+.fc-event-container a.event-future:active,
+.fc-event-container a.event-future:visited {
+  color:black;
 }
 
 .fc-event {
@@ -34,8 +42,8 @@
 }
 
 .fc-event.event-success {
-  background-color: #008000;
-  border-color: #007700;
+  background-color: #3a87ad;
+  border-color: #3a87ad;
 }
 
 .fc-event.event-failure {
@@ -49,8 +57,10 @@
 }
 
 .fc-event.event-future {
-  background-color: #3a87ad;
-  border-color: #3a87ad;
+  background-color: #eee;
+  border-color: gray;
+  border-style: dashed;
 }
+
 
 
