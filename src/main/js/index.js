@@ -15,31 +15,38 @@ $(function() {
      defaultView: hashParams['view'] || CalendarViewOptions.defaultView,
      defaultDate: hashParams['date'] || moment(),
      header: {
-        left: 'MONTH WEEK DAY',
+        left: 'MONTH,WEEK,DAY',
         center: 'title',
-        right: 'today prev next',
+        right: 'today prev,next',
      },
      views: {
         MONTH: {
             type: 'month',
-            buttonText: 'month',
         },
         WEEK: {
             type: 'agendaWeek',
-            buttonText: 'week',
             allDaySlot: false,
             agendaEventMinHeight: 20,
+            nowIndicator: true,
         },
         DAY: {
             type: 'agenda',
-            buttonText: 'day',
             allDaySlot: false,
             agendaEventMinHeight: 20,
             duration: { days: 1 },
+            nowIndicator: true,
         }
      },
+     slotLabelFormat: 'HH:mm',
+     timeFormat: 'HH:mm',
+     buttonText: {
+        today: 'heute',
+        MONTH: 'month',
+        WEEK: 'week',
+        DAY: 'day'
+     },
      viewRender: function(view, element) {
-        window.location = serializeHashParams({date: view.calendar.currentDate.format('YYYY-MM-DD'), type: view.type});
+        window.location = serializeHashParams({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
      }
   })
 });
