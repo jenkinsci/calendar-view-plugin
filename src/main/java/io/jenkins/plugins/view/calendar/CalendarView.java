@@ -454,8 +454,6 @@ public class CalendarView extends ListView {
     }
 
     public List<Event> getEvents() throws ParseException {
-        StaplerRequest request = Stapler.getCurrentRequest();
-
         Calendar start = getCalendarFromRequestParameter("start");
         Calendar end = getCalendarFromRequestParameter("end");
         Calendar now = Calendar.getInstance();
