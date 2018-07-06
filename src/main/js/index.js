@@ -15,30 +15,43 @@ $(function() {
      defaultView: hashParams['view'] || CalendarViewOptions.defaultView,
      defaultDate: hashParams['date'] || moment(),
      header: {
-        left: 'MONTH,WEEK,DAY',
+        left: 'month-view,week-view,day-view',
         center: 'title',
         right: 'today prev,next',
      },
      views: {
-        MONTH: {
+        'month-view': {
             type: 'month',
+            titleFormat: CalendarViewOptions.formats['month-view'].titleFormat,
+            columnHeaderFormat: CalendarViewOptions.formats['month-view'].columnHeaderFormat,
+            timeFormat: CalendarViewOptions.formats['month-view'].timeFormat,
         },
-        WEEK: {
+        'week-view': {
             type: 'agendaWeek',
             allDaySlot: false,
-            agendaEventMinHeight: 20,
+            agendaEventMinHeight: 16,
             nowIndicator: true,
+            titleFormat: CalendarViewOptions.formats['week-view'].titleFormat,
+            columnHeaderFormat: CalendarViewOptions.formats['week-view'].columnHeaderFormat,
+            timeFormat: CalendarViewOptions.formats['week-view'].timeFormat,
+            slotLabelFormat: CalendarViewOptions.formats['week-view'].slotLabelFormat,
         },
-        DAY: {
+        'day-view': {
             type: 'agenda',
             allDaySlot: false,
-            agendaEventMinHeight: 20,
+            agendaEventMinHeight: 16,
             duration: { days: 1 },
             nowIndicator: true,
+            titleFormat: CalendarViewOptions.formats['day-view'].titleFormat,
+            columnHeaderFormat: CalendarViewOptions.formats['day-view'].columnHeaderFormat,
+            timeFormat: CalendarViewOptions.formats['day-view'].timeFormat,
+            slotLabelFormat: CalendarViewOptions.formats['day-view'].slotLabelFormat,
         }
      },
-     slotLabelFormat: 'HH:mm',
-     timeFormat: 'HH:mm',
+     monthNames: CalendarViewOptions.names.monthNames,
+     monthNamesShort: CalendarViewOptions.names.monthNamesShort,
+     dayNames: CalendarViewOptions.names.dayNames,
+     dayNamesShort: CalendarViewOptions.names.dayNamesShort,
      buttonText: CalendarViewOptions.buttonText,
      viewRender: function(view, element) {
         window.location = serializeHashParams({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});

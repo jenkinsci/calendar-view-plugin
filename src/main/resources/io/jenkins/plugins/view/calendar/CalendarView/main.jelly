@@ -39,12 +39,80 @@ THE SOFTWARE.
     <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/calendar-view.css" />
     <script>
        CalendarViewOptions = {
-         defaultView: '${it.calendarViewType}',
+         defaultView: '${it.calendarViewType.name().toLowerCase()}-view',
          buttonText: {
-           today: "${%today}",
-           MONTH: "${%month}",
-           WEEK: "${%week}",
-           DAY: "${%day}",
+           'today': '${%ButtonText.Today}',
+           'month-view': '${%ButtonText.Month}',
+           'week-view': '${%ButtonText.Week}',
+           'day-view': '${%ButtonText.Day}',
+         },
+         names: {
+           monthNames: [
+             '${%MonthNames.January}',
+             '${%MonthNames.February}',
+             '${%MonthNames.March}',
+             '${%MonthNames.April}',
+             '${%MonthNames.May}',
+             '${%MonthNames.June}',
+             '${%MonthNames.July}',
+             '${%MonthNames.August}',
+             '${%MonthNames.September}',
+             '${%MonthNames.October}',
+             '${%MonthNames.November}',
+             '${%MonthNames.December}'
+           ],
+           monthNamesShort: [
+             '${%MonthNamesShort.Jan}',
+             '${%MonthNamesShort.Feb}',
+             '${%MonthNamesShort.Mar}',
+             '${%MonthNamesShort.Apr}',
+             '${%MonthNamesShort.May}',
+             '${%MonthNamesShort.Jun}',
+             '${%MonthNamesShort.Jul}',
+             '${%MonthNamesShort.Aug}',
+             '${%MonthNamesShort.Sep}',
+             '${%MonthNamesShort.Oct}',
+             '${%MonthNamesShort.Nov}',
+             '${%MonthNamesShort.Dec}'
+           ],
+           dayNames: [
+             '${%DayNames.Sunday}',
+             '${%DayNames.Monday}',
+             '${%DayNames.Tuesday}',
+             '${%DayNames.Wednesday}',
+             '${%DayNames.Thursday}',
+             '${%DayNames.Friday}',
+             '${%DayNames.Saturday}'
+           ],
+           dayNamesShort: [
+             '${%DayNamesShort.Sun}',
+             '${%DayNamesShort.Mon}',
+             '${%DayNamesShort.Tue}',
+             '${%DayNamesShort.Wed}',
+             '${%DayNamesShort.Thu}',
+             '${%DayNamesShort.Fri}',
+             '${%DayNamesShort.Sat}'
+           ]
+         },
+         formats: {
+           'month-view': {
+             titleFormat: '${%Month.TitleFormat}',
+             columnHeaderFormat: '${%Month.ColumnHeaderFormat}',
+             timeFormat: '${%Month.TimeFormat}',
+             slotLabelFormat: '${%Month.SlotLabelFormat}'
+           },
+           'week-view': {
+             titleFormat: '${%Week.TitleFormat}',
+             columnHeaderFormat: '${%Week.ColumnHeaderFormat}',
+             timeFormat: '${%Week.TimeFormat}',
+             slotLabelFormat: '${%Week.SlotLabelFormat}'
+           },
+           'day-view': {
+             titleFormat: '${%Day.TitleFormat}',
+             columnHeaderFormat: '${%Day.ColumnHeaderFormat}',
+             timeFormat: '${%Day.TimeFormat}',
+             slotLabelFormat: '${%Day.SlotLabelFormat}'
+           }
          }
        };
     </script>
