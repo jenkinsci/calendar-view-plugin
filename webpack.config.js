@@ -8,6 +8,9 @@ module.exports = {
     filename: 'calendar-view.js',
     path: path.join(__dirname, 'src/main/webapp/bundles')
   },
+  externals: {
+    jquery: 'jQuery'
+  },
   devtool: 'sourcemap',
   resolve: {
     extensions: [ '.js' ],
