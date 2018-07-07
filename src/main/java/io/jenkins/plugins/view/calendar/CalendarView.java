@@ -161,8 +161,28 @@ public class CalendarView extends ListView {
         }
     }
 
-
     private CalendarViewType calendarViewType = CalendarViewType.WEEK;
+
+    private boolean useCustomFormats = false;
+    private boolean useCustomWeekSettings = false;
+
+    private boolean weekSettingsShowWeekends = true;
+    private int weekSettingsFirstDay = 1;
+
+    private String monthTitleFormat;
+    private String monthColumnHeaderFormat;
+    private String monthTimeFormat;
+
+    private String weekTitleFormat;
+    private String weekColumnHeaderFormat;
+    private String weekTimeFormat;
+    private String weekSlotTimeFormat;
+
+    private String dayTitleFormat;
+    private String dayColumnHeaderFormat;
+    private String dayTimeFormat;
+    private String daySlotTimeFormat;
+
 
     @DataBoundConstructor
     public CalendarView(String name) {
@@ -177,6 +197,126 @@ public class CalendarView extends ListView {
         this.calendarViewType = calendarViewType;
     }
 
+    public boolean getUseCustomFormats() {
+        return useCustomFormats;
+    }
+
+    public void setUseCustomFormats(boolean useCustomFormats) {
+        this.useCustomFormats = useCustomFormats;
+    }
+
+    public boolean getUseCustomWeekSettings() {
+        return useCustomWeekSettings;
+    }
+
+    public void setUseCustomWeekSettings(boolean useCustomWeekSettings) {
+        this.useCustomWeekSettings = useCustomWeekSettings;
+    }
+
+    public boolean getWeekSettingsShowWeekends() {
+        return weekSettingsShowWeekends;
+    }
+
+    public void setWeekSettingsShowWeekends(boolean weekSettingsShowWeekends) {
+        this.weekSettingsShowWeekends = weekSettingsShowWeekends;
+    }
+
+    public int getWeekSettingsFirstDay() {
+        return weekSettingsFirstDay;
+    }
+
+    public void setWeekSettingsFirstDay(int weekSettingsFirstDay) {
+        this.weekSettingsFirstDay = weekSettingsFirstDay;
+    }
+
+    public String getMonthTitleFormat() {
+        return monthTitleFormat;
+    }
+
+    public void setMonthTitleFormat(String monthTitleFormat) {
+        this.monthTitleFormat = monthTitleFormat;
+    }
+
+    public String getMonthColumnHeaderFormat() {
+        return monthColumnHeaderFormat;
+    }
+
+    public void setMonthColumnHeaderFormat(String monthColumnHeaderFormat) {
+        this.monthColumnHeaderFormat = monthColumnHeaderFormat;
+    }
+
+    public String getMonthTimeFormat() {
+        return monthTimeFormat;
+    }
+
+    public void setMonthTimeFormat(String monthTimeFormat) {
+        this.monthTimeFormat = monthTimeFormat;
+    }
+
+    public String getWeekTitleFormat() {
+        return weekTitleFormat;
+    }
+
+    public void setWeekTitleFormat(String weekTitleFormat) {
+        this.weekTitleFormat = weekTitleFormat;
+    }
+
+    public String getWeekColumnHeaderFormat() {
+        return weekColumnHeaderFormat;
+    }
+
+    public void setWeekColumnHeaderFormat(String weekColumnHeaderFormat) {
+        this.weekColumnHeaderFormat = weekColumnHeaderFormat;
+    }
+
+    public String getWeekTimeFormat() {
+        return weekTimeFormat;
+    }
+
+    public void setWeekTimeFormat(String weekTimeFormat) {
+        this.weekTimeFormat = weekTimeFormat;
+    }
+
+    public String getWeekSlotTimeFormat() {
+        return weekSlotTimeFormat;
+    }
+
+    public void setWeekSlotTimeFormat(String weekSlotTimeFormat) {
+        this.weekSlotTimeFormat = weekSlotTimeFormat;
+    }
+
+    public String getDayTitleFormat() {
+        return dayTitleFormat;
+    }
+
+    public void setDayTitleFormat(String dayTitleFormat) {
+        this.dayTitleFormat = dayTitleFormat;
+    }
+
+    public String getDayColumnHeaderFormat() {
+        return dayColumnHeaderFormat;
+    }
+
+    public void setDayColumnHeaderFormat(String dayColumnHeaderFormat) {
+        this.dayColumnHeaderFormat = dayColumnHeaderFormat;
+    }
+
+    public String getDayTimeFormat() {
+        return dayTimeFormat;
+    }
+
+    public void setDayTimeFormat(String dayTimeFormat) {
+        this.dayTimeFormat = dayTimeFormat;
+    }
+
+    public String getDaySlotTimeFormat() {
+        return daySlotTimeFormat;
+    }
+
+    public void setDaySlotTimeFormat(String daySlotTimeFormat) {
+        this.daySlotTimeFormat = daySlotTimeFormat;
+    }
+
     @Override
     public boolean isAutomaticRefreshEnabled() {
         return false;
@@ -186,6 +326,26 @@ public class CalendarView extends ListView {
     protected void submit(StaplerRequest req) throws ServletException, Descriptor.FormException, IOException {
         super.submit(req);
         setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
+
+        setUseCustomFormats(req.getParameter("useCustomFormats") != null);
+        setUseCustomWeekSettings(req.getParameter("useCustomWeekSettings") != null);
+
+        setWeekSettingsShowWeekends(req.getParameter("weekSettingsShowWeekends") != null);
+        setWeekSettingsFirstDay(Integer.parseInt(req.getParameter("weekSettingsFirstDay")));
+
+        setMonthTitleFormat(req.getParameter("monthTitleFormat"));
+        setMonthColumnHeaderFormat(req.getParameter("monthColumnHeaderFormat"));
+        setMonthTimeFormat(req.getParameter("monthTimeFormat"));
+
+        setWeekTitleFormat(req.getParameter("weekTitleFormat"));
+        setWeekColumnHeaderFormat(req.getParameter("weekColumnHeaderFormat"));
+        setWeekTimeFormat(req.getParameter("weekTimeFormat"));
+        setWeekSlotTimeFormat(req.getParameter("weekSlotTimeFormat"));
+
+        setDayTitleFormat(req.getParameter("dayTitleFormat"));
+        setDayColumnHeaderFormat(req.getParameter("dayColumnHeaderFormat"));
+        setDayTimeFormat(req.getParameter("dayTimeFormat"));
+        setDaySlotTimeFormat(req.getParameter("daySlotTimeFormat"));
     }
 
     public List<Event> getEvents() throws ParseException {

@@ -28,12 +28,86 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-    <f:section title="${%Calendar Options}">
+    <f:section title="${%Calendar Options}" name="calendarOptions">
         <f:entry title="${%Default View}" field="calendarViewType">
             <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}"/>${%Month}
             <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}"/>${%Week}
             <f:radio name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}"/>${%Day}
         </f:entry>
+
+        <f:optionalBlock name="useCustomWeekSettings" title="${%Use custom week day settings}"
+                         checked="${it.useCustomWeekSettings}">
+            <f:entry title="${%Weekends}">
+                <div>
+                    <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends"/> ${%Show weekends}
+                </div>
+            </f:entry>
+            <f:entry title="${%First day of week}">
+                <div>
+                    <select name="weekSettingsFirstDay" class="setting-input">
+                        <f:option value="0" selected="${it.weekSettingsFirstDay==0}">${%Sunday}</f:option>
+                        <f:option value="1" selected="${it.weekSettingsFirstDay==1}">${%Monday}</f:option>
+                        <f:option value="2" selected="${it.weekSettingsFirstDay==2}">${%Tuesday}</f:option>
+                        <f:option value="3" selected="${it.weekSettingsFirstDay==3}">${%Wednesday}</f:option>
+                        <f:option value="4" selected="${it.weekSettingsFirstDay==4}">${%Thursday}</f:option>
+                        <f:option value="5" selected="${it.weekSettingsFirstDay==5}">${%Friday}</f:option>
+                        <f:option value="6" selected="${it.weekSettingsFirstDay==6}">${%Saturday}</f:option>
+                    </select>
+                </div>
+            </f:entry>
+        </f:optionalBlock>
+
+        <f:optionalBlock name="useCustomFormats" title="${%Use custom date and time formats}"
+                         checked="${it.useCustomFormats}" help="/plugin/calendar-view/help/date-and-time-formats.html">
+            <f:entry title="${%View title}">
+                <table>
+                    <tr>
+                        <td style="vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
+                        <td><f:textbox name="monthTitleFormat" field="monthTitleFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td><f:textbox name="weekTitleFormat" field="weekTitleFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td><f:textbox name="dayTitleFormat" field="dayTitleFormat" /></td>
+                    </tr>
+                </table>
+            </f:entry>
+            <f:entry title="${%Day column title}">
+                <table>
+                    <tr>
+                        <td style="vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
+                        <td><f:textbox name="monthColumnHeaderFormat" field="monthColumnHeaderFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td><f:textbox name="weekColumnHeaderFormat" field="weekColumnHeaderFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td><f:textbox name="dayColumnHeaderFormat" field="dayColumnHeaderFormat" /></td>
+                    </tr>
+                </table>
+            </f:entry>
+            <f:entry title="${%Events}">
+                <table>
+                    <tr>
+                        <td style="vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
+                        <td><f:textbox name="monthTimeFormat" field="monthTimeFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td><f:textbox name="weekTimeFormat" field="weekTimeFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td><f:textbox name="dayTimeFormat" field="dayTimeFormat" /></td>
+                    </tr>
+                </table>
+            </f:entry>
+            <f:entry title="${%Slots}">
+                <table>
+                    <tr>
+                        <td style="visibility:hidden; vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
+                        <td style="visibility:hidden"><f:textbox name="monthSlotTimeFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td><f:textbox name="weekSlotTimeFormat" field="weekSlotTimeFormat" /></td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td><f:textbox name="daySlotTimeFormat" field="daySlotTimeFormat" /></td>
+                    </tr>
+                </table>
+            </f:entry>
+        </f:optionalBlock>
     </f:section>
 
     <f:section title="${%Job Filters}">
