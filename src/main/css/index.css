@@ -38,7 +38,7 @@
 
 .fc-event {
   background-color: #888888;
-  border-color: #777777;
+  border-color: #888888;
 }
 
 .fc-event.event-success {
@@ -48,12 +48,12 @@
 
 .fc-event.event-failure {
   background-color: #ff0000;
-  border-color: #cc0000;
+  border-color: #ff0000;
 }
 
 .fc-event.event-unstable {
   background-color: #a6982b;
-  border-color: #968b3c;
+  border-color: #a6982b;
 }
 
 .fc-event.event-future {
