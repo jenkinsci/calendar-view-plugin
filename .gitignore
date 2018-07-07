@@ -3,7 +3,7 @@
 
 node
 node_modules
-src/main/webapp
+src/main/webapp/bundles
 
 work
 target

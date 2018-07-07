@@ -6,7 +6,7 @@ module.exports = {
   entry: './src/main/js/index.js',
   output: {
     filename: 'calendar-view.js',
-    path: path.join(__dirname, 'src/main/webapp/')
+    path: path.join(__dirname, 'src/main/webapp/bundles')
   },
   devtool: 'sourcemap',
   resolve: {
