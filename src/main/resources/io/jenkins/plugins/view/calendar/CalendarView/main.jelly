@@ -94,24 +94,27 @@ THE SOFTWARE.
              '${%DayNamesShort.Sat}'
            ]
          },
+         weekSettings: {
+           weekends: ${(it.useCustomWeekSettings) ? it.weekSettingsShowWeekends : true},
+           firstDay: ${(it.useCustomWeekSettings) ? it.weekSettingsFirstDay : 1},
+         },
          formats: {
            'month-view': {
-             titleFormat: '${%Month.TitleFormat}',
-             columnHeaderFormat: '${%Month.ColumnHeaderFormat}',
-             timeFormat: '${%Month.TimeFormat}',
-             slotLabelFormat: '${%Month.SlotLabelFormat}'
+             titleFormat: '${it.useCustomFormats ? it.jsonEscape(it.monthTitleFormat) : ''}' || '${%Month.TitleFormat}',
+             columnHeaderFormat: '${it.useCustomFormats ? it.jsonEscape(it.monthColumnHeaderFormat) : ''}' || '${%Month.ColumnHeaderFormat}',
+             timeFormat: '${it.useCustomFormats ? it.jsonEscape(it.monthTimeFormat) : ''}' || '${%Month.TimeFormat}',
            },
            'week-view': {
-             titleFormat: '${%Week.TitleFormat}',
-             columnHeaderFormat: '${%Week.ColumnHeaderFormat}',
-             timeFormat: '${%Week.TimeFormat}',
-             slotLabelFormat: '${%Week.SlotLabelFormat}'
+             titleFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekTitleFormat) : ''}' || '${%Week.TitleFormat}',
+             columnHeaderFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekColumnHeaderFormat) : ''}' || '${%Week.ColumnHeaderFormat}',
+             timeFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekTimeFormat) : ''}' || '${%Week.TimeFormat}',
+             slotLabelFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekSlotTimeFormat) : ''}' || '${%Week.SlotLabelFormat}'
            },
            'day-view': {
-             titleFormat: '${%Day.TitleFormat}',
-             columnHeaderFormat: '${%Day.ColumnHeaderFormat}',
-             timeFormat: '${%Day.TimeFormat}',
-             slotLabelFormat: '${%Day.SlotLabelFormat}'
+             titleFormat: '${it.useCustomFormats ? it.jsonEscape(it.dayTitleFormat) : ''}' || '${%Day.TitleFormat}',
+             columnHeaderFormat: '${it.useCustomFormats ? it.jsonEscape(it.dayColumnHeaderFormat) : ''}' || '${%Day.ColumnHeaderFormat}',
+             timeFormat: '${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : ''}' || '${%Day.TimeFormat}',
+             slotLabelFormat: '${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : ''}' || '${%Day.SlotLabelFormat}'
            }
          }
        };

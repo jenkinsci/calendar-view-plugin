@@ -48,6 +48,8 @@ $(function() {
             slotLabelFormat: CalendarViewOptions.formats['day-view'].slotLabelFormat,
         }
      },
+     weekends: CalendarViewOptions.weekSettings.weekends,
+     firstDay: CalendarViewOptions.weekSettings.firstDay,
      monthNames: CalendarViewOptions.names.monthNames,
      monthNamesShort: CalendarViewOptions.names.monthNamesShort,
      dayNames: CalendarViewOptions.names.dayNames,
