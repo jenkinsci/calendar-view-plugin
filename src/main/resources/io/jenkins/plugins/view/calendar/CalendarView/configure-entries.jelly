@@ -108,6 +108,90 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
                 </table>
             </f:entry>
         </f:optionalBlock>
+
+        <f:optionalBlock name="useCustomSlotSettings" title="${%Use custom time slot settings}"
+                         checked="${it.useCustomSlotSettings}">
+            <f:entry title="${%Time slot duration}">
+                <table>
+                    <tr>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td style="vertical-align:middle;">
+                            <select name="weekSlotDuration" class="setting-input">
+                                <f:option value="00:05:00" selected="${it.weekSlotDuration=='00:05:00'}">${%5 minutes}</f:option>
+                                <f:option value="00:10:00" selected="${it.weekSlotDuration=='00:10:00'}">${%10 minutes}</f:option>
+                                <f:option value="00:15:00" selected="${it.weekSlotDuration=='00:15:00'}">${%15 minutes}</f:option>
+                                <f:option value="00:20:00" selected="${it.weekSlotDuration=='00:20:00'}">${%20 minutes}</f:option>
+                                <f:option value="00:30:00" selected="${it.weekSlotDuration=='00:30:00'}">${%30 minutes}</f:option>
+                                <f:option value="01:00:00" selected="${it.weekSlotDuration=='01:00:00'}">${%1 hour}</f:option>
+                            </select>
+                        </td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td style="vertical-align:middle;">
+                            <select name="daySlotDuration" class="setting-input">
+                                <f:option value="00:05:00" selected="${it.daySlotDuration=='00:05:00'}">${%5 minutes}</f:option>
+                                <f:option value="00:10:00" selected="${it.daySlotDuration=='00:10:00'}">${%10 minutes}</f:option>
+                                <f:option value="00:15:00" selected="${it.daySlotDuration=='00:15:00'}">${%15 minutes}</f:option>
+                                <f:option value="00:20:00" selected="${it.daySlotDuration=='00:20:00'}">${%20 minutes}</f:option>
+                                <f:option value="00:30:00" selected="${it.daySlotDuration=='00:30:00'}">${%30 minutes}</f:option>
+                                <f:option value="01:00:00" selected="${it.daySlotDuration=='01:00:00'}">${%1 hour}</f:option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </f:entry>
+            <f:entry title="${%Time slot start}">
+                <table>
+                    <tr>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td style="vertical-align:middle;">
+                            <select name="weekMinTime" class="setting-input">
+                                <j:forEach var="hour" begin="0" end="24">
+                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
+                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
+                                    <f:option value="${timeSecs}" selected="${it.weekMinTime==timeSecs}">${timeMins}</f:option>
+                                </j:forEach>
+                            </select>
+                        </td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td style="vertical-align:middle;">
+                            <select name="dayMinTime" class="setting-input">
+                                <j:forEach var="hour" begin="0" end="24">
+                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
+                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
+                                    <f:option value="${timeSecs}" selected="${it.dayMinTime==timeSecs}">${timeMins}</f:option>
+                                </j:forEach>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </f:entry>
+            <f:entry title="${%Time slot end}">
+                <table>
+                    <tr>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td style="vertical-align:middle;">
+                            <select name="weekMaxTime" class="setting-input">
+                                <j:forEach var="hour" begin="0" end="24">
+                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
+                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
+                                    <f:option value="${timeSecs}" selected="${it.weekMaxTime==timeSecs}">${timeMins}</f:option>
+                                </j:forEach>
+                            </select>
+                        </td>
+                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td style="vertical-align:middle;">
+                            <select name="dayMaxTime" class="setting-input">
+                                <j:forEach var="hour" begin="0" end="24">
+                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
+                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
+                                    <f:option value="${timeSecs}" selected="${it.dayMaxTime==timeSecs}">${timeMins}</f:option>
+                                </j:forEach>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </f:entry>
+        </f:optionalBlock>
     </f:section>
 
     <f:section title="${%Job Filters}">

@@ -116,6 +116,18 @@ THE SOFTWARE.
              timeFormat: '${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : ''}' || '${%Day.TimeFormat}',
              slotLabelFormat: '${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : ''}' || '${%Day.SlotLabelFormat}'
            }
+         },
+         slotSettings: {
+           'week-view': {
+             slotDuration: '${it.useCustomSlotSettings ? it.jsonEscape(it.weekSlotDuration) : ''}' || '00:30:00',
+             minTime: '${it.useCustomSlotSettings ? it.jsonEscape(it.weekMinTime) : ''}' || '00:00:00',
+             maxTime: '${it.useCustomSlotSettings ? it.jsonEscape(it.weekMaxTime) : ''}' || '24:00:00',
+           },
+           'day-view': {
+             slotDuration: '${it.useCustomSlotSettings ? it.jsonEscape(it.daySlotDuration) : ''}' || '00:30:00',
+             minTime: '${it.useCustomSlotSettings ? it.jsonEscape(it.dayMinTime) : ''}' || '00:00:00',
+             maxTime: '${it.useCustomSlotSettings ? it.jsonEscape(it.dayMaxTime) : ''}' || '24:00:00',
+           }
          }
        };
     </script>

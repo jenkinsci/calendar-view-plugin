@@ -163,11 +163,12 @@ public class CalendarView extends ListView {
 
     private CalendarViewType calendarViewType = CalendarViewType.WEEK;
 
-    private boolean useCustomFormats = false;
-    private boolean useCustomWeekSettings = false;
+    private Boolean useCustomFormats = false;
+    private Boolean useCustomWeekSettings = false;
+    private Boolean useCustomSlotSettings = false;
 
-    private boolean weekSettingsShowWeekends = true;
-    private int weekSettingsFirstDay = 1;
+    private Boolean weekSettingsShowWeekends;
+    private Integer weekSettingsFirstDay = 1;
 
     private String monthTitleFormat;
     private String monthColumnHeaderFormat;
@@ -183,6 +184,12 @@ public class CalendarView extends ListView {
     private String dayTimeFormat;
     private String daySlotTimeFormat;
 
+    private String weekSlotDuration;
+    private String weekMinTime;
+    private String weekMaxTime;
+    private String daySlotDuration;
+    private String dayMinTime;
+    private String dayMaxTime;
 
     @DataBoundConstructor
     public CalendarView(String name) {
@@ -198,7 +205,10 @@ public class CalendarView extends ListView {
     }
 
     public boolean getUseCustomFormats() {
-        return useCustomFormats;
+        if (useCustomFormats != null) {
+            return useCustomFormats;
+        }
+        return false;
     }
 
     public void setUseCustomFormats(boolean useCustomFormats) {
@@ -206,15 +216,32 @@ public class CalendarView extends ListView {
     }
 
     public boolean getUseCustomWeekSettings() {
-        return useCustomWeekSettings;
+        if (useCustomWeekSettings != null) {
+            return useCustomWeekSettings;
+        }
+        return false;
     }
 
     public void setUseCustomWeekSettings(boolean useCustomWeekSettings) {
         this.useCustomWeekSettings = useCustomWeekSettings;
     }
 
+    public boolean getUseCustomSlotSettings() {
+        if (useCustomSlotSettings != null) {
+            return useCustomSlotSettings;
+        }
+        return false;
+    }
+
+    public void setUseCustomSlotSettings(boolean useCustomSlotSettings) {
+        this.useCustomSlotSettings = useCustomSlotSettings;
+    }
+
     public boolean getWeekSettingsShowWeekends() {
-        return weekSettingsShowWeekends;
+        if (weekSettingsShowWeekends != null) {
+            return weekSettingsShowWeekends;
+        }
+        return true;
     }
 
     public void setWeekSettingsShowWeekends(boolean weekSettingsShowWeekends) {
@@ -222,7 +249,10 @@ public class CalendarView extends ListView {
     }
 
     public int getWeekSettingsFirstDay() {
-        return weekSettingsFirstDay;
+        if (weekSettingsFirstDay != null) {
+            return weekSettingsFirstDay;
+        }
+        return 1;
     }
 
     public void setWeekSettingsFirstDay(int weekSettingsFirstDay) {
@@ -317,6 +347,72 @@ public class CalendarView extends ListView {
         this.daySlotTimeFormat = daySlotTimeFormat;
     }
 
+    public String getWeekSlotDuration() {
+        if (weekSlotDuration != null) {
+            return weekSlotDuration;
+        }
+        return "00:30:00";
+    }
+
+    public void setWeekSlotDuration(String weekSlotDuration) {
+        this.weekSlotDuration = weekSlotDuration;
+    }
+
+    public String getDaySlotDuration() {
+        if (daySlotDuration != null) {
+            return daySlotDuration;
+        }
+        return "00:30:00";
+    }
+
+    public void setDaySlotDuration(String daySlotDuration) {
+        this.daySlotDuration = daySlotDuration;
+    }
+
+    public String getWeekMinTime() {
+        if (weekMinTime != null) {
+            return weekMinTime;
+        };
+        return "00:00:00";
+    }
+
+    public void setWeekMinTime(String weekMinTime) {
+        this.weekMinTime = weekMinTime;
+    }
+
+    public String getWeekMaxTime() {
+        if (weekMaxTime != null) {
+            return weekMaxTime;
+        }
+        return "24:00:00";
+    }
+
+    public void setWeekMaxTime(String weekMaxTime) {
+        this.weekMaxTime = weekMaxTime;
+    }
+
+    public String getDayMinTime() {
+        if (dayMinTime != null) {
+            return dayMinTime;
+        }
+        return "00:00:00";
+    }
+
+    public void setDayMinTime(String dayMinTime) {
+        this.dayMinTime = dayMinTime;
+    }
+
+    public String getDayMaxTime() {
+        if (dayMaxTime != null) {
+            return dayMaxTime;
+        }
+        return "24:00:00";
+    }
+
+    public void setDayMaxTime(String dayMaxTime) {
+        this.dayMaxTime = dayMaxTime;
+    }
+
     @Override
     public boolean isAutomaticRefreshEnabled() {
         return false;
@@ -329,6 +425,7 @@ public class CalendarView extends ListView {
 
         setUseCustomFormats(req.getParameter("useCustomFormats") != null);
         setUseCustomWeekSettings(req.getParameter("useCustomWeekSettings") != null);
+        setUseCustomSlotSettings(req.getParameter("useCustomSlotSettings") != null);
 
         setWeekSettingsShowWeekends(req.getParameter("weekSettingsShowWeekends") != null);
         setWeekSettingsFirstDay(Integer.parseInt(req.getParameter("weekSettingsFirstDay")));
@@ -346,6 +443,14 @@ public class CalendarView extends ListView {
         setDayColumnHeaderFormat(req.getParameter("dayColumnHeaderFormat"));
         setDayTimeFormat(req.getParameter("dayTimeFormat"));
         setDaySlotTimeFormat(req.getParameter("daySlotTimeFormat"));
+
+        setWeekSlotDuration(req.getParameter("weekSlotDuration"));
+        setWeekMinTime(req.getParameter("weekMinTime"));
+        setWeekMaxTime(req.getParameter("weekMaxTime"));
+
+        setDaySlotDuration(req.getParameter("daySlotDuration"));
+        setDayMinTime(req.getParameter("dayMinTime"));
+        setDayMaxTime(req.getParameter("dayMaxTime"));
     }
 
     public List<Event> getEvents() throws ParseException {
@@ -473,7 +578,7 @@ public class CalendarView extends ListView {
     }
 
     @Extension
-    public static final class DescriptorImpl extends ViewDescriptor {
+    public static final class DescriptorImpl extends ListView.DescriptorImpl {
         @Override
         public String getDisplayName() {
             return Messages.CalendarView_DisplayName();

@@ -35,6 +35,9 @@ $(function() {
             columnHeaderFormat: CalendarViewOptions.formats['week-view'].columnHeaderFormat,
             timeFormat: CalendarViewOptions.formats['week-view'].timeFormat,
             slotLabelFormat: CalendarViewOptions.formats['week-view'].slotLabelFormat,
+            slotDuration: CalendarViewOptions.slotSettings['week-view'].slotDuration,
+            minTime: CalendarViewOptions.slotSettings['week-view'].minTime,
+            maxTime: CalendarViewOptions.slotSettings['week-view'].maxTime,
         },
         'day-view': {
             type: 'agenda',
@@ -46,6 +49,9 @@ $(function() {
             columnHeaderFormat: CalendarViewOptions.formats['day-view'].columnHeaderFormat,
             timeFormat: CalendarViewOptions.formats['day-view'].timeFormat,
             slotLabelFormat: CalendarViewOptions.formats['day-view'].slotLabelFormat,
+            slotDuration: CalendarViewOptions.slotSettings['day-view'].slotDuration,
+            minTime: CalendarViewOptions.slotSettings['day-view'].minTime,
+            maxTime: CalendarViewOptions.slotSettings['day-view'].maxTime,
         }
      },
      weekends: CalendarViewOptions.weekSettings.weekends,
