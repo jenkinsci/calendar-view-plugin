@@ -2,8 +2,8 @@
 
 Shows past and future builds in a calendar view.
 
-| ![](docs/images/month-view.png) | ![](docs/images/week-view.png) |
-|---------------------------------|--------------------------------|
+| ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/month-view.png) | ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/week-view.png) |
+|---------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
 
 ## Features
 
@@ -19,18 +19,19 @@ Shows past and future builds in a calendar view.
 
 Select the *Calendar View* option and give the view a name.
 
-| ![](docs/images/create-view.png) |
-|----------------------------------|
+| ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/create-view.png) |
+|----------------------------------------------------------------------------------------------------------|
 
 
 ### 2. Configure the view
 
 Select the jobs whose builds should be displayed in the view and customize the view to your liking:
 
-Tip: to be more flexible in selecting the jobs use the [Jenkins View Job Plugin](https://github.com/jenkinsci/view-job-filters-plugin).
+Tip: to be more flexible in selecting the jobs use the 
+[Jenkins View Job Plugin](https://github.com/jenkinsci/view-job-filters-plugin).
 
-| ![](docs/images/config-view.png) |
-|----------------------------------|
+| ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/config-view.png) |
+|----------------------------------------------------------------------------------------------------------|
 
 
 ### 3. Open the view
@@ -55,9 +56,9 @@ Clicking on a past build will lead to that specific build's detail page.
 
 Clicking on a future build will lead to the job's detail page.
 
-| ![](docs/images/month-view.png) |
-|---------------------------------|
-| ![](docs/images/week-view.png)  |
+| ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/month-view.png) |
+|---------------------------------------------------------------------------------------------------------|
+| ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/week-view.png)  |
 
 ## Development
 
