@@ -1,3 +1,6 @@
+[![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins/calendar-view-plugin/master)](https://ci.jenkins.io/blue/organizations/jenkins/Plugins%2Fcalendar-view-plugin/branches)
+
+
 # Jenkins Calendar View Plugin
 
 Shows past and future builds in a calendar view.
@@ -65,7 +68,7 @@ Clicking on a future build will lead to the job's detail page.
 Clone the repository then execute the following in the project's root directory:
 
 ```
-mvn install
+$ mvn install
 ```
 
 This will install Java dependencies as well as a local node installation and npm dependencies.
@@ -73,5 +76,15 @@ This will install Java dependencies as well as a local node installation and npm
 You can now run the plugin in a Jenkins instance by executing the following:
 
 ```
-mvn hpi:run
+$ mvn hpi:run
 ```
+
+## License
+
+MIT License
+
+## Links
+
+* [Jenkins CI](https://ci.jenkins.io/job/Plugins/job/calendar-view-plugin/) ([Blue Ocean](https://ci.jenkins.io/blue/organizations/jenkins/Plugins%2Fcalendar-view-plugin/branches))
+* [Wiki](https://wiki.jenkins.io/display/JENKINS/Calendar+View+Plugin)
+* [Plugin Site](https://plugins.jenkins.io/calendar-view)
