@@ -88,3 +88,4 @@ MIT License
 * [Jenkins CI](https://ci.jenkins.io/job/Plugins/job/calendar-view-plugin/) ([Blue Ocean](https://ci.jenkins.io/blue/organizations/jenkins/Plugins%2Fcalendar-view-plugin/branches))
 * [Wiki](https://wiki.jenkins.io/display/JENKINS/Calendar+View+Plugin)
 * [Plugin Site](https://plugins.jenkins.io/calendar-view)
+* JIRA: [Unresolved Issues](https://issues.jenkins-ci.org/issues/?filter=18648) | [All Issues](https://issues.jenkins-ci.org/issues/?filter=18647)
