@@ -79,6 +79,11 @@ You can now run the plugin in a Jenkins instance by executing the following:
 $ mvn hpi:run
 ```
 
+## Changelog
+
+### 0.1.0 (2018-07-11)
+* Initial release
+
 ## License
 
 MIT License
