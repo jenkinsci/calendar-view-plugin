@@ -53,7 +53,7 @@ Past builds will appear in four different colors:
 
 Clicking on a past build will lead to that specific build's detail page.
 
-#### Future build
+#### Future builds
 
 *Future* builds are *light gray with a dashed border*.
 
