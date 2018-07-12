@@ -100,21 +100,21 @@ THE SOFTWARE.
          },
          formats: {
            'month-view': {
-             titleFormat: '${it.useCustomFormats ? it.jsonEscape(it.monthTitleFormat) : ''}' || '${%Month.TitleFormat}',
-             columnHeaderFormat: '${it.useCustomFormats ? it.jsonEscape(it.monthColumnHeaderFormat) : ''}' || '${%Month.ColumnHeaderFormat}',
-             timeFormat: '${it.useCustomFormats ? it.jsonEscape(it.monthTimeFormat) : ''}' || '${%Month.TimeFormat}',
+             titleFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTitleFormat) : ''}"/>' || '${%Month.TitleFormat}',
+             columnHeaderFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthColumnHeaderFormat) : ''}"/>' || '${%Month.ColumnHeaderFormat}',
+             timeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTimeFormat) : ''}"/>' || '${%Month.TimeFormat}',
            },
            'week-view': {
-             titleFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekTitleFormat) : ''}' || '${%Week.TitleFormat}',
-             columnHeaderFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekColumnHeaderFormat) : ''}' || '${%Week.ColumnHeaderFormat}',
-             timeFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekTimeFormat) : ''}' || '${%Week.TimeFormat}',
-             slotLabelFormat: '${it.useCustomFormats ? it.jsonEscape(it.weekSlotTimeFormat) : ''}' || '${%Week.SlotLabelFormat}'
+             titleFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTitleFormat) : ''}"/>' || '${%Week.TitleFormat}',
+             columnHeaderFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekColumnHeaderFormat) : ''}"/>' || '${%Week.ColumnHeaderFormat}',
+             timeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTimeFormat) : ''}"/>' || '${%Week.TimeFormat}',
+             slotLabelFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekSlotTimeFormat) : ''}"/>' || '${%Week.SlotLabelFormat}'
            },
            'day-view': {
-             titleFormat: '${it.useCustomFormats ? it.jsonEscape(it.dayTitleFormat) : ''}' || '${%Day.TitleFormat}',
-             columnHeaderFormat: '${it.useCustomFormats ? it.jsonEscape(it.dayColumnHeaderFormat) : ''}' || '${%Day.ColumnHeaderFormat}',
-             timeFormat: '${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : ''}' || '${%Day.TimeFormat}',
-             slotLabelFormat: '${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : ''}' || '${%Day.SlotLabelFormat}'
+             titleFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTitleFormat) : ''}"/>' || '${%Day.TitleFormat}',
+             columnHeaderFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayColumnHeaderFormat) : ''}"/>' || '${%Day.ColumnHeaderFormat}',
+             timeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : ''}"/>' || '${%Day.TimeFormat}',
+             slotLabelFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : ''}"/>' || '${%Day.SlotLabelFormat}'
            }
          },
          slotSettings: {
