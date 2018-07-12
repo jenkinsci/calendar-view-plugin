@@ -31,7 +31,7 @@ Select the *Calendar View* option and give the view a name.
 Select the jobs whose builds should be displayed in the view and customize the view to your liking:
 
 Tip: to be more flexible in selecting the jobs use the 
-[Jenkins View Job Plugin](https://github.com/jenkinsci/view-job-filters-plugin).
+[View Job Filters Plugin](https://github.com/jenkinsci/view-job-filters-plugin).
 
 | ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/config-view.png) |
 |----------------------------------------------------------------------------------------------------------|
