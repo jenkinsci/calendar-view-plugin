@@ -81,6 +81,11 @@ $ mvn hpi:run
 
 ## Changelog
 
+### 0.1.1 (2018-07-13)
+* Fix: special HTML characters in custom date/time formats were escaped twice
+* Fix: some typos and other minor issues in documentation
+* Better validation for view configuration options
+
 ### 0.1.0 (2018-07-11)
 * Initial release
 
