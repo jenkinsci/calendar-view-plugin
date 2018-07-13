@@ -55,6 +55,14 @@ public class CalendarView extends ListView {
     private static final String FORMAT_DATE = "yyyy-MM-dd";
     private static final String FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss";
 
+    private static final List<String> SLOT_DURATIONS = Collections.unmodifiableList(Arrays.asList(
+        "00:05:00",
+        "00:10:00",
+        "00:15:00",
+        "00:20:00",
+        "00:30:00",
+        "01:00:00"
+    ));
 
     public static enum CalendarViewType {
        MONTH, WEEK, DAY;
@@ -421,6 +429,17 @@ public class CalendarView extends ListView {
     @Override
     protected void submit(StaplerRequest req) throws ServletException, Descriptor.FormException, IOException {
         super.submit(req);
+
+        validateRange(req, "weekSettingsFirstDay", 0, 7);
+
+        validateInList(req, "weekSlotDuration", SLOT_DURATIONS);
+        validatePattern(req, "weekMinTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
+        validatePattern(req, "weekMaxTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
+
+        validateInList(req, "daySlotDuration", SLOT_DURATIONS);
+        validatePattern(req, "dayMinTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
+        validatePattern(req, "dayMaxTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
+
         setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
 
         setUseCustomFormats(req.getParameter("useCustomFormats") != null);
@@ -451,6 +470,26 @@ public class CalendarView extends ListView {
         setDaySlotDuration(req.getParameter("daySlotDuration"));
         setDayMinTime(req.getParameter("dayMinTime"));
         setDayMaxTime(req.getParameter("dayMaxTime"));
+    }
+
+    private void validateInList(StaplerRequest req, String formField, List<String> possibleValues) throws Descriptor.FormException {
+        if (!possibleValues.contains(req.getParameter(formField))) {
+            throw new Descriptor.FormException(formField + " must be one of " + possibleValues, formField);
+        }
+    }
+
+    private void validatePattern(StaplerRequest req, String formField, String pattern) throws Descriptor.FormException {
+        String value = req.getParameter(formField);
+        if (value == null || !value.matches(pattern)) {
+            throw new Descriptor.FormException(formField + " must match " + pattern, formField);
+        }
+    }
+
+    private void validateRange(StaplerRequest req, String formField, int min, int max) throws Descriptor.FormException {
+        int value = Integer.parseInt(req.getParameter("weekSettingsFirstDay"));
+        if (value < min || value > max) {
+            throw new Descriptor.FormException(formField + " must be: " + min + " <= " + formField + " <= " + max, formField);
+        }
     }
 
     public List<Event> getEvents() throws ParseException {
