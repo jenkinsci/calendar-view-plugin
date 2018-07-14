@@ -19,4 +19,3 @@ export function serializeHashParams(hashParams) {
   }
   return '#' + params.join('|');
 }
-
