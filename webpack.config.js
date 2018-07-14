@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: './src/main/js/index.js',
@@ -13,7 +13,7 @@ module.exports = {
   },
   devtool: 'sourcemap',
   resolve: {
-    extensions: [ '.js' ],
+    extensions: [ '.js' ]
   },
   module: {
     rules: [
@@ -21,7 +21,7 @@ module.exports = {
         test: /\.css$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader,
+            loader: MiniCssExtractPlugin.loader
           },
           'css-loader'
         ]
@@ -29,9 +29,8 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "eslint-loader",
+        loader: 'eslint-loader',
         options: {
-          // eslint options (if necessary)
         }
       }
     ]
