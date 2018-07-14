@@ -24,18 +24,31 @@ THE SOFTWARE.
 
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-<st:contentType value="application/json" />
+<l:ajax contentType="application/json">
 [
   <j:forEach var="event" items="${it.events}" varStatus="loop">
+  <j:set var="icon"><l:icon class="${event.iconClassName} icon-md"/></j:set>
   {
     "id": "${event.item.url}",
-    "title": "${it.jsonEscape(event.title)}",
+    "title": "<j:out value="${it.jsonEscape(event.title)}"/>",
     "allDay": false,
-    "url": "${it.rootUrl}${event.url}",
+    "url": "${rootURL}/${event.url}",
     "start": "${event.startAsISO8601}",
     "end": "${event.endAsISO8601}",
-    "className": "${event.typeAsClassName}"
+    "duration": ${event.duration},
+    <j:if test="${event.future}">
+      "timestampString": "${%startsIn(event.timestampString)}",
+      "durationString": "${%estimatedDuration}: ${event.durationString}",
+    </j:if>
+    <j:if test="${!event.future}">
+      "timestampString": "${%startedAgo(event.timestampString)}",
+      "durationString": "${%duration}: ${event.durationString}",
+    </j:if>
+    "icon": "<j:out value="${it.jsonEscape(icon)}"/>",
+    "className": "${event.typeAsClassName}",
+    "future": ${event.future}
   }<j:if test="${!loop.last}">,</j:if>
   </j:forEach>
 ]
+</l:ajax>
 </j:jelly>

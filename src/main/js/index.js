@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import * as moment from 'moment';
 import 'fullcalendar';
+import tippy from 'tippy.js'
 
 import '../../../node_modules/fullcalendar/dist/fullcalendar.css';
 import '../css/index.css';
@@ -10,6 +11,23 @@ import { parseHashParams, serializeHashParams } from './hashParams.js';
 const hashParams = parseHashParams(window.location.hash);
 
 $(function() {
+
+  function $tooltip(event, body, closeFn) {
+    var $head = $('<div class="tooltip-head"></div>')
+      .append(event.icon)
+      .append($('<a class="tooltip-title"></a>').attr('href', event.url).text(event.title))
+      .append($('<span class="tooltip-close">&#10006;</span>'));
+    $head.find('.tooltip-close').click(closeFn);
+    var $body = $('<div class="tooltip-body"></div>')
+      .append(
+        '<div>' +
+          event.timestampString + '<br>' +
+          event.durationString +
+        '</div>')
+      .append('<div style="clear:both"></div>');
+    return $('<div></div>').append($head).append($body);
+  }
+
   const calendar = $('#calendar-view').fullCalendar({
      events: 'events',
      defaultView: hashParams['view'] || CalendarViewOptions.defaultView,
@@ -63,6 +81,25 @@ $(function() {
      buttonText: CalendarViewOptions.buttonText,
      viewRender: function(view, element) {
         window.location = serializeHashParams({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
+     },
+     eventMouseover: function(event, jsEvent, view) {
+        var target = jsEvent.target || jsEvent.srcElement;
+
+        var $tooltipHtml = (event.future) ?
+          $tooltip(event, '', function() { tooltip.hide(); }) :
+          $tooltip(event, '', function() { tooltip.hide(); });
+
+        var tooltip = tippy.one($(target).closest('.fc-event')[0], {
+          html: $tooltipHtml[0],
+          arrow: true,
+          animation: 'fade',
+          interactive: true,
+          theme: 'jenkins',
+          size: 'large',
+          onHidden: function() {
+            tooltip.destroy();
+          }
+        });
      }
   })
 });

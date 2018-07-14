@@ -28,6 +28,7 @@ package io.jenkins.plugins.view.calendar;
 
 import antlr.ANTLRException;
 import hudson.Functions;
+import hudson.Util;
 import hudson.model.*;
 import hudson.scheduler.CronTab;
 import hudson.triggers.Trigger;
@@ -36,6 +37,7 @@ import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jenkins.ui.icon.IconSet;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
@@ -70,11 +72,13 @@ public class CalendarView extends ListView {
 
     public static class Event {
         private TopLevelItem item;
+        private Run run;
         private Calendar start;
         private Calendar end;
         private EventType type;
         private String title;
         private String url;
+        private long duration;
 
         public Event(TopLevelItem item, Calendar start, long durationInMillis)  {
             this.item = item;
@@ -82,16 +86,19 @@ public class CalendarView extends ListView {
             this.title = item.getFullDisplayName();
             this.url = item.getUrl();
             this.start = start;
+            this.duration = durationInMillis;
             initEnd(durationInMillis);
         }
 
         public Event(TopLevelItem item, Run build) {
             this.item = item;
+            this.run = build;
             this.type = EventType.fromResult(build.getResult());
             this.title = build.getFullDisplayName();
             this.url = build.getUrl();
             this.start = Calendar.getInstance();
             this.start.setTimeInMillis(build.getStartTimeInMillis());
+            this.duration = build.getDuration();
             initEnd(build.getDuration());
         }
 
@@ -140,6 +147,40 @@ public class CalendarView extends ListView {
 
         public String getTitle() {
             return this.title;
+        }
+
+        public long getDuration() {
+            return this.duration;
+        }
+
+        public Run getRun() {
+            return this.run;
+        }
+
+        public boolean isFuture() {
+            return this.run == null;
+        }
+
+        public String getTimestampString() {
+            long now = new GregorianCalendar().getTimeInMillis();
+            long difference = Math.abs(now - start.getTimeInMillis());
+            return Util.getPastTimeString(difference);
+        }
+
+        public String getDurationString() {
+            return Util.getTimeSpanString(duration);
+        }
+
+        public String getIconClassName() {
+            if (isFuture()) {
+                return ((AbstractProject)this.item).getBuildHealth().getIconClassName();
+            }
+            switch (getType()) {
+                case SUCCESS: return "icon-red";
+                case UNSTABLE: return "icon-yellow";
+                case FAILURE: return "icon-red";
+                default: return "icon-grey";
+            }
         }
     }
 
@@ -608,10 +649,6 @@ public class CalendarView extends ListView {
 
     public String jsonEscape(String text) {
         return StringEscapeUtils.escapeJavaScript(text);
-    }
-
-    public String getRootUrl() {
-       return Jenkins.getInstance().getRootUrl();
     }
 
     @Extension

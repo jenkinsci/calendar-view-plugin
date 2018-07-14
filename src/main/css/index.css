@@ -62,5 +62,44 @@
   border-style: dashed;
 }
 
+.tippy-tooltip.jenkins-theme {
+  background-color: white;
+  border: 1px solid #ccc;
+  color: black;
+  padding:0px;
+  font-size:100%;
+  text-align:left;
+  min-width:400px;
+}
 
+.tippy-tooltip.jenkins-theme .tooltip-head {
+  padding: 5px;
+  background: #eee;
+}
 
+.tippy-tooltip.jenkins-theme .tooltip-head .tooltip-title {
+   margin-left: 5px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-head .tooltip-close {
+  float: right;
+  margin-right:3px;
+  margin-left:5px;
+  cursor: pointer;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-head .tooltip-title {
+  margin-left: 5px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body {
+  padding: 8px;
+}
+
+.tippy-popper[x-placement^=top] .tippy-tooltip.jenkins-theme .tippy-arrow {
+  border-top: 7px solid #ccc;
+}
+
+.tippy-popper[x-placement^=bottom] .tippy-tooltip.jenkins-theme .tippy-arrow {
+  border-bottom: 7px solid #ccc;
+}

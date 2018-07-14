@@ -9,7 +9,8 @@
   "author": "Sven Schoenung <sven.schoenung@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "fullcalendar": "^3.9.0"
+    "fullcalendar": "^3.9.0",
+    "tippy.js": "^2.5.3"
   },
   "devDependencies": {
     "css-loader": "^0.28.11",
