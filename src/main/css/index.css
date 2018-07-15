@@ -103,3 +103,17 @@
 .tippy-popper[x-placement^=bottom] .tippy-tooltip.jenkins-theme .tippy-arrow {
   border-bottom: 7px solid #ccc;
 }
+
+.calendar-view-config-default {
+  font-size:90%;
+  color:gray;
+}
+
+.calendar-view-config-label {
+  vertical-align:middle;
+  padding:0px 10px 20px 10px;
+}
+
+.calendar-view-config-label.first-label {
+  padding-left:0px;
+}

@@ -28,6 +28,8 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
+    <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
+
     <f:section title="${%Calendar Options}" name="calendarOptions">
         <f:entry title="${%Default View}" field="calendarViewType">
             <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}"/>${%Month}
@@ -62,48 +64,81 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
             <f:entry title="${%View title}">
                 <table>
                     <tr>
-                        <td style="vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
-                        <td><f:textbox name="monthTitleFormat" field="monthTitleFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
-                        <td><f:textbox name="weekTitleFormat" field="weekTitleFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
-                        <td><f:textbox name="dayTitleFormat" field="dayTitleFormat" /></td>
+                        <td class="calendar-view-config-label first-label">${%Month}:</td>
+                        <td>
+                            <f:textbox name="monthTitleFormat" field="monthTitleFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Month.TitleFormat}</div>
+                        </td>
+                        <td class="calendar-view-config-label">${%Week}:</td>
+                        <td>
+                            <f:textbox name="weekTitleFormat" field="weekTitleFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Week.TitleFormat}</div>
+                        </td>
+                        <td class="calendar-view-config-label">${%Day}:</td>
+                        <td>
+                            <f:textbox name="dayTitleFormat" field="dayTitleFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Day.TitleFormat}</div>
+                        </td>
                     </tr>
                 </table>
             </f:entry>
             <f:entry title="${%Day column title}">
                 <table>
                     <tr>
-                        <td style="vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
-                        <td><f:textbox name="monthColumnHeaderFormat" field="monthColumnHeaderFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
-                        <td><f:textbox name="weekColumnHeaderFormat" field="weekColumnHeaderFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
-                        <td><f:textbox name="dayColumnHeaderFormat" field="dayColumnHeaderFormat" /></td>
+                        <td class="calendar-view-config-label first-label">${%Month}:</td>
+                        <td>
+                            <f:textbox name="monthColumnHeaderFormat" field="monthColumnHeaderFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Month.ColumnHeaderFormat}</div>
+                        </td>
+                        <td class="calendar-view-config-label">${%Week}:</td>
+                        <td>
+                            <f:textbox name="weekColumnHeaderFormat" field="weekColumnHeaderFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Week.ColumnHeaderFormat}</div>
+                        </td>
+                        <td class="calendar-view-config-label">${%Day}:</td>
+                        <td>
+                            <f:textbox name="dayColumnHeaderFormat" field="dayColumnHeaderFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Day.ColumnHeaderFormat}</div>
+                        </td>
                     </tr>
                 </table>
             </f:entry>
             <f:entry title="${%Events}">
                 <table>
                     <tr>
-                        <td style="vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
-                        <td><f:textbox name="monthTimeFormat" field="monthTimeFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
-                        <td><f:textbox name="weekTimeFormat" field="weekTimeFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
-                        <td><f:textbox name="dayTimeFormat" field="dayTimeFormat" /></td>
+                        <td class="calendar-view-config-label first-label">${%Month}:</td>
+                        <td>
+                            <f:textbox name="monthTimeFormat" field="monthTimeFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Month.TimeFormat}</div>
+                        </td>
+                        <td class="calendar-view-config-label">${%Week}:</td>
+                        <td>
+                            <f:textbox name="weekTimeFormat" field="weekTimeFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Week.TimeFormat}</div>
+                        </td>
+                        <td class="calendar-view-config-label">${%Day}:</td>
+                        <td>
+                            <f:textbox name="dayTimeFormat" field="dayTimeFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Day.TimeFormat}</div>
+                        </td>
                     </tr>
                 </table>
             </f:entry>
             <f:entry title="${%Slots}">
                 <table>
                     <tr>
-                        <td style="visibility:hidden; vertical-align:middle; padding:0px 10px 0px 0px;">${%Month}:</td>
+                        <td  style="visibility:hidden" class="calendar-view-config-label first-label">${%Month}:</td>
                         <td style="visibility:hidden"><f:textbox name="monthSlotTimeFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
-                        <td><f:textbox name="weekSlotTimeFormat" field="weekSlotTimeFormat" /></td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
-                        <td><f:textbox name="daySlotTimeFormat" field="daySlotTimeFormat" /></td>
+                        <td class="calendar-view-config-label">${%Week}:</td>
+                        <td>
+                            <f:textbox name="weekSlotTimeFormat" field="weekSlotTimeFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Week.SlotLabelFormat}</div>
+                        </td>
+                        <td class="calendar-view-config-label">${%Day}:</td>
+                        <td>
+                            <f:textbox name="daySlotTimeFormat" field="daySlotTimeFormat" />
+                            <div class="calendar-view-config-default">${%Default}: ${%Day.SlotLabelFormat}</div>
+                        </td>
                     </tr>
                 </table>
             </f:entry>
