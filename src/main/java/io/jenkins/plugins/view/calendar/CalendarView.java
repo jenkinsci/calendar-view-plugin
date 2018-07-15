@@ -27,17 +27,14 @@
 package io.jenkins.plugins.view.calendar;
 
 import antlr.ANTLRException;
-import hudson.Functions;
 import hudson.Util;
 import hudson.model.*;
 import hudson.scheduler.CronTab;
 import hudson.triggers.Trigger;
 import hudson.util.RunList;
-import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jenkins.ui.icon.IconSet;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
@@ -52,8 +49,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CalendarView extends ListView {
-    private static final Logger LOGGER = Logger.getLogger(CalendarView.class.getName());
-
     private static final String FORMAT_DATE = "yyyy-MM-dd";
     private static final String FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss";
 
@@ -176,7 +171,7 @@ public class CalendarView extends ListView {
                 return ((AbstractProject)this.item).getBuildHealth().getIconClassName();
             }
             switch (getType()) {
-                case SUCCESS: return "icon-red";
+                case SUCCESS: return "icon-blue";
                 case UNSTABLE: return "icon-yellow";
                 case FAILURE: return "icon-red";
                 default: return "icon-grey";
@@ -421,7 +416,7 @@ public class CalendarView extends ListView {
     public String getWeekMinTime() {
         if (weekMinTime != null) {
             return weekMinTime;
-        };
+        }
         return "00:00:00";
     }
 
