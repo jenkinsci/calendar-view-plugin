@@ -13,12 +13,12 @@
     "tippy.js": "^2.5.3"
   },
   "devDependencies": {
-    "css-loader": "^0.28.11",
+    "css-loader": "^1.0.0",
     "eslint": "^5.1.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-loader": "^2.0.0",
     "eslint-plugin-import": "^2.13.0",
-    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",
     "mini-css-extract-plugin": "^0.4.1",
