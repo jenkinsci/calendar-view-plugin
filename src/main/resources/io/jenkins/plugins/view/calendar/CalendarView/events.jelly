@@ -33,8 +33,8 @@ THE SOFTWARE.
     "title": "<j:out value="${it.jsonEscape(event.title)}"/>",
     "allDay": false,
     "url": "${rootURL}/${event.url}",
-    "start": "${event.startAsISO8601}",
-    "end": "${event.endAsISO8601}",
+    "start": "${event.startAsDateTime}",
+    "end": "${event.endAsDateTime}",
     "duration": ${event.duration},
     <j:if test="${event.future}">
       "timestampString": "${%startsIn(event.timestampString)}",

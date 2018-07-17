@@ -26,193 +26,45 @@
  */
 package io.jenkins.plugins.view.calendar;
 
-import antlr.ANTLRException;
-import hudson.Util;
 import hudson.model.*;
-import hudson.scheduler.CronTab;
-import hudson.triggers.Trigger;
-import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.util.RequestUtil;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
-import hudson.scheduler.CronTabList;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
+import static io.jenkins.plugins.view.calendar.util.FieldUtil.defaultIfNull;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validateInList;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validatePattern;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validateRange;
+
+@SuppressWarnings({
+    "PMD.GodClass",
+    "PMD.ExcessivePublicCount",
+    "PMD.TooManyFields"
+})
 public class CalendarView extends ListView {
-    private static final String FORMAT_DATE = "yyyy-MM-dd";
-    private static final String FORMAT_ISO8601 = "yyyy-MM-dd'T'HH:mm:ss";
-
-    private static final List<String> SLOT_DURATIONS = Collections.unmodifiableList(Arrays.asList(
-        "00:05:00",
-        "00:10:00",
-        "00:15:00",
-        "00:20:00",
-        "00:30:00",
-        "01:00:00"
-    ));
 
     public static enum CalendarViewType {
        MONTH, WEEK, DAY;
     }
 
-    public static class Event {
-        private TopLevelItem item;
-        private Run run;
-        private Calendar start;
-        private Calendar end;
-        private EventType type;
-        private String title;
-        private String url;
-        private long duration;
+    private CalendarViewType calendarViewType;
 
-        public Event(TopLevelItem item, Calendar start, long durationInMillis)  {
-            this.item = item;
-            this.type = EventType.FUTURE;
-            this.title = item.getFullDisplayName();
-            this.url = item.getUrl();
-            this.start = start;
-            this.duration = durationInMillis;
-            initEnd(durationInMillis);
-        }
-
-        public Event(TopLevelItem item, Run build) {
-            this.item = item;
-            this.run = build;
-            this.type = EventType.fromResult(build.getResult());
-            this.title = build.getFullDisplayName();
-            this.url = build.getUrl();
-            this.start = Calendar.getInstance();
-            this.start.setTimeInMillis(build.getStartTimeInMillis());
-            this.duration = build.getDuration();
-            initEnd(build.getDuration());
-        }
-
-        private void initEnd(long durationInMillis) {
-            // duration needs to be at least 1sec otherwise
-            // fullcalendar will not properly display the event
-            if (durationInMillis < 1000) {
-                durationInMillis = 1000;
-            }
-            this.end = Calendar.getInstance();
-            this.end.setTime(this.start.getTime());
-            this.end.add(Calendar.SECOND, (int)(durationInMillis / 1000));
-        }
-
-        public TopLevelItem getItem() {
-            return this.item;
-        }
-
-        public Calendar getStart() {
-            return start;
-        }
-
-        public String getStartAsISO8601() {
-            return new SimpleDateFormat(FORMAT_ISO8601).format(getStart().getTime());
-        }
-
-        public Calendar getEnd() {
-            return this.end;
-        }
-
-        public String getEndAsISO8601() {
-            return new SimpleDateFormat(FORMAT_ISO8601).format(getEnd().getTime());
-        }
-
-        public EventType getType() {
-            return this.type;
-        }
-
-        public String getTypeAsClassName() {
-            return "event-" + type.name().toLowerCase();
-        }
-
-        public String getUrl() {
-            return this.url;
-        }
-
-        public String getTitle() {
-            return this.title;
-        }
-
-        public long getDuration() {
-            return this.duration;
-        }
-
-        public Run getRun() {
-            return this.run;
-        }
-
-        public boolean isFuture() {
-            return this.run == null;
-        }
-
-        public String getTimestampString() {
-            long now = new GregorianCalendar().getTimeInMillis();
-            long difference = Math.abs(now - start.getTimeInMillis());
-            return Util.getPastTimeString(difference);
-        }
-
-        public String getDurationString() {
-            return Util.getTimeSpanString(duration);
-        }
-
-        public String getIconClassName() {
-            if (isFuture()) {
-                return ((AbstractProject)this.item).getBuildHealth().getIconClassName();
-            }
-            switch (getType()) {
-                case SUCCESS: return "icon-blue";
-                case UNSTABLE: return "icon-yellow";
-                case FAILURE: return "icon-red";
-                default: return "icon-grey";
-            }
-        }
-    }
-
-    public static enum EventType {
-        FAILURE, SUCCESS, UNSTABLE, ABORTED, NOT_BUILT, FUTURE;
-
-        public static EventType fromResult(Result result) {
-            if (result == null) {
-                return null;
-            }
-            if (result.equals(Result.SUCCESS)) {
-                return SUCCESS;
-            }
-            if (result.equals(Result.FAILURE)) {
-                return FAILURE;
-            }
-            if (result.equals(Result.UNSTABLE)) {
-                return UNSTABLE;
-            }
-            if (result.equals(Result.NOT_BUILT)) {
-                return NOT_BUILT;
-            }
-            if (result.equals(Result.ABORTED)) {
-                return ABORTED;
-            }
-            return null;
-        }
-    }
-
-    private CalendarViewType calendarViewType = CalendarViewType.WEEK;
-
-    private Boolean useCustomFormats = false;
-    private Boolean useCustomWeekSettings = false;
-    private Boolean useCustomSlotSettings = false;
+    private Boolean useCustomFormats;
+    private Boolean useCustomWeekSettings;
+    private Boolean useCustomSlotSettings;
 
     private Boolean weekSettingsShowWeekends;
-    private Integer weekSettingsFirstDay = 1;
+    private Integer weekSettingsFirstDay;
 
     private String monthTitleFormat;
     private String monthColumnHeaderFormat;
@@ -236,70 +88,55 @@ public class CalendarView extends ListView {
     private String dayMaxTime;
 
     @DataBoundConstructor
-    public CalendarView(String name) {
+    public CalendarView(final String name) {
         super(name);
     }
 
     public CalendarViewType getCalendarViewType() {
-        return calendarViewType;
+        return defaultIfNull(calendarViewType, CalendarViewType.WEEK);
     }
 
-    public void setCalendarViewType(CalendarViewType calendarViewType) {
+    public void setCalendarViewType(final CalendarViewType calendarViewType) {
         this.calendarViewType = calendarViewType;
     }
 
-    public boolean getUseCustomFormats() {
-        if (useCustomFormats != null) {
-            return useCustomFormats;
-        }
-        return false;
+    public boolean isUseCustomFormats() {
+        return defaultIfNull(useCustomFormats, false);
     }
 
-    public void setUseCustomFormats(boolean useCustomFormats) {
+    public void setUseCustomFormats(final boolean useCustomFormats) {
         this.useCustomFormats = useCustomFormats;
     }
 
-    public boolean getUseCustomWeekSettings() {
-        if (useCustomWeekSettings != null) {
-            return useCustomWeekSettings;
-        }
-        return false;
+    public boolean isUseCustomWeekSettings() {
+        return defaultIfNull(useCustomWeekSettings, false);
     }
 
-    public void setUseCustomWeekSettings(boolean useCustomWeekSettings) {
+    public void setUseCustomWeekSettings(final boolean useCustomWeekSettings) {
         this.useCustomWeekSettings = useCustomWeekSettings;
     }
 
-    public boolean getUseCustomSlotSettings() {
-        if (useCustomSlotSettings != null) {
-            return useCustomSlotSettings;
-        }
-        return false;
+    public boolean isUseCustomSlotSettings() {
+        return defaultIfNull(useCustomSlotSettings, false);
     }
 
-    public void setUseCustomSlotSettings(boolean useCustomSlotSettings) {
+    public void setUseCustomSlotSettings(final boolean useCustomSlotSettings) {
         this.useCustomSlotSettings = useCustomSlotSettings;
     }
 
-    public boolean getWeekSettingsShowWeekends() {
-        if (weekSettingsShowWeekends != null) {
-            return weekSettingsShowWeekends;
-        }
-        return true;
+    public boolean isWeekSettingsShowWeekends() {
+        return defaultIfNull(weekSettingsShowWeekends, true);
     }
 
-    public void setWeekSettingsShowWeekends(boolean weekSettingsShowWeekends) {
+    public void setWeekSettingsShowWeekends(final boolean weekSettingsShowWeekends) {
         this.weekSettingsShowWeekends = weekSettingsShowWeekends;
     }
 
     public int getWeekSettingsFirstDay() {
-        if (weekSettingsFirstDay != null) {
-            return weekSettingsFirstDay;
-        }
-        return 1;
+        return defaultIfNull(weekSettingsFirstDay, 1);
     }
 
-    public void setWeekSettingsFirstDay(int weekSettingsFirstDay) {
+    public void setWeekSettingsFirstDay(final int weekSettingsFirstDay) {
         this.weekSettingsFirstDay = weekSettingsFirstDay;
     }
 
@@ -307,7 +144,7 @@ public class CalendarView extends ListView {
         return monthTitleFormat;
     }
 
-    public void setMonthTitleFormat(String monthTitleFormat) {
+    public void setMonthTitleFormat(final String monthTitleFormat) {
         this.monthTitleFormat = monthTitleFormat;
     }
 
@@ -315,7 +152,7 @@ public class CalendarView extends ListView {
         return monthColumnHeaderFormat;
     }
 
-    public void setMonthColumnHeaderFormat(String monthColumnHeaderFormat) {
+    public void setMonthColumnHeaderFormat(final String monthColumnHeaderFormat) {
         this.monthColumnHeaderFormat = monthColumnHeaderFormat;
     }
 
@@ -323,7 +160,7 @@ public class CalendarView extends ListView {
         return monthTimeFormat;
     }
 
-    public void setMonthTimeFormat(String monthTimeFormat) {
+    public void setMonthTimeFormat(final String monthTimeFormat) {
         this.monthTimeFormat = monthTimeFormat;
     }
 
@@ -331,7 +168,7 @@ public class CalendarView extends ListView {
         return weekTitleFormat;
     }
 
-    public void setWeekTitleFormat(String weekTitleFormat) {
+    public void setWeekTitleFormat(final String weekTitleFormat) {
         this.weekTitleFormat = weekTitleFormat;
     }
 
@@ -339,7 +176,7 @@ public class CalendarView extends ListView {
         return weekColumnHeaderFormat;
     }
 
-    public void setWeekColumnHeaderFormat(String weekColumnHeaderFormat) {
+    public void setWeekColumnHeaderFormat(final String weekColumnHeaderFormat) {
         this.weekColumnHeaderFormat = weekColumnHeaderFormat;
     }
 
@@ -347,7 +184,7 @@ public class CalendarView extends ListView {
         return weekTimeFormat;
     }
 
-    public void setWeekTimeFormat(String weekTimeFormat) {
+    public void setWeekTimeFormat(final String weekTimeFormat) {
         this.weekTimeFormat = weekTimeFormat;
     }
 
@@ -355,7 +192,7 @@ public class CalendarView extends ListView {
         return weekSlotTimeFormat;
     }
 
-    public void setWeekSlotTimeFormat(String weekSlotTimeFormat) {
+    public void setWeekSlotTimeFormat(final String weekSlotTimeFormat) {
         this.weekSlotTimeFormat = weekSlotTimeFormat;
     }
 
@@ -363,7 +200,7 @@ public class CalendarView extends ListView {
         return dayTitleFormat;
     }
 
-    public void setDayTitleFormat(String dayTitleFormat) {
+    public void setDayTitleFormat(final String dayTitleFormat) {
         this.dayTitleFormat = dayTitleFormat;
     }
 
@@ -371,7 +208,7 @@ public class CalendarView extends ListView {
         return dayColumnHeaderFormat;
     }
 
-    public void setDayColumnHeaderFormat(String dayColumnHeaderFormat) {
+    public void setDayColumnHeaderFormat(final String dayColumnHeaderFormat) {
         this.dayColumnHeaderFormat = dayColumnHeaderFormat;
     }
 
@@ -379,7 +216,7 @@ public class CalendarView extends ListView {
         return dayTimeFormat;
     }
 
-    public void setDayTimeFormat(String dayTimeFormat) {
+    public void setDayTimeFormat(final String dayTimeFormat) {
         this.dayTimeFormat = dayTimeFormat;
     }
 
@@ -387,73 +224,55 @@ public class CalendarView extends ListView {
         return daySlotTimeFormat;
     }
 
-    public void setDaySlotTimeFormat(String daySlotTimeFormat) {
+    public void setDaySlotTimeFormat(final String daySlotTimeFormat) {
         this.daySlotTimeFormat = daySlotTimeFormat;
     }
 
     public String getWeekSlotDuration() {
-        if (weekSlotDuration != null) {
-            return weekSlotDuration;
-        }
-        return "00:30:00";
+        return defaultIfNull(weekSlotDuration, "00:30:00");
     }
 
-    public void setWeekSlotDuration(String weekSlotDuration) {
+    public void setWeekSlotDuration(final String weekSlotDuration) {
         this.weekSlotDuration = weekSlotDuration;
     }
 
     public String getDaySlotDuration() {
-        if (daySlotDuration != null) {
-            return daySlotDuration;
-        }
-        return "00:30:00";
+        return defaultIfNull(daySlotDuration, "00:30:00");
     }
 
-    public void setDaySlotDuration(String daySlotDuration) {
+    public void setDaySlotDuration(final String daySlotDuration) {
         this.daySlotDuration = daySlotDuration;
     }
 
     public String getWeekMinTime() {
-        if (weekMinTime != null) {
-            return weekMinTime;
-        }
-        return "00:00:00";
+        return defaultIfNull(weekMinTime, "00:00:00");
     }
 
-    public void setWeekMinTime(String weekMinTime) {
+    public void setWeekMinTime(final String weekMinTime) {
         this.weekMinTime = weekMinTime;
     }
 
     public String getWeekMaxTime() {
-        if (weekMaxTime != null) {
-            return weekMaxTime;
-        }
-        return "24:00:00";
+        return defaultIfNull(weekMaxTime, "24:00:00");
     }
 
-    public void setWeekMaxTime(String weekMaxTime) {
+    public void setWeekMaxTime(final String weekMaxTime) {
         this.weekMaxTime = weekMaxTime;
     }
 
     public String getDayMinTime() {
-        if (dayMinTime != null) {
-            return dayMinTime;
-        }
-        return "00:00:00";
+        return defaultIfNull(dayMinTime, "00:00:00");
     }
 
-    public void setDayMinTime(String dayMinTime) {
+    public void setDayMinTime(final String dayMinTime) {
         this.dayMinTime = dayMinTime;
     }
 
     public String getDayMaxTime() {
-        if (dayMaxTime != null) {
-            return dayMaxTime;
-        }
-        return "24:00:00";
+        return defaultIfNull(dayMaxTime, "24:00:00");
     }
 
-    public void setDayMaxTime(String dayMaxTime) {
+    public void setDayMaxTime(final String dayMaxTime) {
         this.dayMaxTime = dayMaxTime;
     }
 
@@ -463,19 +282,30 @@ public class CalendarView extends ListView {
     }
 
     @Override
-    protected void submit(StaplerRequest req) throws ServletException, Descriptor.FormException, IOException {
+    protected void submit(final StaplerRequest req) throws ServletException, Descriptor.FormException, IOException {
+        this.validate(req);
         super.submit(req);
+        this.updateFields(req);
+    }
+
+    private void validate(final StaplerRequest req) throws Descriptor.FormException {
+        final List<String> validSlotDurations = Collections.unmodifiableList(Arrays.asList(
+            "00:05:00", "00:10:00", "00:15:00", "00:20:00", "00:30:00", "01:00:00"
+        ));
+        final Pattern validDateTimePattern = Pattern.compile("(0[0-9]|1[0-9]|2[0-4]):00:00");
 
         validateRange(req, "weekSettingsFirstDay", 0, 7);
 
-        validateInList(req, "weekSlotDuration", SLOT_DURATIONS);
-        validatePattern(req, "weekMinTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
-        validatePattern(req, "weekMaxTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
+        validateInList(req, "weekSlotDuration", validSlotDurations);
+        validatePattern(req, "weekMinTime", validDateTimePattern);
+        validatePattern(req, "weekMaxTime", validDateTimePattern);
 
-        validateInList(req, "daySlotDuration", SLOT_DURATIONS);
-        validatePattern(req, "dayMinTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
-        validatePattern(req, "dayMaxTime", "(0[0-9]|1[0-9]|2[0-4]):00:00");
+        validateInList(req, "daySlotDuration", validSlotDurations);
+        validatePattern(req, "dayMinTime", validDateTimePattern);
+        validatePattern(req, "dayMaxTime", validDateTimePattern);
+    }
 
+    private void updateFields(final StaplerRequest req) {
         setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
 
         setUseCustomFormats(req.getParameter("useCustomFormats") != null);
@@ -508,141 +338,18 @@ public class CalendarView extends ListView {
         setDayMaxTime(req.getParameter("dayMaxTime"));
     }
 
-    private void validateInList(StaplerRequest req, String formField, List<String> possibleValues) throws Descriptor.FormException {
-        if (!possibleValues.contains(req.getParameter(formField))) {
-            throw new Descriptor.FormException(formField + " must be one of " + possibleValues, formField);
-        }
+    public List<CalendarEvent> getEvents() throws ParseException {
+        final StaplerRequest req = Stapler.getCurrentRequest();
+
+        final Calendar start = RequestUtil.getParamAsCalendar(req, "start");
+        final Calendar end = RequestUtil.getParamAsCalendar(req, "end");
+
+        final List<TopLevelItem> items = getItems();
+
+        return new CalendarEventService().getCalendarEvents(items, start, end);
     }
 
-    private void validatePattern(StaplerRequest req, String formField, String pattern) throws Descriptor.FormException {
-        String value = req.getParameter(formField);
-        if (value == null || !value.matches(pattern)) {
-            throw new Descriptor.FormException(formField + " must match " + pattern, formField);
-        }
-    }
-
-    private void validateRange(StaplerRequest req, String formField, int min, int max) throws Descriptor.FormException {
-        int value = Integer.parseInt(req.getParameter("weekSettingsFirstDay"));
-        if (value < min || value > max) {
-            throw new Descriptor.FormException(formField + " must be: " + min + " <= " + formField + " <= " + max, formField);
-        }
-    }
-
-    public List<Event> getEvents() throws ParseException {
-        Calendar start = getCalendarFromRequestParameter("start");
-        Calendar end = getCalendarFromRequestParameter("end");
-        Calendar now = Calendar.getInstance();
-
-        List<Event> events = new ArrayList<Event>();
-        if (now.compareTo(start) < 0) {
-            events.addAll(getFutureEvents(start, end));
-        } else if (now.compareTo(end) > 0) {
-            events.addAll(getPastEvents(start, end));
-        } else {
-            events.addAll(getPastEvents(start, now));
-            events.addAll(getFutureEvents(now, end));
-        }
-        return events;
-    }
-
-    private List<Event> getFutureEvents(Calendar start, Calendar end) {
-        List<Event> events = new ArrayList<Event>();
-        for (TopLevelItem item: getItems()) {
-            if (!(item instanceof AbstractProject)) {
-               continue;
-            }
-            long durationInMillis = ((AbstractProject)item).getEstimatedDuration();
-            List<Trigger> triggers = getCronTriggers(item);
-            for (Trigger trigger: triggers) {
-                List<CronTab> cronTabs = getCronTabs(trigger);
-                for (CronTab cronTab: cronTabs) {
-                    long timeInMillis = start.getTimeInMillis();
-                    Calendar next;
-                    while ((next = cronTab.ceil(timeInMillis)) != null && next.compareTo(start) >= 0 && next.compareTo(end) < 0) {
-                        events.add(new Event(item, next, durationInMillis));
-                        timeInMillis = next.getTimeInMillis() + 1000 * 60;
-                    }
-                }
-            }
-        }
-        return events;
-    }
-
-    private List<Event> getPastEvents(Calendar start, Calendar end) {
-        List<Event> events = new ArrayList<Event>();
-        for (TopLevelItem item: getItems()) {
-            if (!(item instanceof Job)) {
-                continue;
-            }
-            RunList<Run> builds = ((Job) item).getBuilds();
-            for (Run build : builds) {
-                Event event = new Event(item, build);
-                if (event.getStart().compareTo(start) >= 0 && event.getEnd().compareTo(end) < 0) {
-                    events.add(event);
-                }
-            }
-        }
-        return events;
-    }
-
-    private Calendar getCalendarFromRequestParameter(String param) throws ParseException {
-        StaplerRequest request = Stapler.getCurrentRequest();
-        String date = request.getParameter(param);
-        SimpleDateFormat format = new SimpleDateFormat(FORMAT_DATE);
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(format.parse(date));
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
-        return cal;
-    }
-
-    private List<CronTab> getCronTabs(Trigger trigger) {
-        List<CronTab> cronTabs = new ArrayList<>();
-        int lineNumber = 0;
-        String timezone = null;
-
-        for (String line : trigger.getSpec().split("\\r?\\n")) {
-            lineNumber++;
-            line = line.trim();
-
-            if (lineNumber == 1 && line.startsWith("TZ=")) {
-                timezone = CronTabList.getValidTimezone(line.replace("TZ=",""));
-                continue;
-            }
-
-            if (line.length() == 0 || line.startsWith("#")) {
-                continue;
-            }
-
-            try {
-                cronTabs.add(new CronTab(line, lineNumber, null, timezone));
-            } catch (ANTLRException e) {
-                String msg = "Unable to parse cron trigger spec: '" + line + "'";
-                Logger.getLogger(this.getClass()).error(msg, e);
-            }
-        }
-
-        return cronTabs;
-    }
-
-    private List<Trigger> getCronTriggers(TopLevelItem item) {
-        List<Trigger> triggers = new ArrayList<Trigger>();
-        if (!(item instanceof AbstractProject)) {
-            return triggers;
-        }
-        Collection<Trigger<?>> itemTriggers = ((AbstractProject) item).getTriggers().values();
-        for (Trigger<?> trigger: itemTriggers) {
-            if (StringUtils.isNotBlank(trigger.getSpec())) {
-                triggers.add(trigger);
-            }
-        }
-        return triggers;
-    }
-
-
-    public String jsonEscape(String text) {
+    public String jsonEscape(final String text) {
         return StringEscapeUtils.escapeJavaScript(text);
     }
 
