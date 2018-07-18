@@ -3,6 +3,9 @@
 
 node
 node_modules
+.mvn/wrapper/*
+!.mvn/wrapper/maven-wrapper.properties
+
 src/main/webapp/bundles
 
 work

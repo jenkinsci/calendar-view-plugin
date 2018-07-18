@@ -67,17 +67,10 @@ Clicking on a future build will lead to the job's detail page.
 
 ## Development
 
-### Requires
-
-* Maven >= 3.3
-* JDK >= 1.7
-
-### Instructions
-
 Clone the repository then execute the following in the project's root directory:
 
 ```
-$ mvn install
+$ ./mvnw install
 ```
 
 This will install Java dependencies as well as a local node installation and npm dependencies.
@@ -85,7 +78,7 @@ This will install Java dependencies as well as a local node installation and npm
 You can now run the plugin in a Jenkins instance by executing the following:
 
 ```
-$ mvn hpi:run
+$ ./mvnw hpi:run
 ```
 
 To watch JavaScript and CSS files using webpack:
