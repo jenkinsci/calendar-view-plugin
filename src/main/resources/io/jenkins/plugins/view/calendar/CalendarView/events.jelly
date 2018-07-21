@@ -38,7 +38,12 @@ THE SOFTWARE.
     "duration": ${event.duration},
     <j:if test="${event.future}">
       "timestampString": "${%startsIn(event.timestampString)}",
-      "durationString": "${%estimatedDuration}: ${event.durationString}",
+      <j:if test="${event.duration lt 0}">
+        "durationString": "${%estimatedDuration}: ${%unknownDuration}",
+      </j:if>
+      <j:if test="${event.duration ge 0}">
+        "durationString": "${%estimatedDuration}: ${event.durationString}",
+      </j:if>
       "builds": [
       <j:forEach var="build" items="${event.lastBuilds}" varStatus="buildLoop">
       <j:set var="buildIcon"><l:icon class="${build.iconColor.iconClassName} icon-sm"/></j:set>
