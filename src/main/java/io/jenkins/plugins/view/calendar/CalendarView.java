@@ -69,20 +69,24 @@ public class CalendarView extends ListView {
     private String monthTitleFormat;
     private String monthColumnHeaderFormat;
     private String monthTimeFormat;
+    private String monthPopupBuildTimeFormat;
 
     private String weekTitleFormat;
     private String weekColumnHeaderFormat;
     private String weekTimeFormat;
     private String weekSlotTimeFormat;
+    private String weekPopupBuildTimeFormat;
 
     private String dayTitleFormat;
     private String dayColumnHeaderFormat;
     private String dayTimeFormat;
     private String daySlotTimeFormat;
+    private String dayPopupBuildTimeFormat;
 
     private String weekSlotDuration;
     private String weekMinTime;
     private String weekMaxTime;
+
     private String daySlotDuration;
     private String dayMinTime;
     private String dayMaxTime;
@@ -164,6 +168,14 @@ public class CalendarView extends ListView {
         this.monthTimeFormat = monthTimeFormat;
     }
 
+    public String getMonthPopupBuildTimeFormat() {
+        return monthPopupBuildTimeFormat;
+    }
+
+    public void setMonthPopupBuildTimeFormat(final String monthPopupBuildTimeFormat) {
+        this.monthPopupBuildTimeFormat = monthPopupBuildTimeFormat;
+    }
+
     public String getWeekTitleFormat() {
         return weekTitleFormat;
     }
@@ -196,6 +208,14 @@ public class CalendarView extends ListView {
         this.weekSlotTimeFormat = weekSlotTimeFormat;
     }
 
+    public String getWeekPopupBuildTimeFormat() {
+        return weekPopupBuildTimeFormat;
+    }
+
+    public void setWeekPopupBuildTimeFormat(final String weekPopupBuildTimeFormat) {
+        this.weekPopupBuildTimeFormat = weekPopupBuildTimeFormat;
+    }
+
     public String getDayTitleFormat() {
         return dayTitleFormat;
     }
@@ -226,6 +246,14 @@ public class CalendarView extends ListView {
 
     public void setDaySlotTimeFormat(final String daySlotTimeFormat) {
         this.daySlotTimeFormat = daySlotTimeFormat;
+    }
+
+    public String getDayPopupBuildTimeFormat() {
+        return dayPopupBuildTimeFormat;
+    }
+
+    public void setDayPopupBuildTimeFormat(final String dayPopupBuildTimeFormat) {
+        this.dayPopupBuildTimeFormat = dayPopupBuildTimeFormat;
     }
 
     public String getWeekSlotDuration() {
@@ -318,16 +346,19 @@ public class CalendarView extends ListView {
         setMonthTitleFormat(req.getParameter("monthTitleFormat"));
         setMonthColumnHeaderFormat(req.getParameter("monthColumnHeaderFormat"));
         setMonthTimeFormat(req.getParameter("monthTimeFormat"));
+        setMonthPopupBuildTimeFormat(req.getParameter("monthPopupBuildTimeFormat"));
 
         setWeekTitleFormat(req.getParameter("weekTitleFormat"));
         setWeekColumnHeaderFormat(req.getParameter("weekColumnHeaderFormat"));
         setWeekTimeFormat(req.getParameter("weekTimeFormat"));
         setWeekSlotTimeFormat(req.getParameter("weekSlotTimeFormat"));
+        setWeekPopupBuildTimeFormat(req.getParameter("weekPopupBuildTimeFormat"));
 
         setDayTitleFormat(req.getParameter("dayTitleFormat"));
         setDayColumnHeaderFormat(req.getParameter("dayColumnHeaderFormat"));
         setDayTimeFormat(req.getParameter("dayTimeFormat"));
         setDaySlotTimeFormat(req.getParameter("daySlotTimeFormat"));
+        setDayPopupBuildTimeFormat(req.getParameter("dayPopupBuildTimeFormat"));
 
         setWeekSlotDuration(req.getParameter("weekSlotDuration"));
         setWeekMinTime(req.getParameter("weekMinTime"));

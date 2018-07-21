@@ -1,14 +1,10 @@
 package io.jenkins.plugins.view.calendar;
 
 import hudson.Util;
-import hudson.model.AbstractProject;
-import hudson.model.Run;
-import hudson.model.TopLevelItem;
+import hudson.model.*;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 
 public class CalendarEvent {
     private final TopLevelItem item;
@@ -121,5 +117,12 @@ public class CalendarEvent {
             default:
                 return "icon-grey";
         }
+    }
+
+    public List<Build> getLastBuilds() {
+        if (item instanceof Job) {
+            return ((Job)item).getLastBuildsOverThreshold(5, Result.ABORTED);
+        }
+        return new ArrayList<>();
     }
 }

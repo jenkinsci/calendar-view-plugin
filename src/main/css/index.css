@@ -69,7 +69,6 @@
   padding:0px;
   font-size:100%;
   text-align:left;
-  min-width:400px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-head {
@@ -93,7 +92,42 @@
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body {
-  padding: 8px;
+  padding:10px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body .left {
+  display:inline-block;
+  vertical-align:top;
+  padding-right:10px;
+  border-right:1px solid #ddd;
+  min-width:200px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body .right {
+  display:inline-block;
+  vertical-align:top;
+  padding-left:10px;
+  border-left:1px solid #ddd;
+  margin-left:-1px;
+  min-width:200px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body .right ul a {
+  display:inline-block;
+  min-width:3em;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body time {
+  color:gray;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body ul {
+  margin:0px;
+  padding:0px;
+  list-style-type:none;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body ul {
 }
 
 .tippy-popper[x-placement^=top] .tippy-tooltip.jenkins-theme .tippy-arrow {
@@ -116,4 +150,8 @@
 
 .calendar-view-config-label.first-label {
   padding-left:0px;
+}
+
+.calendar-view-config-input  {
+  width:30%;
 }

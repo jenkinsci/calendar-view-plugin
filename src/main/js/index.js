@@ -19,9 +19,12 @@ $(function() {
     $head.find('.tooltip-close').click(closeFn);
     var $body = $('<div class="tooltip-body"></div>')
       .append(
-        '<div>' +
+        '<div class="left">' +
           event.timestampString + '<br>' +
           event.durationString +
+        '</div>' +
+        '<div class="right">' +
+          body +
         '</div>')
       .append('<div style="clear:both"></div>');
     return $('<div></div>').append($head).append($body);
@@ -84,9 +87,23 @@ $(function() {
     eventMouseover: function(event, jsEvent, view) {
       var target = jsEvent.target || jsEvent.srcElement;
 
-      var $tooltipHtml = (event.future)
-        ? $tooltip(event, '', function() { tooltip.hide(); })
-        : $tooltip(event, '', function() { tooltip.hide(); });
+      var body;
+      if (event.future) {
+        body = '<b>' + CalendarViewOptions.popupText.buildHistory + '</b>';
+        if (event.builds.length > 0) {
+          body += '<ul>' + event.builds.map(function(build) {
+            var link = $('<a></a>').attr('href', build.url).text(build.name);
+            var date = $('<time></time>').text(moment(build.start).format(CalendarViewOptions.formats[view.type].popupBuildTimeFormat));
+            return $('<li></li>').append(build.icon).append(' ').append(link).append(' ').append(date)[0].outerHTML;
+          }).join('') + '</ul>';
+        } else {
+          body += $('<ul><li></li></ul>').text(CalendarViewOptions.popupText.buildHistoryEmpty)[0].outerHTML;
+        }
+      } else {
+        body = '<div></div>';
+      }
+
+      var $tooltipHtml = $tooltip(event, body, function() { tooltip.hide(); });
 
       var tooltip = tippy.one($(target).closest('.fc-event')[0], {
         html: $tooltipHtml[0],

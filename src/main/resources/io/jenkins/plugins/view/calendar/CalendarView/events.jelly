@@ -39,6 +39,17 @@ THE SOFTWARE.
     <j:if test="${event.future}">
       "timestampString": "${%startsIn(event.timestampString)}",
       "durationString": "${%estimatedDuration}: ${event.durationString}",
+      "builds": [
+      <j:forEach var="build" items="${event.lastBuilds}" varStatus="buildLoop">
+      <j:set var="buildIcon"><l:icon class="${build.iconColor.iconClassName} icon-sm"/></j:set>
+        {
+          "name": "<j:out value="${it.jsonEscape(build.displayName)}"/>",
+          "url": "${rootURL}/${build.url}",
+          "icon": "<j:out value="${it.jsonEscape(buildIcon)}"/>",
+          "start": "<i:formatDate value="${build.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+        }<j:if test="${!buildLoop.last}">,</j:if>
+      </j:forEach>
+      ],
     </j:if>
     <j:if test="${!event.future}">
       "timestampString": "${%startedAgo(event.timestampString)}",

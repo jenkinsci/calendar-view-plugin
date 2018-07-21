@@ -46,6 +46,10 @@ THE SOFTWARE.
            'week-view': '${%ButtonText.Week}',
            'day-view': '${%ButtonText.Day}',
          },
+         popupText: {
+           'buildHistory': '${%Build History}',
+           'buildHistoryEmpty': '${%No past builds}'
+         },
          names: {
            monthNames: [
              '${%MonthNames.January}',
@@ -103,18 +107,21 @@ THE SOFTWARE.
              titleFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTitleFormat) : ''}"/>' || '${%Month.TitleFormat}',
              columnHeaderFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthColumnHeaderFormat) : ''}"/>' || '${%Month.ColumnHeaderFormat}',
              timeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTimeFormat) : ''}"/>' || '${%Month.TimeFormat}',
+             popupBuildTimeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthPopupBuildTimeFormat) : ''}"/>' || '${%Month.PopupBuildTimeFormat}'
            },
            'week-view': {
              titleFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTitleFormat) : ''}"/>' || '${%Week.TitleFormat}',
              columnHeaderFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekColumnHeaderFormat) : ''}"/>' || '${%Week.ColumnHeaderFormat}',
              timeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTimeFormat) : ''}"/>' || '${%Week.TimeFormat}',
-             slotLabelFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekSlotTimeFormat) : ''}"/>' || '${%Week.SlotLabelFormat}'
+             slotLabelFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekSlotTimeFormat) : ''}"/>' || '${%Week.SlotLabelFormat}',
+             popupBuildTimeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekPopupBuildTimeFormat) : ''}"/>' || '${%Week.PopupBuildTimeFormat}'
            },
            'day-view': {
              titleFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTitleFormat) : ''}"/>' || '${%Day.TitleFormat}',
              columnHeaderFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayColumnHeaderFormat) : ''}"/>' || '${%Day.ColumnHeaderFormat}',
              timeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : ''}"/>' || '${%Day.TimeFormat}',
-             slotLabelFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : ''}"/>' || '${%Day.SlotLabelFormat}'
+             slotLabelFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : ''}"/>' || '${%Day.SlotLabelFormat}',
+             popupBuildTimeFormat: '<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayPopupBuildTimeFormat) : ''}"/>' || '${%Day.PopupBuildTimeFormat}'
            }
          },
          slotSettings: {
