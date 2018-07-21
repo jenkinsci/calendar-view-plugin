@@ -95,7 +95,7 @@
   padding:10px;
 }
 
-.tippy-tooltip.jenkins-theme .tooltip-body .left {
+.tippy-tooltip.jenkins-theme .tooltip-left {
   display:inline-block;
   vertical-align:top;
   padding-right:10px;
@@ -103,7 +103,7 @@
   min-width:200px;
 }
 
-.tippy-tooltip.jenkins-theme .tooltip-body .right {
+.tippy-tooltip.jenkins-theme .tooltip-right {
   display:inline-block;
   vertical-align:top;
   padding-left:10px;
@@ -112,7 +112,11 @@
   min-width:200px;
 }
 
-.tippy-tooltip.jenkins-theme .tooltip-body .right ul a {
+.tippy-tooltip.jenkins-theme .tooltip-bottom {
+  clear:both;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-right ul a {
   display:inline-block;
   min-width:3em;
 }
