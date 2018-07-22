@@ -112,16 +112,52 @@
   min-width:200px;
 }
 
-.tippy-tooltip.jenkins-theme .tooltip-bottom {
-  clear:both;
-}
-
 .tippy-tooltip.jenkins-theme .tooltip-right ul a {
   display:inline-block;
   min-width:3em;
 }
 
-.tippy-tooltip.jenkins-theme .tooltip-body time {
+.tippy-tooltip.jenkins-theme .tooltip-bottom {
+  border-top:1px solid #ddd;
+  margin-top:20px;
+  padding-top:10px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-bottom .previous {
+  float:left;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-bottom .previous i:after {
+  content:"\25C0";
+  color:#ccc;
+  font-size:80%;
+  font-style:normal;
+  margin-right:2px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-bottom .next {
+  float:right;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-bottom .next i:after {
+  content:"\25B6";
+  color:#ccc;
+  font-size:80%;
+  font-style:normal;
+  margin-left:2px;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body .time {
+  color:gray;
+  text-decoration:none;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body .time:hover {
+  color:gray;
+  text-decoration:underline;
+}
+
+.tippy-tooltip.jenkins-theme .tooltip-body .nextBuild {
   color:gray;
 }
 
@@ -159,3 +195,4 @@
 .calendar-view-config-input  {
   width:30%;
 }
+

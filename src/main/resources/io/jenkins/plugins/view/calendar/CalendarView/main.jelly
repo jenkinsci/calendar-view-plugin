@@ -47,8 +47,11 @@ THE SOFTWARE.
            'day-view': '${%ButtonText.Day}',
          },
          popupText: {
-           'buildHistory': '${%Build History}',
-           'buildHistoryEmpty': '${%No past builds}'
+           'build': '${%This build}:',
+           'buildHistory': '${%Build History}:',
+           'buildHistoryEmpty': '${%No past builds}',
+           'project': '${%Project}: ',
+           'nextBuild': '${%Next build}: ',
          },
          names: {
            monthNames: [

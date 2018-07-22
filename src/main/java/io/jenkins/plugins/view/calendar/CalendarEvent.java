@@ -8,16 +8,20 @@ import java.util.*;
 
 public class CalendarEvent {
     private final TopLevelItem item;
+    private final Run build;
     private final Calendar start;
     private final Calendar end;
+    private final Calendar nextRun;
     private final CalendarEventType type;
     private final String title;
     private final String url;
     private final long duration;
     private final boolean future;
 
+    @SuppressWarnings("PMD.NullAssignment")
     public CalendarEvent(final TopLevelItem item, final Calendar start, final long durationInMillis) {
         this.item = item;
+        this.build = null;
         this.future = true;
         this.type = CalendarEventType.FUTURE;
         this.title = item.getFullDisplayName();
@@ -25,10 +29,12 @@ public class CalendarEvent {
         this.duration = durationInMillis;
         this.start = start;
         this.end = initEnd();
+        this.nextRun = null;
     }
 
     public CalendarEvent(final TopLevelItem item, final Run build) {
         this.item = item;
+        this.build = build;
         this.future = false;
         this.type = CalendarEventType.fromResult(build.getResult());
         this.title = build.getFullDisplayName();
@@ -37,6 +43,7 @@ public class CalendarEvent {
         this.start = Calendar.getInstance();
         this.start.setTimeInMillis(build.getStartTimeInMillis());
         this.end = initEnd();
+        this.nextRun = new CronJobService().getNextRun(item);
     }
 
     private Calendar initEnd() {
@@ -124,5 +131,34 @@ public class CalendarEvent {
             return ((Job)item).getLastBuildsOverThreshold(5, Result.ABORTED);
         }
         return new ArrayList<>();
+    }
+
+    public Run getPreviousBuild() {
+        if (build != null) {
+            return build.getPreviousBuild();
+        }
+        return null;
+    }
+
+    public Run getNextBuild() {
+        if (build != null) {
+            return build.getNextBuild();
+        }
+        return null;
+    }
+
+    public Run getBuild() {
+        return build;
+    }
+
+    public Job getJob() {
+        if (build != null) {
+            return build.getParent();
+        }
+        return null;
+    }
+
+    public Calendar getNextRun() {
+        return nextRun;
     }
 }

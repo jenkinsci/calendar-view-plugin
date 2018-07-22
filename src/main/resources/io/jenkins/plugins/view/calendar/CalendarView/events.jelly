@@ -57,8 +57,35 @@ THE SOFTWARE.
       ],
     </j:if>
     <j:if test="${!event.future}">
+      <j:set var="jobIcon"><l:icon class="${event.job.buildHealth.iconClassName} icon-sm"/></j:set>
       "timestampString": "${%startedAgo(event.timestampString)}",
       "durationString": "${%duration}: ${event.durationString}",
+      "job": {
+        "name": "<j:out value="${it.jsonEscape(event.job.displayName)}"/>",
+        "url": "${rootURL}/${event.job.url}",
+        <j:if test="${not empty event.nextRun}">
+        "nextRun": "<i:formatDate value="${event.nextRun.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
+        </j:if>
+        "icon": "<j:out value="${it.jsonEscape(jobIcon)}"/>"
+      },
+      <j:if test="${not empty event.previousBuild}">
+      <j:set var="previousBuildIcon"><l:icon class="${event.previousBuild.iconColor.iconClassName} icon-sm"/></j:set>
+      "previousBuild": {
+        "name": "<j:out value="${it.jsonEscape(event.previousBuild.displayName)}"/>",
+        "url": "${rootURL}/${event.previousBuild.url}",
+        "icon": "<j:out value="${it.jsonEscape(previousBuildIcon)}"/>",
+        "start": "<i:formatDate value="${event.previousBuild.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+      },
+      </j:if>
+      <j:if test="${not empty event.nextBuild}">
+      <j:set var="nextBuildIcon"><l:icon class="${event.nextBuild.iconColor.iconClassName} icon-sm"/></j:set>
+      "nextBuild": {
+        "name": "<j:out value="${it.jsonEscape(event.nextBuild.displayName)}"/>",
+        "url": "${rootURL}/${event.nextBuild.url}",
+        "icon": "<j:out value="${it.jsonEscape(nextBuildIcon)}"/>",
+        "start": "<i:formatDate value="${event.nextBuild.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+      },
+      </j:if>
     </j:if>
     "icon": "<j:out value="${it.jsonEscape(icon)}"/>",
     "className": "${event.typeAsClassName}",

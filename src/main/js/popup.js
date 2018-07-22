@@ -26,9 +26,9 @@ function body(event, view) {
 
 function left(event) {
   return $('<div class="tooltip-left"></div>')
-    .append($('<span class="timestamp"></span>').text(event.timestampString))
-    .append('<br/>')
-    .append($('<span class="duration"></span>').text(event.durationString));
+    .append($('<b></b>').text(CalendarViewOptions.popupText.build))
+    .append($('<div class="timestamp"></div>').text(event.timestampString))
+    .append($('<div class="duration"></div>').text(event.durationString));
 }
 
 function right(event, view) {
@@ -36,7 +36,14 @@ function right(event, view) {
 }
 
 function rightForPastBuild(event, view) {
-  return $('<div class="tooltip-right"></div>');
+  return $('<div class="tooltip-right"></div>')
+    .append($('<b></b>').text(CalendarViewOptions.popupText.project))
+    .append($('<div></div>')
+      .append(event.job.icon)
+      .append(' ')
+      .append($('<a></a>').attr('href', event.job.url).text(event.job.name)))
+    .append($('<div class="nextBuild"></div>')
+      .append(event.job.nextRun ? [CalendarViewOptions.popupText.nextBuild, dateLink(event.job.nextRun, view)] : ''));
 }
 
 function rightForFutureBuild(event, view) {
@@ -46,19 +53,48 @@ function rightForFutureBuild(event, view) {
 }
 
 function noBuildHistory() {
-  return $('<li></div>').text(CalendarViewOptions.popupText.buildHistoryEmpty);
+  return $('<li></li>').text(CalendarViewOptions.popupText.buildHistoryEmpty);
 }
 
 function buildHistory(event, view) {
-  return event.builds.map(function(build) {
-    var link = $('<a></a>').attr('href', build.url).text(build.name);
-    var date = $('<time></time>').text(moment(build.start).format(CalendarViewOptions.formats[view.type].popupBuildTimeFormat));
-    return $('<li></li>').append(build.icon).append(' ').append(link).append(' ').append(date);
-  });
+  return event.builds.map(function(b) { return $('<li></li>').append(build(b, view)); });
 }
 
-function bottom(event) {
-  return $('<div class="bottom"></div>');
+function bottom(event, view) {
+  if (event.future || (!event.previousBuild && !event.nextBuild)) {
+    return '';
+  }
+  var $bottom = $('<div class="tooltip-bottom"></div>');
+  if (event.previousBuild) {
+    var bottomLeft = $('<span class="previous"></span>')
+      .append('<i></i>')
+      .append(build(event.previousBuild, view));
+    $bottom.append(bottomLeft);
+  }
+  if (event.nextBuild) {
+    var bottomRight = $('<span class="next"></span>')
+      .append(build(event.nextBuild, view).reverse())
+      .append('<i></i>');
+    $bottom.append(bottomRight);
+  }
+  return $bottom.append('<div style="clear:both"></div>');
+}
+
+function build(build, view) {
+  var $link = $('<a></a>').attr('href', build.url).text(build.name);
+  var $dateLink = dateLink(build.start, view);
+  return [build.icon, ' ', $link, ' ', $dateLink];
+}
+
+function dateLink(date, view) {
+  var mom = moment(date);
+  var dateFormat = CalendarViewOptions.formats[view.type].popupBuildTimeFormat;
+  var $dateLink = $('<a class="time" href="#"></a>');
+  $dateLink.click(function() {
+    view.calendar.gotoDate(mom);
+    return false;
+  });
+  return $dateLink.append($('<time></time>').text(mom.format(dateFormat)));
 }
 
 export function show(event, view, target) {

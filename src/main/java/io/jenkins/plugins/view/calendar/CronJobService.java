@@ -9,9 +9,7 @@ import hudson.triggers.Trigger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class CronJobService {
 
@@ -58,5 +56,21 @@ public class CronJobService {
             }
         }
         return triggers;
+    }
+
+    public Calendar getNextRun(final TopLevelItem item) {
+        final Calendar now = GregorianCalendar.getInstance();
+        Calendar next = null;
+        final List<Trigger> triggers = getCronTriggers(item);
+        for (final Trigger trigger: triggers) {
+            final List<CronTab> cronTabs = getCronTabs(trigger);
+            for (final CronTab cronTab: cronTabs) {
+                final Calendar ceil = cronTab.ceil(now);
+                if (next == null || ceil.compareTo(next) < 0) {
+                    next = ceil;
+                }
+            }
+        }
+        return next;
     }
 }
