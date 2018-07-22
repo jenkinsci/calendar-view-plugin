@@ -1,6 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
+
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = {
   entry: './src/main/js/index.js',
@@ -14,6 +17,16 @@ module.exports = {
   devtool: 'sourcemap',
   resolve: {
     extensions: [ '.js' ]
+  },
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+        sourceMap: true
+      }),
+      new OptimizeCssAssetsPlugin({})
+    ]
   },
   module: {
     rules: [
