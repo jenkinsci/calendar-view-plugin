@@ -1,5 +1,5 @@
 
-export function parseHashParams(hash) {
+export function parse(hash) {
   const hashParams = {};
   if (hash) {
     hash.replace('#', '').split(/\|/).forEach(hashParam => {
@@ -12,7 +12,7 @@ export function parseHashParams(hash) {
   return hashParams;
 }
 
-export function serializeHashParams(hashParams) {
+export function serialize(hashParams) {
   var params = [];
   for (var key in hashParams) {
     params.push(key + '=' + hashParams[key]);

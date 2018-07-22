@@ -5,16 +5,16 @@ import 'fullcalendar';
 import '../../../node_modules/fullcalendar/dist/fullcalendar.css';
 import '../css/index.css';
 
-import { parseHashParams, serializeHashParams } from './hashParams.js';
+import * as hashParams from './hash-params.js';
 import * as popup from './popup.js';
 
-const hashParams = parseHashParams(window.location.hash);
+const hashParamOptions = hashParams.parse(window.location.hash);
 
 $(function() {
   $('#calendar-view').fullCalendar({
     events: 'events',
-    defaultView: hashParams['view'] || CalendarViewOptions.defaultView,
-    defaultDate: hashParams['date'] || moment(),
+    defaultView: hashParamOptions['view'] || CalendarViewOptions.defaultView,
+    defaultDate: hashParamOptions['date'] || moment(),
     header: {
       left: 'month-view,week-view,day-view',
       center: 'title',
@@ -63,7 +63,7 @@ $(function() {
     dayNamesShort: CalendarViewOptions.names.dayNamesShort,
     buttonText: CalendarViewOptions.buttonText,
     viewRender: function(view, element) {
-      window.location = serializeHashParams({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
+      window.location = hashParams.serialize({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
     },
     eventMouseover: function(event, jsEvent, view) {
       var target = jsEvent.target || jsEvent.srcElement;
