@@ -30,53 +30,64 @@ import io.jenkins.plugins.view.calendar.util.DateUtil;
 import java.util.*;
 
 public class CalendarEvent {
+    private final String id;
     private final TopLevelItem item;
     private final Run build;
     private final Calendar start;
     private final Calendar end;
-    private final Calendar nextRun;
     private final CalendarEventType type;
     private final String title;
     private final String url;
     private final long duration;
-    private final boolean future;
+
+    private List<CalendarEvent> lastEvents;
+    private CalendarEvent previousEvent;
+    private CalendarEvent nextEvent;
+    private CalendarEvent nextScheduledEvent;
 
     @SuppressWarnings("PMD.NullAssignment")
     public CalendarEvent(final TopLevelItem item, final Calendar start, final long durationInMillis) {
+        this.id = initId(item.getUrl());
         this.item = item;
         this.build = null;
-        this.future = true;
         this.type = CalendarEventType.FUTURE;
         this.title = item.getFullDisplayName();
         this.url = item.getUrl();
         this.duration = durationInMillis;
         this.start = start;
-        this.end = initEnd();
-        this.nextRun = null;
+        this.end = initEnd(start, durationInMillis);
     }
 
+    @SuppressWarnings("PMD.NullAssignment")
     public CalendarEvent(final TopLevelItem item, final Run build) {
+        this.id = initId(build.getUrl());
         this.item = item;
         this.build = build;
-        this.future = false;
         this.type = CalendarEventType.fromResult(build.getResult());
         this.title = build.getFullDisplayName();
         this.url = build.getUrl();
         this.duration = build.getDuration();
         this.start = Calendar.getInstance();
         this.start.setTimeInMillis(build.getStartTimeInMillis());
-        this.end = initEnd();
-        this.nextRun = new CronJobService().getNextRun(item);
+        this.end = initEnd(this.start, build.getDuration());
     }
 
-    private Calendar initEnd() {
+    private static String initId(String url) {
+        return url.replace("/", "-").toLowerCase().replaceAll("-$", "");
+    }
+
+    private static Calendar initEnd(final Calendar start, final long duration) {
         // duration needs to be at least 1sec otherwise
         // fullcalendar will not properly display the event
-        final long dur = (this.duration < 1000) ? 1000 : this.duration;
+        final long dur = (duration < 1000) ? 1000 : duration;
         final Calendar end = Calendar.getInstance();
-        end.setTime(this.start.getTime());
+        end.setTime(start.getTime());
         end.add(Calendar.SECOND, (int) (dur / 1000));
         return end;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public TopLevelItem getItem() {
@@ -120,7 +131,7 @@ public class CalendarEvent {
     }
 
     public boolean isFuture() {
-        return this.future;
+        return build == null;
     }
 
     public String getTimestampString() {
@@ -149,39 +160,36 @@ public class CalendarEvent {
         }
     }
 
-    public List<Build> getLastBuilds() {
-        if (item instanceof Job) {
-            return ((Job)item).getLastBuildsOverThreshold(5, Result.ABORTED);
-        }
-        return new ArrayList<>();
-    }
-
-    public Run getPreviousBuild() {
-        if (build != null) {
-            return build.getPreviousBuild();
-        }
-        return null;
-    }
-
-    public Run getNextBuild() {
-        if (build != null) {
-            return build.getNextBuild();
-        }
-        return null;
-    }
-
     public Run getBuild() {
         return build;
     }
 
-    public Job getJob() {
-        if (build != null) {
-            return build.getParent();
+    public List<CalendarEvent> getLastEvents() {
+        if (this.lastEvents == null) {
+            this.lastEvents = new CalendarEventService().getLastEvents(this, 5);
         }
-        return null;
+        return this.lastEvents;
     }
 
-    public Calendar getNextRun() {
-        return nextRun;
+
+    public CalendarEvent getPreviousEvent() {
+        if (previousEvent == null && build != null) {
+            previousEvent = new CalendarEventService().getPreviousEvent(this);
+        }
+        return previousEvent;
+    }
+
+    public CalendarEvent getNextEvent() {
+        if (nextEvent == null && build != null) {
+            nextEvent = new CalendarEventService().getNextEvent(this);
+        }
+        return nextEvent;
+    }
+
+    public CalendarEvent getNextScheduledEvent() {
+        if (nextScheduledEvent == null && build != null) {
+            nextScheduledEvent = new CalendarEventService().getNextScheduledEvent(this);
+        }
+        return nextScheduledEvent;
     }
 }

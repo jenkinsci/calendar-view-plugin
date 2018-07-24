@@ -65,9 +65,9 @@ function rightForPastBuild(event, view) {
     .append($('<div></div>')
       .append(event.job.icon)
       .append(' ')
-      .append($('<a></a>').attr('href', event.job.url).text(event.job.name)))
+      .append($('<a></a>').attr('href', event.job.url).text(event.job.title)))
     .append($('<div class="nextBuild"></div>')
-      .append(event.job.nextRun ? [CalendarViewOptions.popupText.nextBuild, dateLink(event.job.nextRun, view)] : ''));
+      .append(event.nextScheduledBuild ? [CalendarViewOptions.popupText.nextBuild, dateLink(event.nextScheduledBuild, view)] : ''));
 }
 
 function rightForFutureBuild(event, view) {
@@ -105,23 +105,29 @@ function bottom(event, view) {
 }
 
 function build(build, view) {
-  var $link = $('<a></a>').attr('href', build.url).text(build.name);
-  var $dateLink = dateLink(build.start, view);
+  var $link = $('<a></a>').attr('href', build.url).text(build.title);
+  var $dateLink = dateLink(build, view);
   return [build.icon, ' ', $link, ' ', $dateLink];
 }
 
-function dateLink(date, view) {
-  var mom = moment(date);
+function dateLink(build, view) {
+  var date = moment(build.start);
   var dateFormat = CalendarViewOptions.formats[view.type].popupBuildTimeFormat;
   var $dateLink = $('<a class="time" href="#"></a>');
   $dateLink.click(function() {
-    view.calendar.gotoDate(mom);
+    closeAll();
+    if (view.intervalStart.isSameOrBefore(date) && view.intervalEnd.isAfter(date)) {
+      openForEventId(build.id, view);
+    } else {
+      CalendarViewOptions.gotoEventId = build.id;
+      view.calendar.gotoDate(date);
+    }
     return false;
   });
-  return $dateLink.append($('<time></time>').text(mom.format(dateFormat)));
+  return $dateLink.append($('<time></time>').text(date.format(dateFormat)));
 }
 
-export function show(event, view, target) {
+export function openForEvent(event, view, target, manual) {
   var $popup = popup(event, view, {
     close: function() { popupInstance.hide(); }
   });
@@ -132,9 +138,25 @@ export function show(event, view, target) {
     animation: 'fade',
     interactive: true,
     theme: 'jenkins',
+    trigger: manual ? 'manual' : 'mouseenter focus',
     size: 'large',
     onHidden: function() {
       popupInstance.destroy();
     }
+  });
+  if (manual) {
+    popupInstance.show();
+  }
+}
+
+export function openForEventId(eventId, view) {
+  var event = view.calendar.clientEvents(function(e) { return e.id === eventId; })[0];
+  var target = $('.event-id-' + eventId)[0];
+  openForEvent(event, view, target, true);
+}
+
+export function closeAll() {
+  $('*[data-tippy]').each(function(i, el) {
+    el._tippy.destroy();
   });
 }

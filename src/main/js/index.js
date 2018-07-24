@@ -89,9 +89,15 @@ $(function() {
     viewRender: function(view, element) {
       window.location = hashParams.serialize({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
     },
+    eventAfterAllRender: function(view) {
+      if (CalendarViewOptions.gotoEventId) {
+        popup.openForEventId(CalendarViewOptions.gotoEventId, view);
+        CalendarViewOptions.gotoEventId = null;
+      }
+    },
     eventMouseover: function(event, jsEvent, view) {
-      var target = jsEvent.target || jsEvent.srcElement;
-      popup.show(event, view, $(target).closest('.fc-event')[0]);
+      var target = $(jsEvent.target || jsEvent.srcElement).closest('.fc-event')[0];
+      popup.openForEvent(event, view, target, false);
     }
   });
 });

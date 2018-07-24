@@ -81,7 +81,7 @@ public class CronJobService {
         return triggers;
     }
 
-    public Calendar getNextRun(final TopLevelItem item) {
+    public Calendar getNextStart(final TopLevelItem item) {
         final Calendar now = GregorianCalendar.getInstance();
         Calendar next = null;
         final List<Trigger> triggers = getCronTriggers(item);

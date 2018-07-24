@@ -23,10 +23,7 @@
  */
 package io.jenkins.plugins.view.calendar;
 
-import hudson.model.AbstractProject;
-import hudson.model.Job;
-import hudson.model.Run;
-import hudson.model.TopLevelItem;
+import hudson.model.*;
 import hudson.scheduler.CronTab;
 import hudson.triggers.Trigger;
 import hudson.util.RunList;
@@ -72,7 +69,7 @@ public class CalendarEventService {
             if (!(item instanceof AbstractProject)) {
                 continue;
             }
-            final long durationInMillis = ((AbstractProject)item).getEstimatedDuration();
+            final long estimatedDuration = ((AbstractProject)item).getEstimatedDuration();
             final List<Trigger> triggers = cronJobService.getCronTriggers(item);
             for (final Trigger trigger: triggers) {
                 final List<CronTab> cronTabs = cronJobService.getCronTabs(trigger);
@@ -81,7 +78,7 @@ public class CalendarEventService {
                     Calendar next = cronTab.ceil(timeInMillis);
                     while (next != null && next.compareTo(start) >= 0 && next.compareTo(end) < 0) {
                         @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                        final CalendarEvent event = new CalendarEvent(item, next, durationInMillis);
+                        final CalendarEvent event = new CalendarEvent(item, next, estimatedDuration);
                         events.add(event);
                         timeInMillis = next.getTimeInMillis() + 1000 * 60;
                         next = cronTab.ceil(timeInMillis);
@@ -110,4 +107,48 @@ public class CalendarEventService {
         return events;
     }
 
+    public List<CalendarEvent> getLastEvents(final CalendarEvent event, final int numberOfEvents) {
+        final List<CalendarEvent> lastEvents = new ArrayList<>();
+        final TopLevelItem item = event.getItem();
+        if (item instanceof Job) {
+            final List<Build> lastBuilds = ((Job) item).getLastBuildsOverThreshold(numberOfEvents, Result.ABORTED);
+            for (final Build lastBuild: lastBuilds) {
+                lastEvents.add(new CalendarEvent(item, lastBuild));
+            }
+        }
+        return lastEvents;
+    }
+
+    public CalendarEvent getPreviousEvent(final CalendarEvent event) {
+        if (event.getBuild() != null) {
+            final Run previousBuild = event.getBuild().getPreviousBuild();
+            if (previousBuild != null) {
+                return new CalendarEvent(event.getItem(), previousBuild);
+            }
+        }
+        return null;
+    }
+
+    public CalendarEvent getNextEvent(final CalendarEvent event) {
+        if (event.getBuild() != null) {
+            final Run nextBuild = event.getBuild().getNextBuild();
+            if (nextBuild != null) {
+                return new CalendarEvent(event.getItem(), nextBuild);
+            }
+        }
+        return null;
+    }
+
+    public CalendarEvent getNextScheduledEvent(final CalendarEvent event) {
+        final TopLevelItem item = event.getItem();
+        if (!(item instanceof AbstractProject)) {
+            return null;
+        }
+        final Calendar nextStart = cronJobService.getNextStart(item);
+        if (nextStart != null) {
+            final long estimatedDuration = ((AbstractProject)item).getEstimatedDuration();
+            return new CalendarEvent(item, nextStart, estimatedDuration);
+        }
+        return null;
+    }
 }
