@@ -21,6 +21,8 @@
         <exclude name="LongVariable" />
         <!-- No need for empty constructors -->
         <exclude name="AtLeastOneConstructor" />
+        <!-- This complains about variable names like 'id' -->
+        <exclude name="ShortVariable" />
     </rule>
     <rule ref="category/java/design.xml">
         <!-- "Tell, don't ask" is a good design principle, 

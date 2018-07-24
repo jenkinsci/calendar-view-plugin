@@ -113,7 +113,9 @@ public class CalendarEventService {
         if (item instanceof Job) {
             final List<Build> lastBuilds = ((Job) item).getLastBuildsOverThreshold(numberOfEvents, Result.ABORTED);
             for (final Build lastBuild: lastBuilds) {
-                lastEvents.add(new CalendarEvent(item, lastBuild));
+                @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+                final CalendarEvent lastEvent = new CalendarEvent(item, lastBuild);
+                lastEvents.add(lastEvent);
             }
         }
         return lastEvents;

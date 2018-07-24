@@ -40,10 +40,10 @@ public class CalendarEvent {
     private final String url;
     private final long duration;
 
-    private List<CalendarEvent> lastEvents;
-    private CalendarEvent previousEvent;
-    private CalendarEvent nextEvent;
-    private CalendarEvent nextScheduledEvent;
+    private transient List<CalendarEvent> lastEvents;
+    private transient CalendarEvent previousEvent;
+    private transient CalendarEvent nextEvent;
+    private transient CalendarEvent nextScheduledEvent;
 
     @SuppressWarnings("PMD.NullAssignment")
     public CalendarEvent(final TopLevelItem item, final Calendar start, final long durationInMillis) {
@@ -72,8 +72,8 @@ public class CalendarEvent {
         this.end = initEnd(this.start, build.getDuration());
     }
 
-    private static String initId(String url) {
-        return url.replace("/", "-").toLowerCase().replaceAll("-$", "");
+    private static String initId(final String url) {
+        return url.replace("/", "-").toLowerCase(Locale.ENGLISH).replaceAll("-$", "");
     }
 
     private static Calendar initEnd(final Calendar start, final long duration) {
