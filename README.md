@@ -89,12 +89,15 @@ $ ./npmw run dev
 
 ## Changelog
 
-### 0.1.1 (2018-07-13)
+### v0.2.0 (released 2018-07-25)
+* Feature: show popup with more information when hovering over a past or future build
+
+### v0.1.1 (released 2018-07-13)
 * Fix: special HTML characters in custom date/time formats were escaped twice
 * Fix: some typos and other minor issues in documentation
-* Better validation for view configuration options
+* Fix: better validation for view configuration options
 
-### 0.1.0 (2018-07-11)
+### v0.1.0 (released 2018-07-11)
 * Initial release
 
 ## License
