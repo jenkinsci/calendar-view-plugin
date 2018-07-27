@@ -23,7 +23,7 @@
  */
 
 import $ from 'jquery';
-import * as moment from 'moment';
+import moment from 'moment';
 import tippy from 'tippy.js';
 
 function popup(event, view, options) {

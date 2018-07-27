@@ -23,7 +23,7 @@
  */
 
 import $ from 'jquery';
-import * as moment from 'moment';
+import moment from 'moment';
 import 'fullcalendar';
 
 import '../../../node_modules/fullcalendar/dist/fullcalendar.css';
