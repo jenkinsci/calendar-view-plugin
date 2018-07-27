@@ -145,7 +145,7 @@ public class CalendarView extends ListView {
     }
 
     public String getMonthTitleFormat() {
-        return monthTitleFormat;
+        return defaultIfNull(monthTitleFormat, "");
     }
 
     public void setMonthTitleFormat(final String monthTitleFormat) {
@@ -153,7 +153,7 @@ public class CalendarView extends ListView {
     }
 
     public String getMonthColumnHeaderFormat() {
-        return monthColumnHeaderFormat;
+        return defaultIfNull(monthColumnHeaderFormat, "");
     }
 
     public void setMonthColumnHeaderFormat(final String monthColumnHeaderFormat) {
@@ -161,7 +161,7 @@ public class CalendarView extends ListView {
     }
 
     public String getMonthTimeFormat() {
-        return monthTimeFormat;
+        return defaultIfNull(monthTimeFormat, "");
     }
 
     public void setMonthTimeFormat(final String monthTimeFormat) {
@@ -169,7 +169,7 @@ public class CalendarView extends ListView {
     }
 
     public String getMonthPopupBuildTimeFormat() {
-        return monthPopupBuildTimeFormat;
+        return defaultIfNull(monthPopupBuildTimeFormat, "");
     }
 
     public void setMonthPopupBuildTimeFormat(final String monthPopupBuildTimeFormat) {
@@ -177,7 +177,7 @@ public class CalendarView extends ListView {
     }
 
     public String getWeekTitleFormat() {
-        return weekTitleFormat;
+        return defaultIfNull(weekTitleFormat, "");
     }
 
     public void setWeekTitleFormat(final String weekTitleFormat) {
@@ -185,7 +185,7 @@ public class CalendarView extends ListView {
     }
 
     public String getWeekColumnHeaderFormat() {
-        return weekColumnHeaderFormat;
+        return defaultIfNull(weekColumnHeaderFormat, "");
     }
 
     public void setWeekColumnHeaderFormat(final String weekColumnHeaderFormat) {
@@ -193,7 +193,7 @@ public class CalendarView extends ListView {
     }
 
     public String getWeekTimeFormat() {
-        return weekTimeFormat;
+        return defaultIfNull(weekTimeFormat, "");
     }
 
     public void setWeekTimeFormat(final String weekTimeFormat) {
@@ -201,7 +201,7 @@ public class CalendarView extends ListView {
     }
 
     public String getWeekSlotTimeFormat() {
-        return weekSlotTimeFormat;
+        return defaultIfNull(weekSlotTimeFormat, "");
     }
 
     public void setWeekSlotTimeFormat(final String weekSlotTimeFormat) {
@@ -209,7 +209,7 @@ public class CalendarView extends ListView {
     }
 
     public String getWeekPopupBuildTimeFormat() {
-        return weekPopupBuildTimeFormat;
+        return defaultIfNull(weekPopupBuildTimeFormat, "");
     }
 
     public void setWeekPopupBuildTimeFormat(final String weekPopupBuildTimeFormat) {
@@ -217,7 +217,7 @@ public class CalendarView extends ListView {
     }
 
     public String getDayTitleFormat() {
-        return dayTitleFormat;
+        return defaultIfNull(dayTitleFormat, "");
     }
 
     public void setDayTitleFormat(final String dayTitleFormat) {
@@ -225,7 +225,7 @@ public class CalendarView extends ListView {
     }
 
     public String getDayColumnHeaderFormat() {
-        return dayColumnHeaderFormat;
+        return defaultIfNull(dayColumnHeaderFormat, "");
     }
 
     public void setDayColumnHeaderFormat(final String dayColumnHeaderFormat) {
@@ -233,7 +233,7 @@ public class CalendarView extends ListView {
     }
 
     public String getDayTimeFormat() {
-        return dayTimeFormat;
+        return defaultIfNull(dayTimeFormat, "");
     }
 
     public void setDayTimeFormat(final String dayTimeFormat) {
@@ -241,7 +241,7 @@ public class CalendarView extends ListView {
     }
 
     public String getDaySlotTimeFormat() {
-        return daySlotTimeFormat;
+        return defaultIfNull(daySlotTimeFormat, "");
     }
 
     public void setDaySlotTimeFormat(final String daySlotTimeFormat) {
@@ -249,7 +249,7 @@ public class CalendarView extends ListView {
     }
 
     public String getDayPopupBuildTimeFormat() {
-        return dayPopupBuildTimeFormat;
+        return defaultIfNull(dayPopupBuildTimeFormat, "");
     }
 
     public void setDayPopupBuildTimeFormat(final String dayPopupBuildTimeFormat) {
