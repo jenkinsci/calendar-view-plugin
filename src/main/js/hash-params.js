@@ -29,7 +29,9 @@ export function parse(hash) {
       const keyAndValue = hashParam.split(/=/);
       const key = keyAndValue[0];
       const value = keyAndValue[1];
-      hashParams[key] = value;
+      if (value !== undefined) {
+        hashParams[key] = value;
+      }
     });
   }
   return hashParams;
@@ -38,7 +40,9 @@ export function parse(hash) {
 export function serialize(hashParams) {
   var params = [];
   for (var key in hashParams) {
-    params.push(key + '=' + hashParams[key]);
+    if (hashParams[key] !== undefined && hashParams[key] !== null) {
+      params.push(key + '=' + hashParams[key]);
+    }
   }
   return '#' + params.join('|');
 }
