@@ -26,6 +26,7 @@ package io.jenkins.plugins.view.calendar.util;
 import hudson.model.Descriptor;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,9 +34,19 @@ public final class ValidationUtil {
 
     private ValidationUtil() { }
 
-    public static void validateInList(final StaplerRequest req, final String formfield, final List<String> possibleValues) throws Descriptor.FormException {
-        if (!possibleValues.contains(req.getParameter(formfield))) {
-            throw new Descriptor.FormException(formfield + " must be one of " + possibleValues, formfield);
+    public static void validateEnum(final StaplerRequest req, final String formField, final Class<? extends Enum> enumClass) throws Descriptor.FormException {
+        final Enum[] enumConstants = enumClass.getEnumConstants();
+        for (final Enum enumConstant: enumConstants) {
+            if (enumConstant.name().equals(req.getParameter(formField))) {
+                return;
+            }
+        }
+        throw new Descriptor.FormException(formField + " must be one of " + Arrays.asList(enumConstants), formField);
+    }
+
+    public static void validateInList(final StaplerRequest req, final String formField, final List<String> possibleValues) throws Descriptor.FormException {
+        if (!possibleValues.contains(req.getParameter(formField))) {
+            throw new Descriptor.FormException(formField + " must be one of " + possibleValues, formField);
         }
     }
 

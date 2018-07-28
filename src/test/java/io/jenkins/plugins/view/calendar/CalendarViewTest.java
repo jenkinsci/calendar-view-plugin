@@ -1,17 +1,25 @@
 package io.jenkins.plugins.view.calendar;
 
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.html.*;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.junit.Test;
 import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 public class CalendarViewTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private CalendarView createCalendarView(String name) throws Exception {
         HtmlPage newView = j.createWebClient().goTo("newView");
@@ -232,5 +240,76 @@ public class CalendarViewTest {
         assertThat(calendarView.getDaySlotDuration(), equalTo("00:20:00"));
         assertThat(calendarView.getDayMinTime(), equalTo("09:00:00"));
         assertThat(calendarView.getDayMaxTime(), equalTo("18:00:00"));
+    }
+
+    private void testValidation(HtmlPage configurePage) {
+        HtmlButton submitButton = configurePage.querySelector(".submit-button button");
+        try {
+            submitButton.click();
+        } catch (Exception e) {
+            assertThat(e, instanceOf(FailingHttpStatusCodeException.class));
+            assertThat(((FailingHttpStatusCodeException)e).getStatusCode(), equalTo(400));
+            return;
+        }
+        fail("No Exception thrown");
+    }
+
+    private HtmlPage getConfigurePage(CalendarView calendarView) throws IOException, SAXException {
+        return j.createWebClient().getPage(calendarView, "configure");
+    }
+
+    @Test
+    public void testConfigValidation() throws Exception {
+        CalendarView calendarView = createCalendarView("cal");
+
+        HtmlPage configurePage;
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlRadioButtonInput viewTypeRadioButton = configurePage.querySelector("input[name='calendarViewType'][value='MONTH']");
+        viewTypeRadioButton.setValueAttribute("INVALID_VALUE");
+        viewTypeRadioButton.setChecked(true);
+        testValidation(configurePage);
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlOption firstDayOption = configurePage.querySelector("select[name='weekSettingsFirstDay'] option[value='0']");
+        firstDayOption.setValueAttribute("8");
+        firstDayOption.setSelected(true);
+        testValidation(configurePage);
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlOption weekSlotDurationOption = configurePage.querySelector("select[name='weekSlotDuration'] option[value='00:05:00']");
+        weekSlotDurationOption.setValueAttribute("00:25:00");
+        weekSlotDurationOption.setSelected(true);
+        testValidation(configurePage);
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlOption weekMinTimeOption = configurePage.querySelector("select[name='weekMinTime'] option[value='00:00:00']");
+        weekMinTimeOption.setValueAttribute("10:30:00");
+        weekMinTimeOption.setSelected(true);
+        testValidation(configurePage);
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlOption weekMaxTimeOption = configurePage.querySelector("select[name='weekMaxTime'] option[value='00:00:00']");
+        weekMaxTimeOption.setValueAttribute("25:00:00");
+        weekMaxTimeOption.setSelected(true);
+        testValidation(configurePage);
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlOption daySlotDurationOption = configurePage.querySelector("select[name='weekSlotDuration'] option[value='00:05:00']");
+        daySlotDurationOption.setValueAttribute("00:45:00");
+        daySlotDurationOption.setSelected(true);
+        testValidation(configurePage);
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlOption dayMinTimeOption = configurePage.querySelector("select[name='dayMinTime'] option[value='00:00:00']");
+        dayMinTimeOption.setValueAttribute("00:00");
+        dayMinTimeOption.setSelected(true);
+        testValidation(configurePage);
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlOption dayMaxTimeOption = configurePage.querySelector("select[name='dayMaxTime'] option[value='00:00:00']");
+        dayMaxTimeOption.setValueAttribute("24:30:00");
+        dayMaxTimeOption.setSelected(true);
+        testValidation(configurePage);
     }
 }

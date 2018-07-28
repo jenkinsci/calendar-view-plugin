@@ -42,9 +42,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static io.jenkins.plugins.view.calendar.util.FieldUtil.defaultIfNull;
-import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validateInList;
-import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validatePattern;
-import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validateRange;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.*;
 
 @SuppressWarnings({
     "PMD.GodClass",
@@ -322,6 +320,7 @@ public class CalendarView extends ListView {
         ));
         final Pattern validDateTimePattern = Pattern.compile("(0[0-9]|1[0-9]|2[0-4]):00:00");
 
+        validateEnum(req, "calendarViewType", CalendarViewType.class);
         validateRange(req, "weekSettingsFirstDay", 0, 7);
 
         validateInList(req, "weekSlotDuration", validSlotDurations);
