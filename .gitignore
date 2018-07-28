@@ -11,3 +11,8 @@ src/main/webapp/bundles
 work
 target
 bin
+
+.nyc_output
+coverage
+
+npm-debug.log
