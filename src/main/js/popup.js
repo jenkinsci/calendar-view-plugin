@@ -26,12 +26,6 @@ import $ from 'jquery';
 import moment from 'moment';
 import tippy from 'tippy.js';
 
-function popup(event, view, options) {
-  return $('<div></div>')
-    .append(head(event, options))
-    .append(body(event, view));
-}
-
 function head(event, options) {
   var $head = $('<div class="tooltip-head"></div>')
     .append(event.icon)
@@ -127,8 +121,14 @@ function dateLink(build, view) {
   return $dateLink.append($('<time></time>').text(date.format(dateFormat)));
 }
 
+export function dom(event, view, options) {
+  return $('<div></div>')
+    .append(head(event, options))
+    .append(body(event, view));
+}
+
 export function openForEvent(event, view, target, manual) {
-  var $popup = popup(event, view, {
+  var $popup = dom(event, view, {
     close: function() { popupInstance.hide(); }
   });
 
