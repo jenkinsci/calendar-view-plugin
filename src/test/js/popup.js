@@ -107,8 +107,8 @@ var futureBuild =  {
 
 var view = {
   type: 'month',
-  intervalStart: moment('2018-07-01'),
-  intervalEnd: moment('2018-08-01'),
+  intervalStart: moment('2018-06-01'),
+  intervalEnd: moment('2018-07-01'),
   calendar: {
     gotoDate: function() { },
     clientEvents: function() { return [ build15 ] }
