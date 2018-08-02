@@ -111,8 +111,8 @@ public class CalendarEventService {
         final List<CalendarEvent> lastEvents = new ArrayList<>();
         final TopLevelItem item = event.getItem();
         if (item instanceof Job) {
-            final List<Build> lastBuilds = ((Job) item).getLastBuildsOverThreshold(numberOfEvents, Result.ABORTED);
-            for (final Build lastBuild: lastBuilds) {
+            final List<Run> lastBuilds = ((Job) item).getLastBuildsOverThreshold(numberOfEvents, Result.ABORTED);
+            for (final Run lastBuild: lastBuilds) {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CalendarEvent lastEvent = new CalendarEvent(item, lastBuild);
                 lastEvents.add(lastEvent);
