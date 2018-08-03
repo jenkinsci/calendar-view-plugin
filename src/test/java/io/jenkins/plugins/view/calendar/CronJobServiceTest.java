@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
@@ -164,8 +165,8 @@ public class CronJobServiceTest {
 
         @Test
         public void testTriggersWithSpecs() {
-            Trigger trigger1 = mock(Trigger.class) ;
-            Trigger trigger2 = mock(Trigger.class) ;
+            Trigger trigger1 = mock(Trigger.class);
+            Trigger trigger2 = mock(Trigger.class);
             when(trigger1.getSpec()).thenReturn("0 * * * *");
             when(trigger2.getSpec()).thenReturn("0 12 * * *");
 
@@ -180,6 +181,51 @@ public class CronJobServiceTest {
             assertThat(triggers, hasSize(2));
             assertThat(triggers, hasItem(trigger1));
             assertThat(triggers, hasItem(trigger2));
+        }
+    }
+
+    public static class GetNextStartTests {
+        @Test
+        public void testNoTriggers() {
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+
+            Calendar next = new CronJobService().getNextStart((TopLevelItem) item);
+            assertThat(next, is(nullValue()));
+        }
+
+        @Test
+        public void testNoCronTabs() {
+            Trigger trigger1 = mock(Trigger.class);
+            Trigger trigger2 = mock(Trigger.class);
+            when(trigger1.getSpec()).thenReturn("# Test");
+            when(trigger2.getSpec()).thenReturn("# Test");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger1);
+            triggers.put(mock(TriggerDescriptor.class), trigger2);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            Calendar next = new CronJobService().getNextStart((TopLevelItem) item);
+            assertThat(next, is(nullValue()));
+        }
+
+        @Test
+        public void testWithCronTabs1() throws ParseException {
+
+            Trigger trigger1 = mock(Trigger.class);
+            Trigger trigger2 = mock(Trigger.class);
+            when(trigger1.getSpec()).thenReturn("10 * * * * \n 5 * * * *");
+            when(trigger2.getSpec()).thenReturn("* 10 * * * \n * 5 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger1);
+            triggers.put(mock(TriggerDescriptor.class), trigger2);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 06:00:00 UTC"));
+            assertThat(str(next), is("2018-01-01 07:05:00 CET"));
         }
     }
 
