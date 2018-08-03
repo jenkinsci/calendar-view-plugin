@@ -82,14 +82,17 @@ public class CronJobService {
     }
 
     public Calendar getNextStart(final TopLevelItem item) {
-        final Calendar now = GregorianCalendar.getInstance();
+        return getNextStart(item, GregorianCalendar.getInstance());
+    }
+
+    public Calendar getNextStart(final TopLevelItem item, final Calendar from) {
         Calendar next = null;
         final List<Trigger> triggers = getCronTriggers(item);
         for (final Trigger trigger: triggers) {
             final List<CronTab> cronTabs = getCronTabs(trigger);
             for (final CronTab cronTab: cronTabs) {
-                final Calendar ceil = cronTab.ceil(now);
-                if (next == null || ceil.compareTo(next) < 0) {
+                final Calendar ceil = cronTab.ceil((Calendar)from.clone());
+                if (next == null || ceil.before(next)) {
                     next = ceil;
                 }
             }
