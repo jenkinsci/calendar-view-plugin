@@ -14,6 +14,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.str;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -229,18 +231,6 @@ public class CronJobServiceTest {
         }
     }
 
-    private static Calendar cal(String date) throws ParseException {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").parse(date));
-        return cal;
-    }
-
-    private static String str(Calendar cal) throws ParseException {
-        if (cal == null) {
-            return null;
-        }
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(cal.getTime());
-    }
 
     private static String next(CronTab cronTab, String from) throws ParseException {
         return str(cronTab.ceil(cal(from)));

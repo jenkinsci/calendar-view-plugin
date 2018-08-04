@@ -5,14 +5,17 @@ import hudson.matrix.MatrixProject;
 import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import hudson.util.RunList;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -26,6 +29,60 @@ import static org.mockito.Mockito.withSettings;
 public class CalendarEventServiceTest {
 
     public static class GetPastEventsTests {
+        @Test
+        public void testNoItems() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            List<CalendarEvent> events = new CalendarEventService().getPastEvents(new ArrayList<TopLevelItem>(), start, end);
+            assertThat(events, hasSize(0));
+        }
+
+        @Test
+        public void testItemNotAJob() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            TopLevelItem item = mock(TopLevelItem.class);
+
+            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList(item), start, end);
+            assertThat(events, hasSize(0));
+        }
+
+        @Test
+        public void testItemHasBuilds() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            Run run1 = mock(Run.class);
+            when(run1.getStartTimeInMillis()).thenReturn(cal("2017-12-01 06:00:00 UTC").getTimeInMillis());
+            when(run1.getDuration()).thenReturn(10 * 60 * 1000L);
+            when(run1.getUrl()).thenReturn("run1/url");
+
+            Run run2 = mock(Run.class);
+            when(run2.getStartTimeInMillis()).thenReturn(cal("2018-01-01 06:00:00 UTC").getTimeInMillis());
+            when(run2.getDuration()).thenReturn(10 * 60 * 1000L);
+            when(run2.getUrl()).thenReturn("run2/url");
+
+            Run run3 = mock(Run.class);
+            when(run3.getStartTimeInMillis()).thenReturn(cal("2018-01-05 06:00:00 UTC").getTimeInMillis());
+            when(run3.getDuration()).thenReturn(10 * 60 * 1000L);
+            when(run3.getUrl()).thenReturn("run3/url");
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run1, run2, run3).iterator());
+
+            Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getBuilds()).thenReturn(runs);
+            when(item.getUrl()).thenReturn("item/url");
+
+            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList((TopLevelItem)item), start, end);
+            assertThat(events, hasSize(1));
+            assertThat(events.get(0).getBuild(), is(run2));
+        }
+    }
+
+    public static class GetLastEventsTests {
         @Test
         public void testIsNotAJob() {
             CalendarEvent event = mock(CalendarEvent.class);
