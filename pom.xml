@@ -143,6 +143,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/Messages.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
