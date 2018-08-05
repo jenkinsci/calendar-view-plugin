@@ -65,6 +65,10 @@ public class CalendarEventService {
 
     public List<CalendarEvent> getFutureEvents(final List<TopLevelItem> items, final Calendar start, final Calendar end) {
         final List<CalendarEvent> events = new ArrayList<CalendarEvent>();
+
+        final FutureEventCollector ceilEventCollector = new CeilEventCollector(events, start, end) ;
+        final FutureEventCollector floorEventCollector = new FloorEventCollector(events, start, end) ;
+
         for (final TopLevelItem item: items) {
             if (!(item instanceof AbstractProject)) {
                 continue;
@@ -74,19 +78,77 @@ public class CalendarEventService {
             for (final Trigger trigger: triggers) {
                 final List<CronTab> cronTabs = cronJobService.getCronTabs(trigger);
                 for (final CronTab cronTab: cronTabs) {
-                    long timeInMillis = start.getTimeInMillis();
-                    Calendar next = cronTab.ceil(timeInMillis);
-                    while (next != null && next.compareTo(start) >= 0 && next.compareTo(end) < 0) {
-                        @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                        final CalendarEvent event = new CalendarEvent(item, next, estimatedDuration);
-                        events.add(event);
-                        timeInMillis = next.getTimeInMillis() + 1000 * 60;
-                        next = cronTab.ceil(timeInMillis);
-                    }
+                    ceilEventCollector.collectEvents(item, cronTab, estimatedDuration);
+                    floorEventCollector.collectEvents(item, cronTab, estimatedDuration);
                 }
             }
         }
         return events;
+    }
+
+    private static abstract class FutureEventCollector {
+        private transient final List<CalendarEvent> events;
+        private transient final Calendar start;
+        private transient final Calendar end;
+
+        public FutureEventCollector(final List<CalendarEvent> events, final Calendar start, final Calendar end) {
+            this.events = events;
+            this.start = start;
+            this.end = end;
+        }
+
+        public void collectEvents(final TopLevelItem item, final CronTab cronTab, final long estimatedDuration) {
+            long timeInMillis = start.getTimeInMillis();
+            do {
+                final Calendar next = nextStart(cronTab, timeInMillis);
+                if (next == null) {
+                    break;
+                }
+                @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+                final CalendarEvent event = new CalendarEvent(item, next, estimatedDuration);
+                if (!event.isInRange(start, end)) {
+                    break;
+                }
+                events.add(event);
+                timeInMillis = next.getTimeInMillis() + nextStartOffset();
+            } while (true);
+        }
+
+        protected abstract Calendar nextStart(CronTab cronTab, long timeInMillis);
+
+        protected abstract int nextStartOffset();
+    }
+
+    private static class CeilEventCollector extends FutureEventCollector {
+        public CeilEventCollector(final List<CalendarEvent> events, final Calendar start, final Calendar end) {
+            super(events, start, end);
+        }
+
+        @Override
+        protected Calendar nextStart(final CronTab cronTab, final long timeInMillis) {
+            return cronTab.ceil(timeInMillis);
+        }
+
+        @Override
+        protected int nextStartOffset() {
+            return 1000 * 60;
+        }
+    }
+
+    private static class FloorEventCollector extends FutureEventCollector {
+        public FloorEventCollector(final List<CalendarEvent> events, final Calendar start, final Calendar end) {
+            super(events, start, end);
+        }
+
+        @Override
+        protected Calendar nextStart(final CronTab cronTab, final long timeInMillis) {
+            return cronTab.floor(timeInMillis);
+        }
+
+        @Override
+        protected int nextStartOffset() {
+            return -1000 * 60;
+        }
     }
 
     public List<CalendarEvent> getPastEvents(final List<TopLevelItem> items, final Calendar start, final Calendar end) {
@@ -99,8 +161,7 @@ public class CalendarEventService {
             for (final Run build : builds) {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CalendarEvent event = new CalendarEvent(item, build);
-                if ((event.getStart().compareTo(start) >= 0 && event.getStart().compareTo(end) < 0) ||
-                    (event.getEnd().compareTo(start) > 0 && event.getEnd().compareTo(end) < 0)) {
+                if (event.isInRange(start, end)) {
                     events.add(event);
                 }
             }

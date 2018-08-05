@@ -205,4 +205,15 @@ public class CalendarEvent implements Comparable<CalendarEvent> {
         }
         return c;
     }
+
+    public boolean isInRange(final Calendar start, final Calendar end) {
+        return
+          (getStart().compareTo(start) >= 0 && getStart().compareTo(end) < 0) ||
+          (getEnd().compareTo(start) > 0 && getEnd().compareTo(end) < 0);
+    }
+
+    @Override
+    public String toString() {
+        return getStartAsDateTime() + "-" + getEndAsDateTime() + ": " + getTitle();
+    }
 }
