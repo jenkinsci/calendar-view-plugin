@@ -125,6 +125,76 @@ public class CalendarEventServiceTest {
         }
     }
 
+    public static class GetFutureEventsTests {
+        @Test
+        public void testNoItems() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(new ArrayList<TopLevelItem>(), start, end);
+            assertThat(events, hasSize(0));
+        }
+
+        @Test
+        public void testItemNotAnAbstractProject() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            TopLevelItem item = mock(TopLevelItem.class);
+
+            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList(item), start, end);
+            assertThat(events, hasSize(0));
+        }
+
+        @Test
+        public void testNoTriggers() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+
+            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            assertThat(events, hasSize(0));
+        }
+
+        @Test
+        public void testNoCronTabs() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("# Test");
+
+            Map<TriggerDescriptor, Trigger> triggers = new HashMap<TriggerDescriptor, Trigger>();
+            triggers.put(mock(TriggerDescriptor.class), trigger) ;
+
+            AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(project.getTriggers()).thenReturn(triggers);
+
+            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            assertThat(events, hasSize(0));
+        }
+
+        @Test
+        public void testHasBuilds() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 UTC");
+            Calendar end = cal("2018-01-05 00:00:00 UTC");
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("0 21 * * *");
+
+            Map<TriggerDescriptor, Trigger> triggers = new HashMap<TriggerDescriptor, Trigger>();
+            triggers.put(mock(TriggerDescriptor.class), trigger) ;
+
+            AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(project.getTriggers()).thenReturn(triggers);
+            when(project.getEstimatedDuration()).thenReturn(6 * 60 * 60 * 1000L);
+
+            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            assertThat(events, hasSize(5));
+        }
+    }
+
     public static class GetPastEventsTests {
         @Test
         public void testNoItems() throws ParseException {
