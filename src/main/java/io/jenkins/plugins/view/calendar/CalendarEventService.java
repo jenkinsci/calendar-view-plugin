@@ -99,7 +99,8 @@ public class CalendarEventService {
             for (final Run build : builds) {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CalendarEvent event = new CalendarEvent(item, build);
-                if (event.getStart().compareTo(start) >= 0 && event.getEnd().compareTo(end) < 0) {
+                if ((event.getStart().compareTo(start) >= 0 && event.getStart().compareTo(end) < 0) ||
+                    (event.getEnd().compareTo(start) > 0 && event.getEnd().compareTo(end) < 0)) {
                     events.add(event);
                 }
             }

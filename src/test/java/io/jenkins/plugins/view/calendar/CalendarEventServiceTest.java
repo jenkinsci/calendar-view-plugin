@@ -80,6 +80,46 @@ public class CalendarEventServiceTest {
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getBuild(), is(run2));
         }
+
+        @Test
+        public void testBuildOnStartDate() throws ParseException {
+            Calendar start = cal("2018-01-01 12:00:00 UTC");
+            Calendar end = cal("2018-01-05 12:00:00 UTC");
+
+            Run run1 = mock(Run.class);
+            when(run1.getStartTimeInMillis()).thenReturn(cal("2018-01-01 10:00:00 UTC").getTimeInMillis());
+            when(run1.getDuration()).thenReturn(5 * 60 * 60 * 1000L);
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run1).iterator());
+
+            Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList((TopLevelItem) item), start, end);
+            assertThat(events, hasSize(1));
+            assertThat(events.get(0).getBuild(), is(run1));
+        }
+
+        @Test
+        public void testBuildOnEndDate() throws ParseException {
+            Calendar start = cal("2018-01-01 12:00:00 UTC");
+            Calendar end = cal("2018-01-05 12:00:00 UTC");
+
+            Run run1 = mock(Run.class);
+            when(run1.getStartTimeInMillis()).thenReturn(cal("2018-01-05 10:00:00 UTC").getTimeInMillis());
+            when(run1.getDuration()).thenReturn(5 * 60 * 60 * 1000L);
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run1).iterator());
+
+            Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList((TopLevelItem) item), start, end);
+            assertThat(events, hasSize(1));
+            assertThat(events.get(0).getBuild(), is(run1));
+        }
     }
 
     public static class GetLastEventsTests {
