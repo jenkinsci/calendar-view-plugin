@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public class CalendarEvent implements Comparable<CalendarEvent> {
+public class CalendarEvent {
     private final String id;
     private final TopLevelItem item;
     private final Run build;
@@ -195,15 +195,6 @@ public class CalendarEvent implements Comparable<CalendarEvent> {
             nextScheduledEvent = new CalendarEventService().getNextScheduledEvent(this);
         }
         return nextScheduledEvent;
-    }
-
-    @Override
-    public int compareTo(final CalendarEvent other) {
-        final int c = this.getStart().compareTo(other.getStart());
-        if (c == 0) {
-            return this.getEnd().compareTo(other.getEnd());
-        }
-        return c;
     }
 
     public boolean isInRange(final Calendar start, final Calendar end) {

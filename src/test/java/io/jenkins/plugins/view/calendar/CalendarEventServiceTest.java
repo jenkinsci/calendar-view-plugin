@@ -116,7 +116,7 @@ public class CalendarEventServiceTest {
             items.add((TopLevelItem)item);
 
             List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
-            Collections.sort(calendarEvents);
+            Collections.sort(calendarEvents, new CalendarEventComparator());
             assertThat(calendarEvents, hasSize(greaterThan(1)));
             assertThat(calendarEvents.get(0).getBuild(), is(run));
             for (int i = 1; i < calendarEvents.size(); i++) {
