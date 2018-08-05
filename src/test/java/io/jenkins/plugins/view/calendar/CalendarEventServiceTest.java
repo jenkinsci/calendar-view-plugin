@@ -20,6 +20,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,102 @@ import static org.mockito.Mockito.withSettings;
 
 @RunWith(Enclosed.class)
 public class CalendarEventServiceTest {
+
+    public static class GetCalendarEventsTests {
+        @Test
+        public void testRangeInFuture() {
+            Calendar start = Calendar.getInstance();
+            start.add(Calendar.DATE, 5);
+
+            Calendar end = Calendar.getInstance();
+            end.add(Calendar.DATE, 10);
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("0 12 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem)item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
+            assertThat(calendarEvents, hasSize(greaterThan(0)));
+            for (CalendarEvent calendarEvent : calendarEvents) {
+                assertThat(calendarEvent.getType(), is(CalendarEventType.FUTURE));
+            }
+        }
+
+        @Test
+        public void testRangeInPast() {
+            Calendar start = Calendar.getInstance();
+            start.add(Calendar.DATE, -10);
+
+            Calendar end = Calendar.getInstance();
+            end.add(Calendar.DATE, -5);
+
+            Calendar runDate = Calendar.getInstance();
+            runDate.add(Calendar.DATE, -7);
+            Run run = mock(Run.class);
+            when(run.getStartTimeInMillis()).thenReturn(runDate.getTimeInMillis());
+            when(run.getDuration()).thenReturn(10 * 60 * 1000L);
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run).iterator());
+
+            Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem)item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
+            assertThat(calendarEvents, hasSize(1));
+            assertThat(calendarEvents.get(0).getBuild(), is(run));
+        }
+
+        @Test
+        public void testRangeInPastAndFuture() {
+            Calendar start = Calendar.getInstance();
+            start.add(Calendar.DATE, -10);
+
+            Calendar end = Calendar.getInstance();
+            end.add(Calendar.DATE, 10);
+
+            Calendar runDate = Calendar.getInstance();
+            runDate.add(Calendar.DATE, -7);
+            Run run = mock(Run.class);
+            when(run.getStartTimeInMillis()).thenReturn(runDate.getTimeInMillis());
+            when(run.getDuration()).thenReturn(10 * 60 * 1000L);
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run).iterator());
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("0 12 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem)item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
+            Collections.sort(calendarEvents);
+            assertThat(calendarEvents, hasSize(greaterThan(1)));
+            assertThat(calendarEvents.get(0).getBuild(), is(run));
+            for (int i = 1; i < calendarEvents.size(); i++) {
+                assertThat(calendarEvents.get(i).getType(), is(CalendarEventType.FUTURE));
+            }
+        }
+    }
 
     public static class GetPastEventsTests {
         @Test
