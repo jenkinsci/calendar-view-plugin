@@ -26,10 +26,11 @@ package io.jenkins.plugins.view.calendar;
 import hudson.Util;
 import hudson.model.*;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
-public class CalendarEvent {
+public class CalendarEvent implements Comparable<CalendarEvent> {
     private final String id;
     private final TopLevelItem item;
     private final Run build;
@@ -73,7 +74,10 @@ public class CalendarEvent {
     }
 
     private static String initId(final String url) {
-        return url.replace("/", "-").toLowerCase(Locale.ENGLISH).replaceAll("-$", "");
+        return StringUtils.defaultString(url, "")
+          .replace("/", "-")
+          .toLowerCase(Locale.ENGLISH)
+          .replaceAll("-$", "");
     }
 
     private static Calendar initEnd(final Calendar start, final long duration) {
@@ -191,5 +195,14 @@ public class CalendarEvent {
             nextScheduledEvent = new CalendarEventService().getNextScheduledEvent(this);
         }
         return nextScheduledEvent;
+    }
+
+    @Override
+    public int compareTo(final CalendarEvent other) {
+        final int c = this.getStart().compareTo(other.getStart());
+        if (c == 0) {
+            return this.getEnd().compareTo(other.getEnd());
+        }
+        return c;
     }
 }
