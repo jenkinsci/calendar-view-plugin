@@ -5,8 +5,8 @@
   "main": "src/main/js/index.js",
   "scripts": {
     "test": "nyc mocha 'src/test/js/**/*.js'",
-    "coverage": "nyc mocha 'src/test/js/**/*.js' && nyc report --reporter=html",
-    "codecov": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "coverage": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js' && nyc report --reporter=html",
+    "codecov": "nyc --exclude 'src/test/js/**/*.js' report --reporter=text-lcov > coverage.lcov && codecov",
     "dev": "webpack --watch --mode development"
   },
   "author": "Sven Schoenung <sven.schoenung@gmail.com>",
