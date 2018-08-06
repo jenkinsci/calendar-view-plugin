@@ -1,5 +1,5 @@
 [![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins/calendar-view-plugin/master)](https://ci.jenkins.io/blue/organizations/jenkins/Plugins%2Fcalendar-view-plugin/branches)
-[![Coverage Status](https://coveralls.io/repos/github/jenkinsci/calendar-view-plugin/badge.svg?branch=master)](https://coveralls.io/github/jenkinsci/calendar-view-plugin?branch=master)
+[![codecov](https://codecov.io/gh/jenkinsci/calendar-view-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/jenkinsci/calendar-view-plugin)
 [![Dependency Status](https://david-dm.org/jenkinsci/calendar-view-plugin.svg)](https://david-dm.org/jenkinsci/calendar-view-plugin)
 [![devDependency Status](https://david-dm.org/jenkinsci/calendar-view-plugin/dev-status.svg)](https://david-dm.org/jenkinsci/calendar-view-plugin?type=dev)
 [![Code Climate](https://codeclimate.com/github/jenkinsci/calendar-view-plugin/badges/gpa.svg)](https://codeclimate.com/github/jenkinsci/calendar-view-plugin)
