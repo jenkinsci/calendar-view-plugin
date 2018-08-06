@@ -6,7 +6,5 @@ cache:
   directories:
     - $HOME/.m2
 after_script:
-  - ./npmw run coveralls
-  - ./mvnw test jacoco:report coveralls:report
-notifications:
-  webhooks: https://coveralls.io/webhook?repo_token=COVERALLS_REPO_TOKEN
+  - bash <(curl -s https://codecov.io/bash)
+  - ./npmw run codecov
