@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/main/js/index.js",
   "scripts": {
-    "test": "nyc mocha 'src/test/js/**/*.js'",
+    "test": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js'",
     "coverage": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js' && nyc report --reporter=html",
     "codecov": "nyc --exclude 'src/test/js/**/*.js' report --reporter=text-lcov > coverage.lcov && codecov",
     "dev": "webpack --watch --mode development"
