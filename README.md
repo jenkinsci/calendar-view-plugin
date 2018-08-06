@@ -91,6 +91,11 @@ $ ./npmw run dev
 
 ## Changelog
 
+### v0.2.1 (released 2018-08-06)
+* Fix: [[JENKINS-52797]](https://issues.jenkins-ci.org/browse/JENKINS-52797) ClassCastException for Matrix Projects
+* Fix: calcution of next start date was wrong when there were multiple cron expressions
+* Fix: builds overlapping the edge of the date range were not being shown
+
 ### v0.2.0 (released 2018-07-25)
 * Feature: show popup with more information when hovering over a past or future build
 
