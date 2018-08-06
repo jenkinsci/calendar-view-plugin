@@ -6,6 +6,8 @@ import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -28,6 +30,19 @@ import static org.mockito.Mockito.withSettings;
 
 @RunWith(Enclosed.class)
 public class CalendarEventServiceTest {
+
+    private static TimeZone defaultTimeZone;
+
+    @BeforeClass
+    public static void beforeClass() {
+        CalendarEventServiceTest.defaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        TimeZone.setDefault(CalendarEventServiceTest.defaultTimeZone);
+    }
 
     public static class GetCalendarEventsTests {
         @Test
