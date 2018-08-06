@@ -119,7 +119,7 @@ public class CalendarEvent {
     }
 
     public String getTypeAsClassName() {
-        return "event-" + type.name().toLowerCase(Locale.ENGLISH);
+        return "event-" + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-");
     }
 
     public String getUrl() {
@@ -152,16 +152,7 @@ public class CalendarEvent {
         if (isFuture()) {
             return ((AbstractProject) this.item).getBuildHealth().getIconClassName();
         }
-        switch (getType()) {
-            case SUCCESS:
-                return "icon-blue";
-            case UNSTABLE:
-                return "icon-yellow";
-            case FAILURE:
-                return "icon-red";
-            default:
-                return "icon-grey";
-        }
+        return build.getIconColor().getIconClassName();
     }
 
     public Run getBuild() {
@@ -205,6 +196,6 @@ public class CalendarEvent {
 
     @Override
     public String toString() {
-        return getStartAsDateTime() + "-" + getEndAsDateTime() + ": " + getTitle();
+        return getStartAsDateTime() + " - " + getEndAsDateTime() + ": " + getTitle();
     }
 }
