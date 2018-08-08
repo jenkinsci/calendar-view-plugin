@@ -63,7 +63,7 @@ public class CronJobService {
         return getCronTabs(trigger, null);
     }
 
-    public List<CronTab> getCronTabs(final Trigger trigger, Hash hash) {
+    public List<CronTab> getCronTabs(final Trigger trigger, final Hash hash) {
         final List<CronTab> cronTabs = new ArrayList<>();
         int lineNumber = 0;
         String timezone = null;
