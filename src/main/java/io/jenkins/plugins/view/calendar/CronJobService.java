@@ -28,6 +28,7 @@ import hudson.model.AbstractProject;
 import hudson.model.TopLevelItem;
 import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
+import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +60,10 @@ public class CronJobService {
     }
 
     public List<CronTab> getCronTabs(final Trigger trigger) {
+        return getCronTabs(trigger, null);
+    }
+
+    public List<CronTab> getCronTabs(final Trigger trigger, Hash hash) {
         final List<CronTab> cronTabs = new ArrayList<>();
         int lineNumber = 0;
         String timezone = null;
@@ -78,7 +83,7 @@ public class CronJobService {
 
             try {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                final CronTab cronTab = new CronTab(line, lineNumber, null, timezone);
+                final CronTab cronTab = new CronTab(line, lineNumber, hash, timezone);
                 cronTabs.add(cronTab);
             } catch (ANTLRException e) {
                 final String msg = "Unable to parse cron trigger spec: '" + line + "'";
