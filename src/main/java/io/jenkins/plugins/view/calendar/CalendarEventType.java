@@ -29,22 +29,19 @@ public enum CalendarEventType {
     FAILURE, SUCCESS, UNSTABLE, ABORTED, NOT_BUILT, FUTURE;
 
     public static CalendarEventType fromResult(final Result result) {
-        if (result == null) {
-            return null;
-        }
-        if (result.equals(Result.SUCCESS)) {
+        if (Result.SUCCESS.equals(result)) {
             return SUCCESS;
         }
-        if (result.equals(Result.FAILURE)) {
+        if (Result.FAILURE.equals(result)) {
             return FAILURE;
         }
-        if (result.equals(Result.UNSTABLE)) {
+        if (Result.UNSTABLE.equals(result)) {
             return UNSTABLE;
         }
-        if (result.equals(Result.NOT_BUILT)) {
+        if (Result.NOT_BUILT.equals(result)) {
             return NOT_BUILT;
         }
-        if (result.equals(Result.ABORTED)) {
+        if (Result.ABORTED.equals(result)) {
             return ABORTED;
         }
         return null;
