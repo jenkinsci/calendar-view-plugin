@@ -44,4 +44,19 @@ public final class DateUtil {
         return new SimpleDateFormat(FORMAT_DATE).parse(dateString);
     }
 
+    public static Calendar roundToNextMinute(final Calendar cal) {
+        final Calendar clone = (Calendar)cal.clone();
+        clone.set(Calendar.SECOND, 0);
+        clone.set(Calendar.MILLISECOND, 0);
+        clone.add(Calendar.MINUTE, 1);
+        return clone;
+    }
+
+    public static Calendar roundToPreviousMinute(final Calendar cal) {
+        final Calendar clone = (Calendar)cal.clone();
+        clone.set(Calendar.SECOND, 0);
+        clone.set(Calendar.MILLISECOND, 0);
+        clone.add(Calendar.MINUTE, -1);
+        return clone;
+    }
 }

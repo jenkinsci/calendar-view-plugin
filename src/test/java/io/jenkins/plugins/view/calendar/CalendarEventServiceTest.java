@@ -6,18 +6,21 @@ import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.test.CalendarUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.Issue;
+import sun.util.calendar.CalendarUtils;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.str;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -63,7 +66,7 @@ public class CalendarEventServiceTest {
             when(item.getTriggers()).thenReturn(triggers);
 
             List<TopLevelItem> items = new ArrayList<>();
-            items.add((TopLevelItem)item);
+            items.add((TopLevelItem) item);
 
             List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
             assertThat(calendarEvents, hasSize(greaterThan(0)));
@@ -93,7 +96,7 @@ public class CalendarEventServiceTest {
             when(item.getBuilds()).thenReturn(runs);
 
             List<TopLevelItem> items = new ArrayList<>();
-            items.add((TopLevelItem)item);
+            items.add((TopLevelItem) item);
 
             List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
             assertThat(calendarEvents, hasSize(1));
@@ -110,6 +113,7 @@ public class CalendarEventServiceTest {
 
             Calendar runDate = Calendar.getInstance();
             runDate.add(Calendar.DATE, -7);
+
             Run run = mock(Run.class);
             when(run.getStartTimeInMillis()).thenReturn(runDate.getTimeInMillis());
             when(run.getDuration()).thenReturn(10 * 60 * 1000L);
@@ -128,7 +132,7 @@ public class CalendarEventServiceTest {
             when(item.getBuilds()).thenReturn(runs);
 
             List<TopLevelItem> items = new ArrayList<>();
-            items.add((TopLevelItem)item);
+            items.add((TopLevelItem) item);
 
             List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
             Collections.sort(calendarEvents, new CalendarEventComparator());
@@ -137,6 +141,191 @@ public class CalendarEventServiceTest {
             for (int i = 1; i < calendarEvents.size(); i++) {
                 assertThat(calendarEvents.get(i).getType(), is(CalendarEventType.FUTURE));
             }
+        }
+
+        @Test
+        public void testOneMinuteBeforeScheduledStart() throws ParseException {
+            Calendar now = cal("2018-01-04 23:43:00 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-07 00:00:00 CET");
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(new ArrayList().iterator());
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("44 23 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem) item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+            assertThat(calendarEvents, hasSize(3));
+            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).isFuture(), is(true));
+            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).isFuture(), is(true));
+            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).isFuture(), is(true));
+        }
+
+        @Test
+        public void testThirtySecondsBeforeScheduledStart() throws ParseException {
+            Calendar now = cal("2018-01-04 23:43:30 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-07 00:00:00 CET");
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(new ArrayList().iterator());
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("44 23 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem) item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+            assertThat(calendarEvents, hasSize(3));
+            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).isFuture(), is(true));
+            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).isFuture(), is(true));
+            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).isFuture(), is(true));
+        }
+
+        @Test
+        public void testExactSecondOfScheduledStart() throws ParseException {
+            Calendar runDate = cal("2018-01-04 23:44:00 CET");
+            Calendar now = cal("2018-01-04 23:44:00 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-07 00:00:00 CET");
+
+            Run run = mock(Run.class);
+            when(run.getStartTimeInMillis()).thenReturn(runDate.getTimeInMillis());
+            when(run.getDuration()).thenReturn(10 * 60 * 1000L);
+            when(run.isBuilding()).thenReturn(true);
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run).iterator());
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("44 23 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem) item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+
+            assertThat(calendarEvents, hasSize(3));
+            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).isFuture(), is(false));
+            assertThat(calendarEvents.get(0).getBuild().isBuilding(), is(true));
+            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).isFuture(), is(true));
+            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).isFuture(), is(true));
+        }
+
+
+        @Test
+        public void testThirtySecondsAfterScheduledStart() throws ParseException {
+            Calendar runDate = cal("2018-01-04 23:44:00 CET");
+            Calendar now = cal("2018-01-04 23:44:30 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-07 00:00:00 CET");
+
+            Run run = mock(Run.class);
+            when(run.getStartTimeInMillis()).thenReturn(runDate.getTimeInMillis());
+            when(run.getDuration()).thenReturn(10 * 60 * 1000L);
+            when(run.isBuilding()).thenReturn(true);
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run).iterator());
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("44 23 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem) item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+
+            assertThat(calendarEvents, hasSize(3));
+            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).isFuture(), is(false));
+            assertThat(calendarEvents.get(0).getBuild().isBuilding(), is(true));
+            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).isFuture(), is(true));
+            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).isFuture(), is(true));
+        }
+
+        @Test
+        public void testOneMinuteAfterScheduledStart() throws ParseException {
+            Calendar runDate = cal("2018-01-04 23:44:00 CET");
+            Calendar now = cal("2018-01-04 23:45:00 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-07 00:00:00 CET");
+
+            Run run = mock(Run.class);
+            when(run.getStartTimeInMillis()).thenReturn(runDate.getTimeInMillis());
+            when(run.getDuration()).thenReturn(10 * 60 * 1000L);
+            when(run.isBuilding()).thenReturn(true);
+
+            RunList runs = mock(RunList.class);
+            when(runs.iterator()).thenReturn(Arrays.asList(run).iterator());
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("44 23 * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(triggers);
+            when(item.getBuilds()).thenReturn(runs);
+
+            List<TopLevelItem> items = new ArrayList<>();
+            items.add((TopLevelItem) item);
+
+            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+
+            assertThat(calendarEvents, hasSize(3));
+            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).isFuture(), is(false));
+            assertThat(calendarEvents.get(0).getBuild().isBuilding(), is(true));
+            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).isFuture(), is(true));
+            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).isFuture(), is(true));
         }
     }
 

@@ -25,19 +25,29 @@ package io.jenkins.plugins.view.calendar;
 
 import hudson.model.*;
 import hudson.scheduler.CronTab;
-import hudson.triggers.Trigger;
 import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.util.DateUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class CalendarEventService {
 
     private CronJobService cronJobService;
 
+    private Calendar now;
+    private transient Calendar roundedNow;
+
     public CalendarEventService() {
-        this.cronJobService = new CronJobService();
+        this(Calendar.getInstance());
+    }
+
+    @SuppressWarnings("PMD.ConstructorCallsOverridableMethod")
+    public CalendarEventService(final Calendar now) {
+        this.cronJobService = new CronJobService(now);
+        this.setNow(now);
     }
 
     public CronJobService getCronJobService() {
@@ -48,45 +58,57 @@ public class CalendarEventService {
         this.cronJobService = cronJobService;
     }
 
-    public List<CalendarEvent> getCalendarEvents(final List<TopLevelItem> items, final Calendar start, final Calendar end) {
-        final Calendar now = Calendar.getInstance();
+    public Calendar getNow() {
+        return now;
+    }
 
-        final List<CalendarEvent> events = new ArrayList<CalendarEvent>();
-        if (now.compareTo(start) < 0) {
+    public void setNow(final Calendar now) {
+        this.now = now;
+        this.roundedNow = DateUtil.roundToNextMinute(now);
+    }
+
+
+    public List<CalendarEvent> getCalendarEvents(final List<TopLevelItem> items, final Calendar start, final Calendar end) {
+        final List<CalendarEvent> events = new ArrayList<>();
+
+        if (roundedNow.compareTo(start) < 0) {
             events.addAll(getFutureEvents(items, start, end));
-        } else if (now.compareTo(end) > 0) {
+        } else if (roundedNow.compareTo(end) > 0) {
             events.addAll(getPastEvents(items, start, end));
         } else {
-            events.addAll(getPastEvents(items, start, now));
+            events.addAll(getPastEvents(items, start, roundedNow));
             events.addAll(getFutureEvents(items, now, end));
         }
+        Collections.sort(events, new CalendarEventComparator());
+
         return events;
     }
 
     public List<CalendarEvent> getFutureEvents(final List<TopLevelItem> items, final Calendar start, final Calendar end) {
         final List<CalendarEvent> events = new ArrayList<CalendarEvent>();
 
-        final FutureEventCollector ceilEventCollector = new CeilEventCollector(events, start, end) ;
-        final FutureEventCollector floorEventCollector = new FloorEventCollector(events, start, end) ;
+        final Calendar ceilStart = DateUtil.roundToNextMinute(start);
+        final Calendar floorStart = DateUtil.roundToPreviousMinute(start);
+        floorStart.add(Calendar.SECOND, -1);
+
+        final FutureEventCollector ceilEventCollector = new CeilEventCollector(events, ceilStart, end) ;
+        final FutureEventCollector floorEventCollector = new FloorEventCollector(events, floorStart, end) ;
 
         for (final TopLevelItem item: items) {
             if (!(item instanceof AbstractProject)) {
                 continue;
             }
             final long estimatedDuration = ((AbstractProject)item).getEstimatedDuration();
-            final List<Trigger> triggers = cronJobService.getCronTriggers(item);
-            for (final Trigger trigger: triggers) {
-                final List<CronTab> cronTabs = cronJobService.getCronTabs(trigger);
-                for (final CronTab cronTab: cronTabs) {
-                    ceilEventCollector.collectEvents(item, cronTab, estimatedDuration);
-                    floorEventCollector.collectEvents(item, cronTab, estimatedDuration);
-                }
+            final List<CronTab> cronTabs = cronJobService.getCronTabs(item);
+            for (final CronTab cronTab: cronTabs) {
+                ceilEventCollector.collectEvents(item, cronTab, estimatedDuration);
+                floorEventCollector.collectEvents(item, cronTab, estimatedDuration);
             }
         }
         return events;
     }
 
-    private static abstract class FutureEventCollector {
+    private abstract class FutureEventCollector {
         private transient final List<CalendarEvent> events;
         private transient final Calendar start;
         private transient final Calendar end;
@@ -119,7 +141,7 @@ public class CalendarEventService {
         protected abstract int nextStartOffset();
     }
 
-    private static class CeilEventCollector extends FutureEventCollector {
+    private class CeilEventCollector extends FutureEventCollector {
         public CeilEventCollector(final List<CalendarEvent> events, final Calendar start, final Calendar end) {
             super(events, start, end);
         }
@@ -135,7 +157,7 @@ public class CalendarEventService {
         }
     }
 
-    private static class FloorEventCollector extends FutureEventCollector {
+    private class FloorEventCollector extends FutureEventCollector {
         public FloorEventCollector(final List<CalendarEvent> events, final Calendar start, final Calendar end) {
             super(events, start, end);
         }
