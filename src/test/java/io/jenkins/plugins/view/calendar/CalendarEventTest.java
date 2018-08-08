@@ -226,4 +226,20 @@ public class CalendarEventTest {
         assertThat(event8.isInRange(rangeStart, rangeEnd), is(not(true)));
     }
 
+    @Test
+    public void testEventIsAtLeastOneSecondLong() throws ParseException {
+        Calendar start = cal("2018-01-01 00:00:00 UTC");
+        Calendar end = cal("2018-01-01 00:00:01 UTC");
+        long duration =  0;
+
+        Run build = mock(Run.class);
+        when(build.getStartTimeInMillis()).thenReturn(start.getTimeInMillis());
+        when(build.getDuration()).thenReturn(duration);
+
+        AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+
+        CalendarEvent event = new CalendarEvent((TopLevelItem) project, build);
+        assertThat(event.getStartAsDateTime(), is("2018-01-01T01:00:00"));
+        assertThat(event.getEndAsDateTime(), is("2018-01-01T01:00:01"));
+    }
 }
