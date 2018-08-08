@@ -449,24 +449,20 @@ public class CalendarEventServiceTest {
             Run run1 = mock(Run.class);
             when(run1.getStartTimeInMillis()).thenReturn(cal("2017-12-01 06:00:00 UTC").getTimeInMillis());
             when(run1.getDuration()).thenReturn(10 * 60 * 1000L);
-            when(run1.getUrl()).thenReturn("run1/url");
 
             Run run2 = mock(Run.class);
             when(run2.getStartTimeInMillis()).thenReturn(cal("2018-01-01 06:00:00 UTC").getTimeInMillis());
             when(run2.getDuration()).thenReturn(10 * 60 * 1000L);
-            when(run2.getUrl()).thenReturn("run2/url");
 
             Run run3 = mock(Run.class);
             when(run3.getStartTimeInMillis()).thenReturn(cal("2018-01-05 06:00:00 UTC").getTimeInMillis());
             when(run3.getDuration()).thenReturn(10 * 60 * 1000L);
-            when(run3.getUrl()).thenReturn("run3/url");
 
             RunList runs = mock(RunList.class);
             when(runs.iterator()).thenReturn(Arrays.asList(run1, run2, run3).iterator());
 
             Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
             when(item.getBuilds()).thenReturn(runs);
-            when(item.getUrl()).thenReturn("item/url");
 
             List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList((TopLevelItem)item), start, end);
             assertThat(events, hasSize(1));
@@ -537,21 +533,17 @@ public class CalendarEventServiceTest {
         public void testFreeStyleProjectHasPastBuilds() throws IOException {
             Run build1 = mock(FreeStyleBuild.class);
             when(build1.getResult()).thenReturn(Result.FAILURE);
-            when(build1.getUrl()).thenReturn("build1/url");
 
             Run build2 = mock(FreeStyleBuild.class);
             when(build2.getResult()).thenReturn(Result.SUCCESS);
-            when(build2.getUrl()).thenReturn("build2/url");
             when(build2.getPreviousBuild()).thenReturn(build1);
 
             Run build3 = mock(FreeStyleBuild.class);
             when(build3.getResult()).thenReturn(Result.ABORTED);
-            when(build3.getUrl()).thenReturn("build3/url");
             when(build3.getPreviousBuild()).thenReturn(build2);
 
             final Run build4 = mock(FreeStyleBuild.class);
             when(build4.getResult()).thenReturn(Result.UNSTABLE);
-            when(build4.getUrl()).thenReturn("build4/url");
             when(build4.getPreviousBuild()).thenReturn(build3);
 
             FreeStyleProject project = new FreeStyleProject(mock(ItemGroup.class), "project") {
@@ -577,21 +569,17 @@ public class CalendarEventServiceTest {
         public void testMatrixProjectHasPastBuilds() throws IOException {
             Run build1 = mock(MatrixBuild.class);
             when(build1.getResult()).thenReturn(Result.FAILURE);
-            when(build1.getUrl()).thenReturn("build1/url");
 
             Run build2 = mock(MatrixBuild.class);
             when(build2.getResult()).thenReturn(Result.SUCCESS);
-            when(build2.getUrl()).thenReturn("build2/url");
             when(build2.getPreviousBuild()).thenReturn(build1);
 
             Run build3 = mock(MatrixBuild.class);
             when(build3.getResult()).thenReturn(Result.ABORTED);
-            when(build3.getUrl()).thenReturn("build3/url");
             when(build3.getPreviousBuild()).thenReturn(build2);
 
             final Run build4 = mock(MatrixBuild.class);
             when(build4.getResult()).thenReturn(Result.UNSTABLE);
-            when(build4.getUrl()).thenReturn("build4/url");
             when(build4.getPreviousBuild()).thenReturn(build3);
 
             MatrixProject project = new MatrixProject(mock(ItemGroup.class), "project") {
@@ -631,7 +619,6 @@ public class CalendarEventServiceTest {
         @Test
         public void testHasPreviousBuild() {
             Run previousBuild = mock(Run.class);
-            when(previousBuild.getUrl()).thenReturn("build/url");
 
             Run build = mock(Run.class);
             when(build.getPreviousBuild()).thenReturn(previousBuild);
@@ -663,7 +650,6 @@ public class CalendarEventServiceTest {
         @Test
         public void testHasPreviousBuild() {
             Run nextBuild = mock(Run.class);
-            when(nextBuild.getUrl()).thenReturn("build/url");
 
             Run build = mock(Run.class);
             when(build.getNextBuild()).thenReturn(nextBuild);
@@ -707,7 +693,6 @@ public class CalendarEventServiceTest {
 
             AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
             when(project.getTriggers()).thenReturn(triggers);
-            when(project.getUrl()).thenReturn("project/url");
 
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn((TopLevelItem)project);
