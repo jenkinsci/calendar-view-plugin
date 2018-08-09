@@ -230,12 +230,13 @@ public class CronJobServiceTest {
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
             when(item.getTriggers()).thenReturn(triggers);
+
             Calendar next = new CronJobService().getNextStart((TopLevelItem) item);
             assertThat(next, is(nullValue()));
         }
 
         @Test
-        public void testWithCronTabs1() throws ParseException {
+        public void testWithCronTabs() throws ParseException {
 
             Trigger trigger1 = mock(Trigger.class);
             Trigger trigger2 = mock(Trigger.class);
@@ -248,8 +249,30 @@ public class CronJobServiceTest {
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
             when(item.getTriggers()).thenReturn(triggers);
+
             Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 06:00:00 UTC"));
             assertThat(str(next), is("2018-01-01 07:05:00 CET"));
+        }
+
+        @Test
+        public void testHash() throws ParseException {
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("H * * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("HashThisName");
+            when(item.getTriggers()).thenReturn(triggers);
+
+            Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 00:00:00 CET"));
+            assertThat(str(next), is("2018-01-01 00:48:00 CET"));
+
+            when(item.getFullName()).thenReturn("HashThisDifferentName");
+
+            next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 00:00:00 CET"));
+            assertThat(str(next), is("2018-01-01 00:23:00 CET"));
         }
     }
 

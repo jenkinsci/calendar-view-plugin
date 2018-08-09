@@ -111,7 +111,7 @@ public class CronJobService {
     public List<CronTab> getCronTabs(final TopLevelItem item) {
         final List<CronTab> cronTabs = new ArrayList<CronTab>();
         for (final Trigger trigger: getCronTriggers(item)) {
-            cronTabs.addAll(getCronTabs(trigger));
+            cronTabs.addAll(getCronTabs(trigger, Hash.from(item.getFullName())));
         }
         return cronTabs;
     }
@@ -122,14 +122,11 @@ public class CronJobService {
 
     public Calendar getNextStart(final TopLevelItem item, final Calendar from) {
         Calendar next = null;
-        final List<Trigger> triggers = getCronTriggers(item);
-        for (final Trigger trigger: triggers) {
-            final List<CronTab> cronTabs = getCronTabs(trigger);
-            for (final CronTab cronTab: cronTabs) {
-                final Calendar ceil = cronTab.ceil((Calendar)from.clone());
-                if (next == null || ceil.before(next)) {
-                    next = ceil;
-                }
+        final List<CronTab> cronTabs = getCronTabs(item);
+        for (final CronTab cronTab: cronTabs) {
+            final Calendar ceil = cronTab.ceil((Calendar)from.clone());
+            if (next == null || ceil.before(next)) {
+                next = ceil;
             }
         }
         return next;

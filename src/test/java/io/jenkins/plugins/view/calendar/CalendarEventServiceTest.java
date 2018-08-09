@@ -84,6 +84,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
 
             List<TopLevelItem> items = new ArrayList<>();
@@ -149,6 +150,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
             when(item.getBuilds()).thenReturn(runs);
 
@@ -180,6 +182,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
             when(item.getBuilds()).thenReturn(runs);
 
@@ -212,6 +215,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
             when(item.getBuilds()).thenReturn(runs);
 
@@ -250,6 +254,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
             when(item.getBuilds()).thenReturn(runs);
 
@@ -291,6 +296,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
             when(item.getBuilds()).thenReturn(runs);
 
@@ -331,6 +337,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
             when(item.getBuilds()).thenReturn(runs);
 
@@ -394,6 +401,7 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger) ;
 
             AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(project.getFullName()).thenReturn("Project Name");
             when(project.getTriggers()).thenReturn(triggers);
 
             List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
