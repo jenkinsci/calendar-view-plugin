@@ -127,6 +127,8 @@ public class CronJobService {
             final Calendar ceil = cronTab.ceil((Calendar)from.clone());
             if (next == null || ceil.before(next)) {
                 next = ceil;
+                next.set(Calendar.SECOND, 0);
+                next.set(Calendar.MILLISECOND, 0);
             }
         }
         return next;

@@ -126,6 +126,8 @@ public class CalendarEventService {
                 if (next == null) {
                     break;
                 }
+                next.set(Calendar.SECOND, 0);
+                next.set(Calendar.MILLISECOND, 0);
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CalendarEvent event = new CalendarEvent(item, next, estimatedDuration);
                 if (!event.isInRange(start, end)) {

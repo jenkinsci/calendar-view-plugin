@@ -274,6 +274,23 @@ public class CronJobServiceTest {
             next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 00:00:00 CET"));
             assertThat(str(next), is("2018-01-01 00:23:00 CET"));
         }
+
+        @Test
+        public void testSecondsAreZero() throws ParseException {
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("15 * * * *");
+
+            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
+            when(item.getTriggers()).thenReturn(triggers);
+
+            Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 00:00:23 CET"));
+            assertThat(next.get(Calendar.SECOND), is(0));
+            assertThat(next.get(Calendar.MILLISECOND), is(0));
+        }
     }
 
 
