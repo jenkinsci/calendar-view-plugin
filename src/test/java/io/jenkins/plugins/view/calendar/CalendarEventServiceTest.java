@@ -420,11 +420,42 @@ public class CalendarEventServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger) ;
 
             AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(project.getFullName()).thenReturn("Project Name");
             when(project.getTriggers()).thenReturn(triggers);
             when(project.getEstimatedDuration()).thenReturn(6 * 60 * 60 * 1000L);
 
             List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
             assertThat(events, hasSize(5));
+            assertThat(str(events.get(0).getStart()), is("2018-01-01 21:00:00 CET"));
+            assertThat(str(events.get(1).getStart()), is("2018-01-02 21:00:00 CET"));
+            assertThat(str(events.get(2).getStart()), is("2018-01-03 21:00:00 CET"));
+            assertThat(str(events.get(3).getStart()), is("2018-01-04 21:00:00 CET"));
+            assertThat(str(events.get(4).getStart()), is("2017-12-31 21:00:00 CET"));
+        }
+
+        @Test
+        public void testHash() throws ParseException {
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-05 00:00:00 CET");
+
+            Trigger trigger = mock(Trigger.class);
+            when(trigger.getSpec()).thenReturn("H 21 * * *");
+
+            Map<TriggerDescriptor, Trigger> triggers = new HashMap<TriggerDescriptor, Trigger>();
+            triggers.put(mock(TriggerDescriptor.class), trigger) ;
+
+            AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(project.getFullName()).thenReturn("HashThisName");
+            when(project.getTriggers()).thenReturn(triggers);
+            when(project.getEstimatedDuration()).thenReturn(6 * 60 * 60 * 1000L);
+
+            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            assertThat(events, hasSize(5));
+            assertThat(str(events.get(0).getStart()), is("2018-01-01 21:48:00 CET"));
+            assertThat(str(events.get(1).getStart()), is("2018-01-02 21:48:00 CET"));
+            assertThat(str(events.get(2).getStart()), is("2018-01-03 21:48:00 CET"));
+            assertThat(str(events.get(3).getStart()), is("2018-01-04 21:48:00 CET"));
+            assertThat(str(events.get(4).getStart()), is("2017-12-31 21:48:00 CET"));
         }
     }
 
