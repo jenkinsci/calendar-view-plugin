@@ -131,6 +131,7 @@ public class CalendarEventTest {
         triggers.put(mock(TriggerDescriptor.class), trigger);
 
         AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+        when(project.getFullName()).thenReturn("Project Name");
         when(project.getFullDisplayName()).thenReturn("Example Project");
         when(project.getUrl()).thenReturn("example/item/url/");
         when(project.getTriggers()).thenReturn(triggers);

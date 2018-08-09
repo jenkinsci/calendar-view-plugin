@@ -229,6 +229,7 @@ public class CronJobServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger2);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
 
             Calendar next = new CronJobService().getNextStart((TopLevelItem) item);
@@ -248,6 +249,7 @@ public class CronJobServiceTest {
             triggers.put(mock(TriggerDescriptor.class), trigger2);
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
 
             Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 06:00:00 UTC"));
