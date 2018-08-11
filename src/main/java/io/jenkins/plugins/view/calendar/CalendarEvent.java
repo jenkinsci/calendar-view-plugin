@@ -25,6 +25,8 @@ package io.jenkins.plugins.view.calendar;
 
 import hudson.Util;
 import hudson.model.*;
+import io.jenkins.plugins.view.calendar.service.CalendarEventService;
+import io.jenkins.plugins.view.calendar.service.CronJobService;
 import io.jenkins.plugins.view.calendar.time.Now;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 import org.apache.commons.lang.StringUtils;

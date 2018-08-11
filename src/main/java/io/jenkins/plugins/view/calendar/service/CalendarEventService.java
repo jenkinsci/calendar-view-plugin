@@ -21,11 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.plugins.view.calendar;
+package io.jenkins.plugins.view.calendar.service;
 
 import hudson.model.*;
 import hudson.scheduler.CronTab;
 import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.CalendarEvent;
+import io.jenkins.plugins.view.calendar.CalendarEventComparator;
 import io.jenkins.plugins.view.calendar.time.Now;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 

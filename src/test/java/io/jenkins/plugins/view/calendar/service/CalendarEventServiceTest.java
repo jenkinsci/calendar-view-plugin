@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.plugins.view.calendar;
+package io.jenkins.plugins.view.calendar.service;
 
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
@@ -29,7 +29,11 @@ import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.CalendarEvent;
+import io.jenkins.plugins.view.calendar.CalendarEventComparator;
+import io.jenkins.plugins.view.calendar.CalendarEventType;
 import io.jenkins.plugins.view.calendar.time.Now;
+import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,7 +76,7 @@ public class CalendarEventServiceTest {
     
     private static CalendarEventService getCalendarEventService() {
         final Now now = new Now();
-        return new CalendarEventService(now, new CronJobService(now)); 
+        return new CalendarEventService(now, new CronJobService(now));
     }
 
     private static CalendarEventService getCalendarEventService(Calendar calendar) {
@@ -105,7 +109,7 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> calendarEvents = getCalendarEventService().getCalendarEvents(items, start, end);
             assertThat(calendarEvents, hasSize(greaterThan(0)));
             for (CalendarEvent calendarEvent : calendarEvents) {
-                assertThat(calendarEvent.getType(), is(CalendarEventType.FUTURE));
+                assertThat(calendarEvent.getType(), Is.is(CalendarEventType.FUTURE));
             }
         }
 
