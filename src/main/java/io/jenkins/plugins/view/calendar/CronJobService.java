@@ -106,14 +106,10 @@ public class CronJobService {
     }
 
     public Calendar getNextStart(final TopLevelItem item) {
-        return getNextStart(item, now.getNextMinute());
-    }
-
-    public Calendar getNextStart(final TopLevelItem item, final Calendar from) {
         Calendar next = null;
         final List<CronTab> cronTabs = getCronTabs(item);
         for (final CronTab cronTab: cronTabs) {
-            final Calendar ceil = cronTab.ceil((Calendar)from.clone());
+            final Calendar ceil = cronTab.ceil(now.getNextMinute());
             if (next == null || ceil.before(next)) {
                 next = ceil;
                 next.set(Calendar.SECOND, 0);

@@ -29,6 +29,7 @@ import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import io.jenkins.plugins.view.calendar.time.Now;
 import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -252,7 +253,7 @@ public class CronJobServiceTest {
             when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
 
-            Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 06:00:00 UTC"));
+            Calendar next = new CronJobService(new Now(cal("2018-01-01 06:00:00 UTC"))).getNextStart((TopLevelItem) item);
             assertThat(str(next), is("2018-01-01 07:05:00 CET"));
         }
 
@@ -268,12 +269,12 @@ public class CronJobServiceTest {
             when(item.getFullName()).thenReturn("HashThisName");
             when(item.getTriggers()).thenReturn(triggers);
 
-            Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 00:00:00 CET"));
+            Calendar next = new CronJobService(new Now(cal("2018-01-01 00:00:00 CET"))).getNextStart((TopLevelItem) item);
             assertThat(str(next), is("2018-01-01 00:48:00 CET"));
 
             when(item.getFullName()).thenReturn("HashThisDifferentName");
 
-            next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 00:00:00 CET"));
+            next = new CronJobService(new Now(cal("2018-01-01 00:00:00 CET"))).getNextStart((TopLevelItem) item);
             assertThat(str(next), is("2018-01-01 00:23:00 CET"));
         }
 
@@ -289,7 +290,7 @@ public class CronJobServiceTest {
             when(item.getFullName()).thenReturn("Project Name");
             when(item.getTriggers()).thenReturn(triggers);
 
-            Calendar next = new CronJobService().getNextStart((TopLevelItem) item, cal("2018-01-01 00:00:23 CET"));
+            Calendar next = new CronJobService(new Now(cal("2018-01-01 00:00:23 CET"))).getNextStart((TopLevelItem) item);
             assertThat(next.get(Calendar.SECOND), is(0));
             assertThat(next.get(Calendar.MILLISECOND), is(0));
         }
