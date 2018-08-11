@@ -25,6 +25,7 @@ package io.jenkins.plugins.view.calendar;
 
 import hudson.Util;
 import hudson.model.*;
+import io.jenkins.plugins.view.calendar.time.Now;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -161,7 +162,7 @@ public class CalendarEvent {
 
     public List<CalendarEvent> getLastEvents() {
         if (this.lastEvents == null) {
-            this.lastEvents = new CalendarEventService().getLastEvents(this, 5);
+            this.lastEvents = getCalendarEventService().getLastEvents(this, 5);
         }
         return this.lastEvents;
     }
@@ -169,21 +170,21 @@ public class CalendarEvent {
 
     public CalendarEvent getPreviousEvent() {
         if (previousEvent == null && build != null) {
-            previousEvent = new CalendarEventService().getPreviousEvent(this);
+            previousEvent = getCalendarEventService().getPreviousEvent(this);
         }
         return previousEvent;
     }
 
     public CalendarEvent getNextEvent() {
         if (nextEvent == null && build != null) {
-            nextEvent = new CalendarEventService().getNextEvent(this);
+            nextEvent = getCalendarEventService().getNextEvent(this);
         }
         return nextEvent;
     }
 
     public CalendarEvent getNextScheduledEvent() {
         if (nextScheduledEvent == null && build != null) {
-            nextScheduledEvent = new CalendarEventService().getNextScheduledEvent(this);
+            nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(this);
         }
         return nextScheduledEvent;
     }
@@ -197,5 +198,10 @@ public class CalendarEvent {
     @Override
     public String toString() {
         return getStartAsDateTime() + " - " + getEndAsDateTime() + ": " + getTitle();
+    }
+
+    private CalendarEventService getCalendarEventService() {
+        final Now now = new Now();
+        return new CalendarEventService(now, new CronJobService(now));
     }
 }

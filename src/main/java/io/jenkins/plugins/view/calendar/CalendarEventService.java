@@ -26,6 +26,7 @@ package io.jenkins.plugins.view.calendar;
 import hudson.model.*;
 import hudson.scheduler.CronTab;
 import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.time.Now;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 
 import java.util.ArrayList;
@@ -35,49 +36,24 @@ import java.util.List;
 
 public class CalendarEventService {
 
-    private CronJobService cronJobService;
+    private final transient CronJobService cronJobService;
+    private final transient Now now;
 
-    private Calendar now;
-    private transient Calendar roundedNow;
-
-    public CalendarEventService() {
-        this(Calendar.getInstance());
-    }
-
-    @SuppressWarnings("PMD.ConstructorCallsOverridableMethod")
-    public CalendarEventService(final Calendar now) {
-        this.cronJobService = new CronJobService(now);
-        this.setNow(now);
-    }
-
-    public CronJobService getCronJobService() {
-        return cronJobService;
-    }
-
-    public void setCronJobService(final CronJobService cronJobService) {
+    public CalendarEventService(final Now now, final CronJobService cronJobService) {
+        this.now = now;
         this.cronJobService = cronJobService;
     }
-
-    public Calendar getNow() {
-        return now;
-    }
-
-    public void setNow(final Calendar now) {
-        this.now = now;
-        this.roundedNow = DateUtil.roundToNextMinute(now);
-    }
-
 
     public List<CalendarEvent> getCalendarEvents(final List<TopLevelItem> items, final Calendar start, final Calendar end) {
         final List<CalendarEvent> events = new ArrayList<>();
 
-        if (roundedNow.compareTo(start) < 0) {
+        if (now.getNextMinute().compareTo(start) < 0) {
             events.addAll(getFutureEvents(items, start, end));
-        } else if (roundedNow.compareTo(end) > 0) {
+        } else if (now.getNextMinute().compareTo(end) > 0) {
             events.addAll(getPastEvents(items, start, end));
         } else {
-            events.addAll(getPastEvents(items, start, roundedNow));
-            events.addAll(getFutureEvents(items, now, end));
+            events.addAll(getPastEvents(items, start, now.getNextMinute()));
+            events.addAll(getFutureEvents(items, now.getMinute(), end));
         }
         Collections.sort(events, new CalendarEventComparator());
 

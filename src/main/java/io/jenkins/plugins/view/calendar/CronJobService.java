@@ -30,7 +30,7 @@ import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
-import io.jenkins.plugins.view.calendar.util.DateUtil;
+import io.jenkins.plugins.view.calendar.time.Now;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -38,25 +38,14 @@ import java.util.*;
 
 public class CronJobService {
 
-    private Calendar now;
-    private transient Calendar roundedNow;
+    private final transient Now now;
 
     public CronJobService() {
-        this(Calendar.getInstance());
+        this(new Now());
     }
 
-    @SuppressWarnings("PMD.ConstructorCallsOverridableMethod")
-    public CronJobService(final Calendar now) {
-        this.setNow(now);
-    }
-
-    public Calendar getNow() {
-        return now;
-    }
-
-    public void setNow(final Calendar now) {
+    public CronJobService(final Now now) {
         this.now = now;
-        this.roundedNow = DateUtil.roundToNextMinute(now);
     }
 
     public List<CronTab> getCronTabs(final Trigger trigger) {
@@ -117,7 +106,7 @@ public class CronJobService {
     }
 
     public Calendar getNextStart(final TopLevelItem item) {
-        return getNextStart(item, roundedNow);
+        return getNextStart(item, now.getNextMinute());
     }
 
     public Calendar getNextStart(final TopLevelItem item, final Calendar from) {

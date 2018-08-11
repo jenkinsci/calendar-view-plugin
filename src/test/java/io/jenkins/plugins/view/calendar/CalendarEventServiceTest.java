@@ -29,6 +29,7 @@ import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.time.Now;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.withSettings;
 public class CalendarEventServiceTest {
 
     private static TimeZone defaultTimeZone;
+    private CalendarEventService calendarEventService;
 
     @BeforeClass
     public static void beforeClass() {
@@ -66,6 +68,16 @@ public class CalendarEventServiceTest {
     @AfterClass
     public static void afterClass() {
         TimeZone.setDefault(CalendarEventServiceTest.defaultTimeZone);
+    }
+    
+    private static CalendarEventService getCalendarEventService() {
+        final Now now = new Now();
+        return new CalendarEventService(now, new CronJobService(now)); 
+    }
+
+    private static CalendarEventService getCalendarEventService(Calendar calendar) {
+        final Now now = new Now(calendar);
+        return new CalendarEventService(now, new CronJobService(now));
     }
 
     public static class GetCalendarEventsTests {
@@ -90,7 +102,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService().getCalendarEvents(items, start, end);
             assertThat(calendarEvents, hasSize(greaterThan(0)));
             for (CalendarEvent calendarEvent : calendarEvents) {
                 assertThat(calendarEvent.getType(), is(CalendarEventType.FUTURE));
@@ -120,7 +132,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService().getCalendarEvents(items, start, end);
             assertThat(calendarEvents, hasSize(1));
             assertThat(calendarEvents.get(0).getBuild(), is(run));
         }
@@ -157,7 +169,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService().getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService().getCalendarEvents(items, start, end);
             Collections.sort(calendarEvents, new CalendarEventComparator());
             assertThat(calendarEvents, hasSize(greaterThan(1)));
             assertThat(calendarEvents.get(0).getBuild(), is(run));
@@ -189,7 +201,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(items, start, end);
             assertThat(calendarEvents, hasSize(3));
             assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
             assertThat(calendarEvents.get(0).isFuture(), is(true));
@@ -222,7 +234,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(items, start, end);
             assertThat(calendarEvents, hasSize(3));
             assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
             assertThat(calendarEvents.get(0).isFuture(), is(true));
@@ -261,7 +273,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(items, start, end);
 
             assertThat(calendarEvents, hasSize(3));
             assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
@@ -303,7 +315,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(items, start, end);
 
             assertThat(calendarEvents, hasSize(3));
             assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
@@ -344,7 +356,7 @@ public class CalendarEventServiceTest {
             List<TopLevelItem> items = new ArrayList<>();
             items.add((TopLevelItem) item);
 
-            List<CalendarEvent> calendarEvents = new CalendarEventService(now).getCalendarEvents(items, start, end);
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(items, start, end);
 
             assertThat(calendarEvents, hasSize(3));
             assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
@@ -363,7 +375,7 @@ public class CalendarEventServiceTest {
             Calendar start = cal("2018-01-01 00:00:00 UTC");
             Calendar end = cal("2018-01-05 00:00:00 UTC");
 
-            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(new ArrayList<TopLevelItem>(), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getFutureEvents(new ArrayList<TopLevelItem>(), start, end);
             assertThat(events, hasSize(0));
         }
 
@@ -374,7 +386,7 @@ public class CalendarEventServiceTest {
 
             TopLevelItem item = mock(TopLevelItem.class);
 
-            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList(item), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getFutureEvents(Arrays.asList(item), start, end);
             assertThat(events, hasSize(0));
         }
 
@@ -385,7 +397,7 @@ public class CalendarEventServiceTest {
 
             AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
 
-            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
             assertThat(events, hasSize(0));
         }
 
@@ -404,7 +416,7 @@ public class CalendarEventServiceTest {
             when(project.getFullName()).thenReturn("Project Name");
             when(project.getTriggers()).thenReturn(triggers);
 
-            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
             assertThat(events, hasSize(0));
         }
 
@@ -424,7 +436,7 @@ public class CalendarEventServiceTest {
             when(project.getTriggers()).thenReturn(triggers);
             when(project.getEstimatedDuration()).thenReturn(6 * 60 * 60 * 1000L);
 
-            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
             assertThat(events, hasSize(5));
             assertThat(str(events.get(0).getStart()), is("2018-01-01 21:00:00 CET"));
             assertThat(str(events.get(1).getStart()), is("2018-01-02 21:00:00 CET"));
@@ -449,7 +461,7 @@ public class CalendarEventServiceTest {
             when(project.getTriggers()).thenReturn(triggers);
             when(project.getEstimatedDuration()).thenReturn(6 * 60 * 60 * 1000L);
 
-            List<CalendarEvent> events = new CalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getFutureEvents(Arrays.asList((TopLevelItem)project), start, end);
             assertThat(events, hasSize(5));
             assertThat(str(events.get(0).getStart()), is("2018-01-01 21:48:00 CET"));
             assertThat(str(events.get(1).getStart()), is("2018-01-02 21:48:00 CET"));
@@ -465,7 +477,7 @@ public class CalendarEventServiceTest {
             Calendar start = cal("2018-01-01 00:00:00 UTC");
             Calendar end = cal("2018-01-05 00:00:00 UTC");
 
-            List<CalendarEvent> events = new CalendarEventService().getPastEvents(new ArrayList<TopLevelItem>(), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getPastEvents(new ArrayList<TopLevelItem>(), start, end);
             assertThat(events, hasSize(0));
         }
 
@@ -476,7 +488,7 @@ public class CalendarEventServiceTest {
 
             TopLevelItem item = mock(TopLevelItem.class);
 
-            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList(item), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getPastEvents(Arrays.asList(item), start, end);
             assertThat(events, hasSize(0));
         }
 
@@ -503,7 +515,7 @@ public class CalendarEventServiceTest {
             Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
             when(item.getBuilds()).thenReturn(runs);
 
-            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList((TopLevelItem)item), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getPastEvents(Arrays.asList((TopLevelItem)item), start, end);
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getBuild(), is(run2));
         }
@@ -523,7 +535,7 @@ public class CalendarEventServiceTest {
             Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
             when(item.getBuilds()).thenReturn(runs);
 
-            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList((TopLevelItem) item), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getPastEvents(Arrays.asList((TopLevelItem) item), start, end);
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getBuild(), is(run1));
         }
@@ -543,7 +555,7 @@ public class CalendarEventServiceTest {
             Job item = mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class));
             when(item.getBuilds()).thenReturn(runs);
 
-            List<CalendarEvent> events = new CalendarEventService().getPastEvents(Arrays.asList((TopLevelItem) item), start, end);
+            List<CalendarEvent> events = getCalendarEventService().getPastEvents(Arrays.asList((TopLevelItem) item), start, end);
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getBuild(), is(run1));
         }
@@ -555,7 +567,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn(mock(TopLevelItem.class));
 
-            List<CalendarEvent> lastEvents = new CalendarEventService().getLastEvents(event, 2);
+            List<CalendarEvent> lastEvents = getCalendarEventService().getLastEvents(event, 2);
             assertThat(lastEvents, hasSize(0));
         }
 
@@ -564,7 +576,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn((TopLevelItem)mock(Job.class, withSettings().extraInterfaces(TopLevelItem.class)));
 
-            List<CalendarEvent> lastEvents = new CalendarEventService().getLastEvents(event, 2);
+            List<CalendarEvent> lastEvents = getCalendarEventService().getLastEvents(event, 2);
             assertThat(lastEvents, hasSize(0));
         }
 
@@ -595,7 +607,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn((TopLevelItem)project);
 
-            List<CalendarEvent> lastEvents = new CalendarEventService().getLastEvents(event, 5);
+            List<CalendarEvent> lastEvents = getCalendarEventService().getLastEvents(event, 5);
             assertThat(lastEvents, hasSize(4));
             assertThat(lastEvents.get(0).getBuild(), is(build4));
             assertThat(lastEvents.get(1).getBuild(), is(build3));
@@ -631,7 +643,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn((TopLevelItem)project);
 
-            List<CalendarEvent> lastEvents = new CalendarEventService().getLastEvents(event, 5);
+            List<CalendarEvent> lastEvents = getCalendarEventService().getLastEvents(event, 5);
             assertThat(lastEvents, hasSize(4));
             assertThat(lastEvents.get(0).getBuild(), is(build4));
             assertThat(lastEvents.get(1).getBuild(), is(build3));
@@ -644,7 +656,7 @@ public class CalendarEventServiceTest {
         @Test
         public void testHasNoBuild() {
             CalendarEvent event = mock(CalendarEvent.class);
-            assertThat(new CalendarEventService().getPreviousEvent(event), is(nullValue()));
+            assertThat(getCalendarEventService().getPreviousEvent(event), is(nullValue()));
         }
 
         @Test
@@ -652,7 +664,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getBuild()).thenReturn(mock(Run.class));
 
-            assertThat(new CalendarEventService().getPreviousEvent(event), is(nullValue()));
+            assertThat(getCalendarEventService().getPreviousEvent(event), is(nullValue()));
         }
 
         @Test
@@ -665,7 +677,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getBuild()).thenReturn(build);
 
-            CalendarEvent previousEvent = new CalendarEventService().getPreviousEvent(event);
+            CalendarEvent previousEvent = getCalendarEventService().getPreviousEvent(event);
             assertThat(previousEvent, is(notNullValue()));
             assertThat(previousEvent.getBuild(), is(previousBuild));
         }
@@ -675,7 +687,7 @@ public class CalendarEventServiceTest {
         @Test
         public void testHasNoBuild() {
             CalendarEvent event = mock(CalendarEvent.class);
-            assertThat(new CalendarEventService().getNextEvent(event), is(nullValue()));
+            assertThat(getCalendarEventService().getNextEvent(event), is(nullValue()));
         }
 
         @Test
@@ -683,7 +695,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getBuild()).thenReturn(mock(Run.class));
 
-            assertThat(new CalendarEventService().getNextEvent(event), is(nullValue()));
+            assertThat(getCalendarEventService().getNextEvent(event), is(nullValue()));
         }
 
         @Test
@@ -696,7 +708,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getBuild()).thenReturn(build);
 
-            CalendarEvent nextEvent = new CalendarEventService().getNextEvent(event);
+            CalendarEvent nextEvent = getCalendarEventService().getNextEvent(event);
             assertThat(nextEvent, is(notNullValue()));
             assertThat(nextEvent.getBuild(), is(nextBuild));
         }
@@ -708,7 +720,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn(mock(TopLevelItem.class));
 
-            CalendarEvent nextScheduledEvent = new CalendarEventService().getNextScheduledEvent(event);
+            CalendarEvent nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(event);
             assertThat(nextScheduledEvent, is(nullValue()));
         }
 
@@ -718,7 +730,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn((TopLevelItem)project);
 
-            CalendarEvent nextScheduledEvent = new CalendarEventService().getNextScheduledEvent(event);
+            CalendarEvent nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(event);
             assertThat(nextScheduledEvent, is(nullValue()));
         }
 
@@ -737,7 +749,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getItem()).thenReturn((TopLevelItem)project);
 
-            CalendarEvent nextScheduledEvent = new CalendarEventService().getNextScheduledEvent(event);
+            CalendarEvent nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(event);
             assertThat(nextScheduledEvent, is(notNullValue()));
         }
     }

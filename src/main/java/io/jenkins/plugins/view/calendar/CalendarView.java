@@ -27,6 +27,7 @@
 package io.jenkins.plugins.view.calendar;
 
 import hudson.model.*;
+import io.jenkins.plugins.view.calendar.time.Now;
 import io.jenkins.plugins.view.calendar.util.RequestUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -376,7 +377,8 @@ public class CalendarView extends ListView {
 
         final List<TopLevelItem> items = getItems();
 
-        return new CalendarEventService().getCalendarEvents(items, start, end);
+        final Now now = new Now();
+        return new CalendarEventService(now, new CronJobService(now)).getCalendarEvents(items, start, end);
     }
 
     public String jsonEscape(final String text) {
