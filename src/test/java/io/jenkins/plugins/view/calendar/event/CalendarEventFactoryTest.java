@@ -21,12 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.plugins.view.calendar;
+package io.jenkins.plugins.view.calendar.event;
 
 import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import io.jenkins.plugins.view.calendar.service.CalendarEventService;
+import io.jenkins.plugins.view.calendar.service.CronJobService;
+import io.jenkins.plugins.view.calendar.time.Now;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -45,24 +49,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-public class CalendarEventTest {
+public class CalendarEventFactoryTest {
 
     private static TimeZone defaultTimeZone;
     private static Locale defaultLocale;
+    private CalendarEventFactory calendarEventFactory;
 
     @BeforeClass
     public static void beforeClass() {
-        CalendarEventTest.defaultTimeZone = TimeZone.getDefault();
+        CalendarEventFactoryTest.defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
 
-        CalendarEventTest.defaultLocale = Locale.getDefault();
+        CalendarEventFactoryTest.defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMAN);
     }
 
     @AfterClass
     public static void afterClass() {
-        TimeZone.setDefault(CalendarEventTest.defaultTimeZone);
-        Locale.setDefault(CalendarEventTest.defaultLocale);
+        TimeZone.setDefault(CalendarEventFactoryTest.defaultTimeZone);
+        Locale.setDefault(CalendarEventFactoryTest.defaultLocale);
+    }
+
+    @Before
+    public void initCalendarEventFactory() {
+        final Now now = new Now();
+        final CronJobService cronJobService = new CronJobService(now);
+        final CalendarEventService calendarEventService = new CalendarEventService(now, cronJobService);
+        this.calendarEventFactory = new CalendarEventFactory(calendarEventService);
     }
 
     @Test
@@ -79,7 +92,8 @@ public class CalendarEventTest {
         when(project.getUrl()).thenReturn("example/item/url/");
         when(project.getBuildHealth()).thenReturn(health);
 
-        CalendarEvent event = new CalendarEvent((TopLevelItem) project, start, duration);
+
+        CalendarEvent event = calendarEventFactory.createFutureEvent((TopLevelItem) project, start, duration);
         assertThat(event.getItem(), is((TopLevelItem)project));
         assertThat(event.getTitle(), is("Example Project"));
         assertThat(event.getStart(), is(start));
@@ -136,7 +150,7 @@ public class CalendarEventTest {
         when(project.getUrl()).thenReturn("example/item/url/");
         when(project.getTriggers()).thenReturn(triggers);
 
-        CalendarEvent event = new CalendarEvent((TopLevelItem) project, build);
+        CalendarEvent event = calendarEventFactory.createPastEvent((TopLevelItem) project, build);
         assertThat(event.getItem(), is((TopLevelItem)project));
         assertThat(event.getTitle(), is("Example Build #1"));
         assertThat(event.getStart(), is(start));
@@ -173,56 +187,56 @@ public class CalendarEventTest {
         // Range:       |           |
         // Event:       #####
         Calendar start1 = cal("2018-01-01 00:00:00 UTC");
-        CalendarEvent event1 = new CalendarEvent(item, start1, duration);
+        CalendarEvent event1 = calendarEventFactory.createFutureEvent(item, start1, duration);
         assertThat(event1.getEnd(), is(cal("2018-01-01 06:00:00 UTC")));
         assertThat(event1.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:                   #####
         Calendar start2 = cal("2018-01-02 00:00:00 UTC");
-        CalendarEvent event2 = new CalendarEvent(item, start2, duration);
+        CalendarEvent event2 = calendarEventFactory.createFutureEvent(item, start2, duration);
         assertThat(event2.getEnd(), is(cal("2018-01-02 06:00:00 UTC")));
         assertThat(event2.isInRange(rangeStart, rangeEnd), is(not(true)));
 
         // Range:       |           |
         // Event:   #####
         Calendar start3 = cal("2017-12-31 18:00:00 UTC");
-        CalendarEvent event3 = new CalendarEvent(item, start3, duration);
+        CalendarEvent event3 = calendarEventFactory.createFutureEvent(item, start3, duration);
         assertThat(event3.getEnd(), is(cal("2018-01-01 00:00:00 UTC")));
         assertThat(event3.isInRange(rangeStart, rangeEnd), is(not(true)));
 
         // Range:       |           |
         // Event:               #####
         Calendar start4 = cal("2018-01-01 18:00:00 UTC");
-        CalendarEvent event4 = new CalendarEvent(item, start4, duration);
+        CalendarEvent event4 = calendarEventFactory.createFutureEvent(item, start4, duration);
         assertThat(event4.getEnd(), is(cal("2018-01-02 00:00:00 UTC")));
         assertThat(event4.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:     #####
         Calendar start5 = cal("2017-12-31 21:00:00 UTC");
-        CalendarEvent event5 = new CalendarEvent(item, start5, duration);
+        CalendarEvent event5 = calendarEventFactory.createFutureEvent(item, start5, duration);
         assertThat(event5.getEnd(), is(cal("2018-01-01 03:00:00 UTC")));
         assertThat(event5.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:                 #####
         Calendar start6 = cal("2018-01-01 21:00:00 UTC");
-        CalendarEvent event6 = new CalendarEvent(item, start6, duration);
+        CalendarEvent event6 = calendarEventFactory.createFutureEvent(item, start6, duration);
         assertThat(event6.getEnd(), is(cal("2018-01-02 03:00:00 UTC")));
         assertThat(event6.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:                     #####
         Calendar start7 = cal("2018-01-02 03:00:00 UTC");
-        CalendarEvent event7 = new CalendarEvent(item, start7, duration);
+        CalendarEvent event7 = calendarEventFactory.createFutureEvent(item, start7, duration);
         assertThat(event7.getEnd(), is(cal("2018-01-02 09:00:00 UTC")));
         assertThat(event7.isInRange(rangeStart, rangeEnd), is(not(true)));
 
         // Range:       |           |
         // Event: #####
         Calendar start8 = cal("2017-12-31 03:00:00 UTC");
-        CalendarEvent event8 = new CalendarEvent(item, start8, duration);
+        CalendarEvent event8 = calendarEventFactory.createFutureEvent(item, start8, duration);
         assertThat(event8.getEnd(), is(cal("2017-12-31 09:00:00 UTC")));
         assertThat(event8.isInRange(rangeStart, rangeEnd), is(not(true)));
     }
@@ -239,7 +253,7 @@ public class CalendarEventTest {
 
         AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
 
-        CalendarEvent event = new CalendarEvent((TopLevelItem) project, build);
+        CalendarEvent event = calendarEventFactory.createPastEvent((TopLevelItem) project, build);
         assertThat(event.getStartAsDateTime(), is("2018-01-01T01:00:00"));
         assertThat(event.getEndAsDateTime(), is("2018-01-01T01:00:01"));
     }

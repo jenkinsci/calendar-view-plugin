@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.plugins.view.calendar;
+package io.jenkins.plugins.view.calendar.event;
 
 import hudson.model.Result;
 

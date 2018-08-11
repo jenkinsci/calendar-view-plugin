@@ -9,7 +9,9 @@
         Calendar View rules.
     </description>
 
-    <rule ref="category/java/bestpractices.xml" />
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="AccessorMethodGeneration" />
+    </rule>
     <rule ref="category/java/codestyle.xml">
         <!-- Operator precedence is hard and parentheses enhance readability -->
         <exclude name="UselessParentheses" />

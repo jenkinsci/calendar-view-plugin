@@ -1,4 +1,4 @@
-package io.jenkins.plugins.view.calendar;
+package io.jenkins.plugins.view.calendar.event;
 
 import java.io.Serializable;
 import java.util.Comparator;

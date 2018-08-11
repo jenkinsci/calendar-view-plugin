@@ -26,8 +26,9 @@ package io.jenkins.plugins.view.calendar.service;
 import hudson.model.*;
 import hudson.scheduler.CronTab;
 import hudson.util.RunList;
-import io.jenkins.plugins.view.calendar.CalendarEvent;
-import io.jenkins.plugins.view.calendar.CalendarEventComparator;
+import io.jenkins.plugins.view.calendar.event.CalendarEvent;
+import io.jenkins.plugins.view.calendar.event.CalendarEventComparator;
+import io.jenkins.plugins.view.calendar.event.CalendarEventFactory;
 import io.jenkins.plugins.view.calendar.time.Now;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 
@@ -40,10 +41,12 @@ public class CalendarEventService {
 
     private final transient CronJobService cronJobService;
     private final transient Now now;
+    private final transient CalendarEventFactory calendarEventFactory;
 
     public CalendarEventService(final Now now, final CronJobService cronJobService) {
         this.now = now;
         this.cronJobService = cronJobService;
+        this.calendarEventFactory = new CalendarEventFactory(this);
     }
 
     public List<CalendarEvent> getCalendarEvents(final List<TopLevelItem> items, final Calendar start, final Calendar end) {
@@ -107,7 +110,7 @@ public class CalendarEventService {
                 next.set(Calendar.SECOND, 0);
                 next.set(Calendar.MILLISECOND, 0);
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                final CalendarEvent event = new CalendarEvent(item, next, estimatedDuration);
+                final CalendarEvent event = calendarEventFactory.createFutureEvent(item, next, estimatedDuration);
                 if (!event.isInRange(start, end)) {
                     break;
                 }
@@ -162,7 +165,7 @@ public class CalendarEventService {
             final RunList<Run> builds = ((Job) item).getBuilds();
             for (final Run build : builds) {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                final CalendarEvent event = new CalendarEvent(item, build);
+                final CalendarEvent event = calendarEventFactory.createPastEvent(item, build);
                 if (event.isInRange(start, end)) {
                     events.add(event);
                 }
@@ -178,7 +181,7 @@ public class CalendarEventService {
             final List<Run> lastBuilds = ((Job) item).getLastBuildsOverThreshold(numberOfEvents, Result.ABORTED);
             for (final Run lastBuild: lastBuilds) {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                final CalendarEvent lastEvent = new CalendarEvent(item, lastBuild);
+                final CalendarEvent lastEvent = calendarEventFactory.createPastEvent(item, lastBuild);
                 lastEvents.add(lastEvent);
             }
         }
@@ -189,7 +192,7 @@ public class CalendarEventService {
         if (event.getBuild() != null) {
             final Run previousBuild = event.getBuild().getPreviousBuild();
             if (previousBuild != null) {
-                return new CalendarEvent(event.getItem(), previousBuild);
+                return calendarEventFactory.createPastEvent(event.getItem(), previousBuild);
             }
         }
         return null;
@@ -199,7 +202,7 @@ public class CalendarEventService {
         if (event.getBuild() != null) {
             final Run nextBuild = event.getBuild().getNextBuild();
             if (nextBuild != null) {
-                return new CalendarEvent(event.getItem(), nextBuild);
+                return calendarEventFactory.createPastEvent(event.getItem(), nextBuild);
             }
         }
         return null;
@@ -213,7 +216,7 @@ public class CalendarEventService {
         final Calendar nextStart = cronJobService.getNextStart(item);
         if (nextStart != null) {
             final long estimatedDuration = ((AbstractProject)item).getEstimatedDuration();
-            return new CalendarEvent(item, nextStart, estimatedDuration);
+            return calendarEventFactory.createFutureEvent(item, nextStart, estimatedDuration);
         }
         return null;
     }
