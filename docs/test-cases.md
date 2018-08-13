@@ -1,4 +1,4 @@
-# Test cases for events
+# Test cases for build inclusion
 
 ### Points in time
 
@@ -8,18 +8,17 @@
 
 ### Event types:
 
-* `[#####]`: Finished event that should be included
-* `{#####}`: Finished event that should not be included
-* `[*****]`: Running event that should be included
-* `{*****}`: Running event that should not be included
-* `[=====]`: Scheduled event that should be included
-* `{=====}`: Scheduled event that should not be included
+* `[#####]`: Finished build that should be included
+* `{#####}`: Finished build that should not be included
+* `[*****]`: Running build that should be included
+* `{*****}`: Running build that should not be included
+* `[=====]`: Scheduled build that should be included
+* `{=====}`: Scheduled build that should not be included
 
 ## Case 1: now < start < end
 
-<pre>
---- time ------------------------------>
-
+```
+--- time --------------------------------------------------------->
            :       |                      |
 {#####} 1  :       |                      |
            :       |                      |
@@ -29,36 +28,40 @@
            :       |                      |
         [*************] 4                 |
            :       |                      |
-           : {===} 5                      |
+           {***} 5 |                      |
+           :       |                      |
+           [**********] 6                 |
            :       |                      |           
-           : {=====} 6                    |
+           : {===} 7                      |
+           :       |                      |           
+           : {=====} 8                    |
            :       |                      |
-           :  [===========] 7             |
+           :  [===========] 9             |
            :       |                      |
-           :       [===========] 8        |
+           :       [===========] 10       |
            :       |                      |
-           :       |       [=========] 9  |
+           :       |       [=========] 11 |
            :       |                      |
-           :       |                [===========] 10
+           :       |                [===========] 12
            :       |                      |
-           :       |                      {===========} 11
+           :       |                      {===========} 13
            :       |                      |
-           :       |                      |      {===========} 12
+           :       |                      |      {===========} 14
            :       |                      |
           now    start                   end
-</pre>
+```
 
 Includes:
-* `4`: Currently running events estimated to end in the selection range
+* `4`,`6`: Currently running builds estimated to end in the selection range
   * `running(start, end)`
-* `7`: Scheduled events estimated to end in the selection range
-  * `scheduled-backwards(start, end)`
-* `8`,`9`,`10`: Scheduled events that start within the selection range
+* `9`: Scheduled builds that start before the selection range but are estimated to end in the selection range
+  * `scheduled-backwards(now + 1min, start)`
+* `10`,`11`,`12`: Scheduled builds that start within the selection range
   * `scheduled-forwards(start, end)`
   
 
 Does not include:
-* `1`: All finished events (since they cannot have finished in the future and the selection range is entirely in the future)
-* `2`,`3`: Currently running events that start before the selection range but are not estimated to end within the selection range
-* `5`,`6`: Scheduled events that start before the selection range but are not estimated to end within the selection range
-* `11`,`12`: Scheduled events that start after the selection range
+* `1`: All finished builds (since they cannot have finished in the future and the selection range is entirely in the future)
+* `2`,`3`,`5`: Currently running builds that start before the selection range but are not estimated to end within the selection range
+* `5`,`7`,`8`: Scheduled builds that start before the selection range but are not estimated to end within the selection range
+* `13`,`14`: Scheduled builds that start after the selection range
