@@ -52,7 +52,7 @@
 ```
 
 Includes:
-* `4`,`6`: Currently running builds estimated to end in the selection range
+* `4`,`6`: Running builds estimated to end in the selection range
   * `running(start, end)`
 * `9`: Scheduled builds that start before the selection range but are estimated to end in the selection range
   * `scheduled-backwards(now + 1min, start)`
@@ -61,7 +61,7 @@ Includes:
 
 Does not include:
 * `1`: All finished builds (since they cannot have finished in the future and the selection range is entirely in the future)
-* `2`,`3`,`5`: Currently running builds that start before the selection range but are not estimated to end within the selection range
+* `2`,`3`,`5`: Running builds that start before the selection range but are not estimated to end within the selection range
 * `5`,`7`,`8`: Scheduled builds that start before the selection range but are not estimated to end within the selection range
 * `13`,`14`: Scheduled builds that start after the selection range
 
@@ -94,16 +94,56 @@ Does not include:
 ```
 
 Includes:
-* `4`,`5`: Currently running builds estimated to end in the selection range
+* `4`,`5`: Running builds estimated to end in the selection range
   * `running(start, end)`
-* `6`,`7`,`12`: Scheduled builds that start within the selection range
-  * `scheduled-forwards(start + 1min, end)`
+* `6`,`7`: Scheduled builds that start within the selection range
+  * `scheduled-forwards(now + 1min, end)`
   
 Does not include:
 * `1`: All finished builds (since they cannot have finished in the selection range)
-* `3`: Currently running builds that start before the selection range but are not estimated to end within the selection range
+* `3`: Running builds that start before the selection range but are not estimated to end within the selection range
 * `8`,`9`: Scheduled builds that start after the selection range
 
+## Case 3: start < now < end
 
+```
+--- time --------------------------------------------------------->
+           |              :                |
+{#####} 1  |              :                |
+           |              :                |
+     {#####} 2            :                |
+           |              :                |
+        [#####] 3         :                |
+           |              :                |
+           [#####] 4      :                |
+           |              :                |
+           |   [#####] 5  :                |
+           |              :                |
+           |          [*******] 6          |
+           |              :                |           
+           |              [*******] 7      |
+           |              :                |
+           |              :   [========] 8 |
+           |              :                |
+           |              :          [===========] 9
+           |              :                |
+           |              :                {===========} 10
+           |              :                |
+           |              :                |      {===========} 11
+           |              :                |
+         start           now              end
+```
+
+Includes:
+* `3`,`4`,`5`: Finished builds that start or end in the selection range
+  * `finished(start, now)`
+* `6`,`7`: Running builds started in the selection range
+  * `running(start, now)`
+* `8`,`9`: Scheduled builds that start within the selection range
+  * `scheduled-forwards(now + 1min, end)`
+  
+Does not include:
+* `1`,`2`: Finished builds that don't start or end in selection range
+* `10`,`11`: Scheduled builds that start after the selection range
 
 
