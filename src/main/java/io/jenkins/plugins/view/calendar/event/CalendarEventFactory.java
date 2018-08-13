@@ -209,7 +209,8 @@ public class CalendarEventFactory {
         public boolean isInRange(final Calendar start, final Calendar end) {
             return
               (getStart().compareTo(start) >= 0 && getStart().compareTo(end) < 0) ||
-              (getEnd().compareTo(start) > 0 && getEnd().compareTo(end) < 0);
+              (getEnd().compareTo(start) > 0 && getEnd().compareTo(end) < 0) ||
+              (getStart().compareTo(start) <= 0 && getEnd().compareTo(end) >= 0);
         }
 
         @Override

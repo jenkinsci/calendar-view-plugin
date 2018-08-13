@@ -181,64 +181,72 @@ public class CalendarEventFactoryTest {
         Calendar rangeStart = cal("2018-01-01 00:00:00 UTC");
         Calendar rangeEnd = cal("2018-01-02 00:00:00 UTC");
 
-        long duration = 6 * 60 * 60 * 1000;
+        long duration6hours = 6 * 60 * 60 * 1000;
+        long duration30hours = duration6hours * 5;
         TopLevelItem item = mock(TopLevelItem.class);
 
         // Range:       |           |
         // Event:       #####
         Calendar start1 = cal("2018-01-01 00:00:00 UTC");
-        CalendarEvent event1 = calendarEventFactory.createFutureEvent(item, start1, duration);
+        CalendarEvent event1 = calendarEventFactory.createFutureEvent(item, start1, duration6hours);
         assertThat(event1.getEnd(), is(cal("2018-01-01 06:00:00 UTC")));
         assertThat(event1.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:                   #####
         Calendar start2 = cal("2018-01-02 00:00:00 UTC");
-        CalendarEvent event2 = calendarEventFactory.createFutureEvent(item, start2, duration);
+        CalendarEvent event2 = calendarEventFactory.createFutureEvent(item, start2, duration6hours);
         assertThat(event2.getEnd(), is(cal("2018-01-02 06:00:00 UTC")));
         assertThat(event2.isInRange(rangeStart, rangeEnd), is(not(true)));
 
         // Range:       |           |
         // Event:   #####
         Calendar start3 = cal("2017-12-31 18:00:00 UTC");
-        CalendarEvent event3 = calendarEventFactory.createFutureEvent(item, start3, duration);
+        CalendarEvent event3 = calendarEventFactory.createFutureEvent(item, start3, duration6hours);
         assertThat(event3.getEnd(), is(cal("2018-01-01 00:00:00 UTC")));
         assertThat(event3.isInRange(rangeStart, rangeEnd), is(not(true)));
 
         // Range:       |           |
         // Event:               #####
         Calendar start4 = cal("2018-01-01 18:00:00 UTC");
-        CalendarEvent event4 = calendarEventFactory.createFutureEvent(item, start4, duration);
+        CalendarEvent event4 = calendarEventFactory.createFutureEvent(item, start4, duration6hours);
         assertThat(event4.getEnd(), is(cal("2018-01-02 00:00:00 UTC")));
         assertThat(event4.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:     #####
         Calendar start5 = cal("2017-12-31 21:00:00 UTC");
-        CalendarEvent event5 = calendarEventFactory.createFutureEvent(item, start5, duration);
+        CalendarEvent event5 = calendarEventFactory.createFutureEvent(item, start5, duration6hours);
         assertThat(event5.getEnd(), is(cal("2018-01-01 03:00:00 UTC")));
         assertThat(event5.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:                 #####
         Calendar start6 = cal("2018-01-01 21:00:00 UTC");
-        CalendarEvent event6 = calendarEventFactory.createFutureEvent(item, start6, duration);
+        CalendarEvent event6 = calendarEventFactory.createFutureEvent(item, start6, duration6hours);
         assertThat(event6.getEnd(), is(cal("2018-01-02 03:00:00 UTC")));
         assertThat(event6.isInRange(rangeStart, rangeEnd), is(true));
 
         // Range:       |           |
         // Event:                     #####
         Calendar start7 = cal("2018-01-02 03:00:00 UTC");
-        CalendarEvent event7 = calendarEventFactory.createFutureEvent(item, start7, duration);
+        CalendarEvent event7 = calendarEventFactory.createFutureEvent(item, start7, duration6hours);
         assertThat(event7.getEnd(), is(cal("2018-01-02 09:00:00 UTC")));
         assertThat(event7.isInRange(rangeStart, rangeEnd), is(not(true)));
 
         // Range:       |           |
         // Event: #####
         Calendar start8 = cal("2017-12-31 03:00:00 UTC");
-        CalendarEvent event8 = calendarEventFactory.createFutureEvent(item, start8, duration);
+        CalendarEvent event8 = calendarEventFactory.createFutureEvent(item, start8, duration6hours);
         assertThat(event8.getEnd(), is(cal("2017-12-31 09:00:00 UTC")));
         assertThat(event8.isInRange(rangeStart, rangeEnd), is(not(true)));
+
+        // Range:       |           |
+        // Event:      ###############
+        Calendar start9 = cal("2017-12-31 21:00:00 UTC");
+        CalendarEvent event9 = calendarEventFactory.createFutureEvent(item, start9, duration30hours);
+        assertThat(event9.getEnd(), is(cal("2018-01-02 03:00:00 UTC")));
+        assertThat(event9.isInRange(rangeStart, rangeEnd), is(true));
     }
 
     @Test
