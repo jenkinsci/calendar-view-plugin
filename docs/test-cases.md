@@ -134,10 +134,48 @@ Includes:
 * `3`,`4`,`5`: Finished builds that start or end in the selection range
   * `finished(start, end)`
 * `6`: Running builds started in the selection range
-  * `running(start, now)`
+  * `running(start, end)`
   
 Does not include:
 * `1`,`2`: Finished builds that don't start or end in selection range
 * `7`,`8`: Scheduled builds that start after the selection range
 
 
+## Case 5: start < end < now
+
+```
+--- time --------------------------------------------------------->
+           |                       |       :
+{#####} 1  |                       |       :
+           |                       |       :
+     {#####} 2                     |       :
+           |                       |       :
+        [#####] 3                  |       :
+           |                       |       :
+           [########] 4            |       :
+           |                       |       :
+           |       [########] 5    |       :
+           |                       |       :
+           |                [########] 6   :
+           |                       |       :           
+           |                     [************] 7
+           |                       |       :
+           |                       |   {*********} 8
+           |                       |       :
+           |                       |       {*********} 9
+           |                       |       :          
+           |                       |       :    {========} 10
+           |                       |       :
+         start                    end     now
+```
+
+Includes:
+* `3`,`4`,`5`,`6`: Finished builds that start or end in the selection range
+  * `finished(start, end)`
+* `7`: Running builds started in the selection range
+  * `running(start, end)`
+  
+Does not include:
+* `1`,`2`: Finished builds that don't start or end in selection range
+* `8`,`9`: Running builds that start after the selection range
+* `10`: Scheduled builds that start after the selection range
