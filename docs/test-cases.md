@@ -183,7 +183,9 @@ Does not include:
 Includes:
 * `3`,`4`,`5`: Finished builds that start or end in the selection range
   * `finished(start, end)`
-* `6`,`7`: Running builds started in or before the selection range
+* `6`: Running builds started before the selection range
+  * `running(start, end)`
+* `7`: Running builds started in the selection range
   * `running(start, end)`
   
 Does not include:
@@ -207,14 +209,16 @@ Does not include:
            |       [########] 5    |       :
            |                       |       :
            |                [########] 6   :
+           |                       |       :                     
+        [************************************] 7           
            |                       |       :           
-           |                     [************] 7
+           |                     [************] 8
            |                       |       :
-           |                       |   {*********} 8
+           |                       |   {*********} 9
            |                       |       :
-           |                       |       {*********} 9
+           |                       |       {*********} 10
            |                       |       :          
-           |                       |       :    {========} 10
+           |                       |       :    {========} 11
            |                       |       :
          start                    end     now
 ```
@@ -222,10 +226,12 @@ Does not include:
 Includes:
 * `3`,`4`,`5`,`6`: Finished builds that start or end in the selection range
   * `finished(start, end)`
-* `7`: Running builds started in the selection range
+* `7`: Running builds started before the selection range
+  * `running(start, end)`
+* `8`: Running builds started in the selection range
   * `running(start, end)`
   
 Does not include:
 * `1`,`2`: Finished builds that don't start or end in selection range
-* `8`,`9`: Running builds that start after the selection range
-* `10`: Scheduled builds that start after the selection range
+* `9`,`10`: Running builds that start after the selection range
+* `11`: Scheduled builds that start after the selection range
