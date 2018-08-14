@@ -210,15 +210,19 @@ Does not include:
            |                       |       :
            |                [########] 6   :
            |                       |       :                     
-        [************************************] 7           
+           |                       {###} 7 :
+           |                       |       :
+           |                       | {###} 8
+           |                       |       :              
+        [************************************] 9           
            |                       |       :           
-           |                     [************] 8
+           |                     [************] 10
            |                       |       :
-           |                       |   {*********} 9
+           |                       |   {*********} 11
            |                       |       :
-           |                       |       {*********} 10
+           |                       |       {*********} 12
            |                       |       :          
-           |                       |       :    {========} 11
+           |                       |       :    {========} 13
            |                       |       :
          start                    end     now
 ```
@@ -226,12 +230,13 @@ Does not include:
 Includes:
 * `3`,`4`,`5`,`6`: Finished builds that start or end in the selection range
   * `finished(start, end)`
-* `7`: Running builds started before the selection range
+* `9`: Running builds started before the selection range
   * `running(start, end)`
-* `8`: Running builds started in the selection range
+* `10`: Running builds started in the selection range
   * `running(start, end)`
   
 Does not include:
 * `1`,`2`: Finished builds that don't start or end in selection range
-* `9`,`10`: Running builds that start after the selection range
-* `11`: Scheduled builds that start after the selection range
+* `7`,`8`: Finished builds start after the selection range
+* `11`,`12`: Running builds that start after the selection range
+* `13`: Scheduled builds that start after the selection range
