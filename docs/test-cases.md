@@ -167,11 +167,13 @@ Does not include:
            |                               !
            |           [########] 5        !
            |                               !
-           |                           [*******] 6
-           |                               !           
-           |                               {*******} 7 
+       [*************************************] 6
            |                               !
-           |                               !    {========} 8
+           |                           [*******] 7
+           |                               !           
+           |                               {*******} 8 
+           |                               !
+           |                               !    {========} 9
            |                               !
            |                               !
          start                            end
@@ -181,12 +183,12 @@ Does not include:
 Includes:
 * `3`,`4`,`5`: Finished builds that start or end in the selection range
   * `finished(start, end)`
-* `6`: Running builds started in the selection range
+* `6`,`7`: Running builds started in or before the selection range
   * `running(start, end)`
   
 Does not include:
 * `1`,`2`: Finished builds that don't start or end in selection range
-* `7`,`8`: Scheduled builds that start after the selection range
+* `8`,`9`: Scheduled builds that start after the selection range
 
 
 ## Case 5: start < end < now
