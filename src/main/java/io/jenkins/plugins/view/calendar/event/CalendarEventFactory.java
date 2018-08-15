@@ -71,18 +71,8 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public String getStartAsDateTime() {
-            return DateUtil.formatDateTime(getStart());
-        }
-
-        @Override
         public Calendar getEnd() {
             return this.end;
-        }
-
-        @Override
-        public String getEndAsDateTime() {
-            return DateUtil.formatDateTime(getEnd());
         }
 
         @Override
@@ -122,7 +112,7 @@ public class CalendarEventFactory {
 
         @Override
         public String toString() {
-            return getStartAsDateTime() + " - " + getEndAsDateTime() + ": " + getTitle();
+            return DateUtil.formatDateTime(start) + " - " + DateUtil.formatDateTime(end) + ": " + getTitle();
         }
     }
 

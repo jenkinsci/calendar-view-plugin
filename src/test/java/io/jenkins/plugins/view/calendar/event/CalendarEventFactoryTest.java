@@ -38,9 +38,7 @@ import org.junit.Test;
 import java.text.ParseException;
 import java.util.*;
 
-import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
-import static io.jenkins.plugins.view.calendar.test.CalendarUtil.hours;
-import static io.jenkins.plugins.view.calendar.test.CalendarUtil.minutes;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.*;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockScheduledFreeStyleProject;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockTriggers;
 import static org.hamcrest.Matchers.*;
@@ -97,8 +95,6 @@ public class CalendarEventFactoryTest {
         assertThat(event.getStart(), is(start));
         assertThat(event.getEnd(), is(end));
         assertThat(event.getState(), is(CalendarEventState.SCHEDULED));
-        assertThat(event.getStartAsDateTime(), is("2018-01-01T01:00:00"));
-        assertThat(event.getEndAsDateTime(), is("2018-01-01T01:01:00"));
         assertThat(event.getDuration(), is(duration));
         assertThat(event.getDurationString(), containsString("1 Minute"));
         assertThat(event.getUrl(), is("example/item/url/"));
@@ -157,8 +153,6 @@ public class CalendarEventFactoryTest {
         assertThat(event.getTitle(), is("Example Build #1"));
         assertThat(event.getStart(), is(start));
         assertThat(event.getEnd(), is(end));
-        assertThat(event.getStartAsDateTime(), is("2018-01-01T01:00:00"));
-        assertThat(event.getEndAsDateTime(), is("2018-01-01T01:01:00"));
         assertThat(event.getDuration(), is(duration));
         assertThat(event.getDurationString(), containsString("1 Minute"));
         assertThat(event.getUrl(), is("example/build/url/"));
@@ -258,7 +252,7 @@ public class CalendarEventFactoryTest {
         AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
 
         StartedCalendarEvent event = calendarEventFactory.createStartedEvent(project, build);
-        assertThat(event.getStartAsDateTime(), is("2018-01-01T01:00:00"));
-        assertThat(event.getEndAsDateTime(), is("2018-01-01T01:00:01"));
+        assertThat(event.getStart(), is(start));
+        assertThat(event.getEnd(), is(end));
     }
 }

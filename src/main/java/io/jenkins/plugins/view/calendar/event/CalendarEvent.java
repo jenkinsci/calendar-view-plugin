@@ -12,11 +12,7 @@ public interface CalendarEvent {
 
     Calendar getStart();
 
-    String getStartAsDateTime();
-
     Calendar getEnd();
-
-    String getEndAsDateTime();
 
     String getUrl();
 
