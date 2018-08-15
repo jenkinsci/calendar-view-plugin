@@ -24,12 +24,14 @@
 package io.jenkins.plugins.view.calendar.service;
 
 import hudson.model.AbstractProject;
+import hudson.model.FreeStyleProject;
+import hudson.model.Job;
 import hudson.model.TopLevelItem;
 import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
-import io.jenkins.plugins.view.calendar.time.Now;
+import io.jenkins.plugins.view.calendar.time.Moment;
 import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -39,6 +41,8 @@ import java.util.*;
 
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.str;
+import static io.jenkins.plugins.view.calendar.test.TestUtil.mockFreeStyleProject;
+import static io.jenkins.plugins.view.calendar.test.TestUtil.mockTriggers;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -167,130 +171,100 @@ public class CronJobServiceTest {
     public static class GetCronTriggersTests {
         @Test
         public void testItemIsNotAbstractProject() {
-            TopLevelItem item = mock(TopLevelItem.class);
+            Job item = mock(Job.class);
             assertThat(new CronJobService().getCronTriggers(item), hasSize(0));
         }
 
         @Test
         public void testEmptyTriggerMap() {
-            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-            assertThat(new CronJobService().getCronTriggers((TopLevelItem) item), hasSize(0));
+            FreeStyleProject project = mockFreeStyleProject();
+            assertThat(new CronJobService().getCronTriggers(project), hasSize(0));
         }
 
         @Test
         public void testTriggersWithoutSpecs() {
-            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
-            triggers.put(mock(TriggerDescriptor.class), mock(Trigger.class));
-            triggers.put(mock(TriggerDescriptor.class), mock(Trigger.class));
 
-            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-            when(item.getTriggers()).thenReturn(triggers);
-            assertThat(new CronJobService().getCronTriggers((TopLevelItem) item), hasSize(0));
+            Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("", "");
+
+            FreeStyleProject project = mockFreeStyleProject();
+            when(project.getTriggers()).thenReturn(triggers);
+
+            assertThat(new CronJobService().getCronTriggers(project), hasSize(0));
         }
 
         @Test
         public void testTriggersWithSpecs() {
-            Trigger trigger1 = mock(Trigger.class);
-            Trigger trigger2 = mock(Trigger.class);
-            when(trigger1.getSpec()).thenReturn("0 * * * *");
-            when(trigger2.getSpec()).thenReturn("0 12 * * *");
-
-            HashMap<TriggerDescriptor, Trigger> expectedTriggers = new HashMap<>();
-            expectedTriggers.put(mock(TriggerDescriptor.class), trigger1);
-            expectedTriggers.put(mock(TriggerDescriptor.class), trigger2);
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers = mockTriggers("0 * * * *", "0 12 * * *");
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-            when(item.getTriggers()).thenReturn(expectedTriggers);
+            when(item.getTriggers()).thenReturn(mockedTriggers);
 
-            List<Trigger> triggers = new CronJobService().getCronTriggers((TopLevelItem) item);
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
             assertThat(triggers, hasSize(2));
-            assertThat(triggers, hasItem(trigger1));
-            assertThat(triggers, hasItem(trigger2));
+            assertThat(triggers, hasItem(iterator.next()));
+            assertThat(triggers, hasItem(iterator.next()));
         }
     }
 
     public static class GetNextStartTests {
         @Test
         public void testNoTriggers() {
-            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-
-            Calendar next = new CronJobService().getNextStart((TopLevelItem) item);
+            Calendar next = new CronJobService().getNextStart(mockFreeStyleProject());
             assertThat(next, is(nullValue()));
         }
 
         @Test
         public void testNoCronTabs() {
-            Trigger trigger1 = mock(Trigger.class);
-            Trigger trigger2 = mock(Trigger.class);
-            when(trigger1.getSpec()).thenReturn("# Test");
-            when(trigger2.getSpec()).thenReturn("# Test");
+            Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("#Test", "#Test");
 
-            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
-            triggers.put(mock(TriggerDescriptor.class), trigger1);
-            triggers.put(mock(TriggerDescriptor.class), trigger2);
+            FreeStyleProject project = mockFreeStyleProject();
+            when(project.getFullName()).thenReturn("project");
+            when(project.getTriggers()).thenReturn(triggers);
 
-            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-            when(item.getFullName()).thenReturn("Project Name");
-            when(item.getTriggers()).thenReturn(triggers);
-
-            Calendar next = new CronJobService().getNextStart((TopLevelItem) item);
+            Calendar next = new CronJobService().getNextStart(project);
             assertThat(next, is(nullValue()));
         }
 
         @Test
         public void testWithCronTabs() throws ParseException {
+            Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("10 * * * * \n 5 * * * *", "* 10 * * * \n * 5 * * *");
 
-            Trigger trigger1 = mock(Trigger.class);
-            Trigger trigger2 = mock(Trigger.class);
-            when(trigger1.getSpec()).thenReturn("10 * * * * \n 5 * * * *");
-            when(trigger2.getSpec()).thenReturn("* 10 * * * \n * 5 * * *");
+            FreeStyleProject project = mockFreeStyleProject();
+            when(project.getFullName()).thenReturn("project");
+            when(project.getTriggers()).thenReturn(triggers);
 
-            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
-            triggers.put(mock(TriggerDescriptor.class), trigger1);
-            triggers.put(mock(TriggerDescriptor.class), trigger2);
-
-            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-            when(item.getFullName()).thenReturn("Project Name");
-            when(item.getTriggers()).thenReturn(triggers);
-
-            Calendar next = new CronJobService(new Now(cal("2018-01-01 06:00:00 UTC"))).getNextStart((TopLevelItem) item);
+            Calendar next = new CronJobService(new Moment(cal("2018-01-01 06:00:00 UTC"))).getNextStart(project);
             assertThat(str(next), is("2018-01-01 07:05:00 CET"));
         }
 
         @Test
         public void testHash() throws ParseException {
-            Trigger trigger = mock(Trigger.class);
-            when(trigger.getSpec()).thenReturn("H * * * *");
+            Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("H * * * *");
 
-            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
-            triggers.put(mock(TriggerDescriptor.class), trigger);
+            FreeStyleProject project = mockFreeStyleProject();
+            when(project.getFullName()).thenReturn("HashThisName");
+            when(project.getTriggers()).thenReturn(triggers);
 
-            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-            when(item.getFullName()).thenReturn("HashThisName");
-            when(item.getTriggers()).thenReturn(triggers);
-
-            Calendar next = new CronJobService(new Now(cal("2018-01-01 00:00:00 CET"))).getNextStart((TopLevelItem) item);
+            Calendar next = new CronJobService(new Moment(cal("2018-01-01 00:00:00 CET"))).getNextStart(project);
             assertThat(str(next), is("2018-01-01 00:48:00 CET"));
 
-            when(item.getFullName()).thenReturn("HashThisDifferentName");
+            when(project.getFullName()).thenReturn("HashThisDifferentName");
 
-            next = new CronJobService(new Now(cal("2018-01-01 00:00:00 CET"))).getNextStart((TopLevelItem) item);
+            next = new CronJobService(new Moment(cal("2018-01-01 00:00:00 CET"))).getNextStart(project);
             assertThat(str(next), is("2018-01-01 00:23:00 CET"));
         }
 
         @Test
         public void testSecondsAreZero() throws ParseException {
-            Trigger trigger = mock(Trigger.class);
-            when(trigger.getSpec()).thenReturn("15 * * * *");
+            Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("15 * * * *");
 
-            HashMap<TriggerDescriptor, Trigger> triggers = new HashMap<>();
-            triggers.put(mock(TriggerDescriptor.class), trigger);
+            FreeStyleProject project = mockFreeStyleProject();
+            when(project.getFullName()).thenReturn("Project Name");
+            when(project.getTriggers()).thenReturn(triggers);
 
-            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-            when(item.getFullName()).thenReturn("Project Name");
-            when(item.getTriggers()).thenReturn(triggers);
-
-            Calendar next = new CronJobService(new Now(cal("2018-01-01 00:00:23 CET"))).getNextStart((TopLevelItem) item);
+            Calendar next = new CronJobService(new Moment(cal("2018-01-01 00:00:23 CET"))).getNextStart(project);
             assertThat(next.get(Calendar.SECOND), is(0));
             assertThat(next.get(Calendar.MILLISECOND), is(0));
         }

@@ -36,9 +36,9 @@ THE SOFTWARE.
     "start": "<i:formatDate value="${event.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
     "end": "<i:formatDate value="${event.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
     "duration": ${event.duration},
-    "future": ${event.future},
-    "className": "${event.typeAsClassName} event-id-${event.id}",
-    <j:if test="${event.future}">
+    "state": "${event.state.toString().toLowerCase()}",
+    <j:if test="${event.state == 'SCHEDULED'}">
+      "className": "event-state-${event.state.toString().toLowerCase()} event-id-${event.id}",
       "timestampString": "<j:out value="${%startsIn(event.timestampString)}"/>",
       <j:if test="${event.duration lt 0}">
       "durationString": "<j:out value="${%estimatedDuration}: ${%unknownDuration}"/>",
@@ -60,51 +60,50 @@ THE SOFTWARE.
       </j:forEach>
       ],
     </j:if>
-    <j:if test="${!event.future}">
-      "timestampString": "${%startedAgo(event.timestampString)}",
-      "durationString": "${%duration}: ${event.durationString}",
-      <j:set var="jobIcon"><l:icon class="${event.item.buildHealth.iconClassName} icon-sm"/></j:set>
-      "job": {
-        "title": "<j:out value="${it.jsonEscape(event.item.fullDisplayName)}"/>",
-        "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.item.url)}"/>",
-        "icon": "<j:out value="${it.jsonEscape(jobIcon)}"/>"
-      },
-      <j:if test="${not empty event.nextScheduledEvent}">
-      "nextScheduledBuild": {
-        "id": "<j:out value="${it.jsonEscape(event.nextScheduledEvent.id)}"/>",
-        "start": "<i:formatDate value="${event.nextScheduledEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-        "end": "<i:formatDate value="${event.nextScheduledEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-        "future": true
-      },
-      </j:if>
-      <j:if test="${not empty event.previousEvent}">
-      <j:set var="previousEventIcon"><l:icon class="${event.previousEvent.iconClassName} icon-sm"/></j:set>
-      "previousBuild": {
-        "id": "<j:out value="${it.jsonEscape(event.previousEvent.id)}"/>",
-        "title": "<j:out value="${it.jsonEscape(event.previousEvent.build.displayName)}"/>",
-        "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.previousEvent.url)}"/>",
-        "icon": "<j:out value="${it.jsonEscape(previousEventIcon)}"/>",
-        "start": "<i:formatDate value="${event.previousEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-        "end": "<i:formatDate value="${event.previousEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-        "future": false
-      },
-      </j:if>
-      <j:if test="${not empty event.nextEvent}">
-      <j:set var="nextEventIcon"><l:icon class="${event.nextEvent.iconClassName} icon-sm"/></j:set>
-      "nextBuild": {
-        "id": "<j:out value="${it.jsonEscape(event.nextEvent.id)}"/>",
-        "title": "<j:out value="${it.jsonEscape(event.nextEvent.build.displayName)}"/>",
-        "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.nextEvent.url)}"/>",
-        "icon": "<j:out value="${it.jsonEscape(nextEventIcon)}"/>",
-        "start": "<i:formatDate value="${event.nextEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-        "end": "<i:formatDate value="${event.nextEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-        "future": false
-      },
-      </j:if>
-    </j:if>
-    "allDay": false
-  }<j:if test="${!loop.last}">,</j:if>
+    <j:if test="${event.state == 'FINISHED' || event.state == 'RUNNING'}">
+       "className": "event-result-${event.build.result.toString().toLowerCase()} event-state-${event.state.toString().toLowerCase()} event-id-${event.id}",
+       "timestampString": "${%startedAgo(event.timestampString)}",
+       "durationString": "${%duration}: ${event.durationString}",
+       <j:set var="jobIcon"><l:icon class="${event.job.buildHealth.iconClassName} icon-sm"/></j:set>
+       "job": {
+         "title": "<j:out value="${it.jsonEscape(event.job.fullDisplayName)}"/>",
+         "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.job.url)}"/>",
+         "icon": "<j:out value="${it.jsonEscape(jobIcon)}"/>"
+       },
+       <j:if test="${not empty event.nextScheduledEvent}">
+       "nextScheduledBuild": {
+         "id": "<j:out value="${it.jsonEscape(event.nextScheduledEvent.id)}"/>",
+         "start": "<i:formatDate value="${event.nextScheduledEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
+         "end": "<i:formatDate value="${event.nextScheduledEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+       },
+       </j:if>
+       <j:if test="${not empty event.previousStartedEvent}">
+       <j:set var="previousStartedEventIcon"><l:icon class="${event.previousStartedEvent.iconClassName} icon-sm"/></j:set>
+       "previousStartedBuild": {
+         "id": "<j:out value="${it.jsonEscape(event.previousStartedEvent.id)}"/>",
+         "title": "<j:out value="${it.jsonEscape(event.previousStartedEvent.build.displayName)}"/>",
+         "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.previousStartedEvent.url)}"/>",
+         "icon": "<j:out value="${it.jsonEscape(previousStartedEventIcon)}"/>",
+         "start": "<i:formatDate value="${event.previousStartedEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
+         "end": "<i:formatDate value="${event.previousStartedEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+       },
+       </j:if>
+       <j:if test="${not empty event.nextStartedEvent}">
+       <j:set var="nextStartedEventIcon"><l:icon class="${event.nextStartedEvent.iconClassName} icon-sm"/></j:set>
+       "nextStartedBuild": {
+         "id": "<j:out value="${it.jsonEscape(event.nextStartedEvent.id)}"/>",
+         "title": "<j:out value="${it.jsonEscape(event.nextStartedEvent.build.displayName)}"/>",
+         "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.nextStartedEvent.url)}"/>",
+         "icon": "<j:out value="${it.jsonEscape(nextStartedEventIcon)}"/>",
+         "start": "<i:formatDate value="${event.nextStartedEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
+         "end": "<i:formatDate value="${event.nextStartedEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+       },
+       </j:if>
+     </j:if>
+     "allDay": false
+   }<j:if test="${!loop.last}">,</j:if>
   </j:forEach>
+
 ]
 </l:ajax>
 </j:jelly>

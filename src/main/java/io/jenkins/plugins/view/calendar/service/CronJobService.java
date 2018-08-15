@@ -25,12 +25,12 @@ package io.jenkins.plugins.view.calendar.service;
 
 import antlr.ANTLRException;
 import hudson.model.AbstractProject;
-import hudson.model.TopLevelItem;
+import hudson.model.Job;
 import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
-import io.jenkins.plugins.view.calendar.time.Now;
+import io.jenkins.plugins.view.calendar.time.Moment;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -38,13 +38,13 @@ import java.util.*;
 
 public class CronJobService {
 
-    private final transient Now now;
+    private final transient Moment now;
 
     public CronJobService() {
-        this(new Now());
+        this(new Moment());
     }
 
-    public CronJobService(final Now now) {
+    public CronJobService(final Moment now) {
         this.now = now;
     }
 
@@ -83,12 +83,12 @@ public class CronJobService {
         return cronTabs;
     }
 
-    public List<Trigger> getCronTriggers(final TopLevelItem item) {
+    public List<Trigger> getCronTriggers(final Job job) {
         final List<Trigger> triggers = new ArrayList<Trigger>();
-        if (!(item instanceof AbstractProject)) {
+        if (!(job instanceof AbstractProject)) {
             return triggers;
         }
-        final Collection<Trigger<?>> itemTriggers = ((AbstractProject) item).getTriggers().values();
+        final Collection<Trigger<?>> itemTriggers = ((AbstractProject) job).getTriggers().values();
         for (final Trigger<?> trigger: itemTriggers) {
             if (StringUtils.isNotBlank(trigger.getSpec())) {
                 triggers.add(trigger);
@@ -97,19 +97,19 @@ public class CronJobService {
         return triggers;
     }
 
-    public List<CronTab> getCronTabs(final TopLevelItem item) {
+    public List<CronTab> getCronTabs(final Job job) {
         final List<CronTab> cronTabs = new ArrayList<CronTab>();
-        for (final Trigger trigger: getCronTriggers(item)) {
-            cronTabs.addAll(getCronTabs(trigger, Hash.from(item.getFullName())));
+        for (final Trigger trigger: getCronTriggers(job)) {
+            cronTabs.addAll(getCronTabs(trigger, Hash.from(job.getFullName())));
         }
         return cronTabs;
     }
 
-    public Calendar getNextStart(final TopLevelItem item) {
+    public Calendar getNextStart(final Job job) {
         Calendar next = null;
-        final List<CronTab> cronTabs = getCronTabs(item);
+        final List<CronTab> cronTabs = getCronTabs(job);
         for (final CronTab cronTab: cronTabs) {
-            final Calendar ceil = cronTab.ceil(now.getNextMinute());
+            final Calendar ceil = cronTab.ceil(now.nextMinute().getTimeInMillis());
             if (next == null || ceil.before(next)) {
                 next = ceil;
                 next.set(Calendar.SECOND, 0);

@@ -50,7 +50,7 @@ function left(event) {
 }
 
 function right(event, view) {
-  return (event.future) ? rightForFutureBuild(event, view) : rightForPastBuild(event, view);
+  return (event.state === 'scheduled') ? rightForFutureBuild(event, view) : rightForPastBuild(event, view);
 }
 
 function rightForPastBuild(event, view) {
@@ -60,8 +60,8 @@ function rightForPastBuild(event, view) {
       .append(event.job.icon)
       .append(' ')
       .append($('<a></a>').attr('href', event.job.url).text(event.job.title)))
-    .append($('<div class="nextBuild"></div>')
-      .append(event.nextScheduledBuild ? [CalendarViewOptions.popupText.nextBuild, dateLink(event.nextScheduledBuild, view)] : ''));
+    .append($('<div class="nextScheduledBuild"></div>')
+      .append(event.nextScheduledBuild ? [CalendarViewOptions.popupText.nextScheduledBuild, dateLink(event.nextScheduledBuild, view)] : ''));
 }
 
 function rightForFutureBuild(event, view) {
@@ -79,19 +79,19 @@ function buildHistory(event, view) {
 }
 
 function bottom(event, view) {
-  if (event.future || (!event.previousBuild && !event.nextBuild)) {
+  if (event.state === 'scheduled' || (!event.previousStartedBuild && !event.nextStartedBuild)) {
     return '';
   }
   var $bottom = $('<div class="tooltip-bottom"></div>');
-  if (event.previousBuild) {
+  if (event.previousStartedBuild) {
     var bottomLeft = $('<span class="previous"></span>')
       .append('<i></i>')
-      .append(build(event.previousBuild, view));
+      .append(build(event.previousStartedBuild, view));
     $bottom.append(bottomLeft);
   }
-  if (event.nextBuild) {
+  if (event.nextStartedBuild) {
     var bottomRight = $('<span class="next"></span>')
-      .append(build(event.nextBuild, view).reverse())
+      .append(build(event.nextStartedBuild, view).reverse())
       .append('<i></i>');
     $bottom.append(bottomRight);
   }

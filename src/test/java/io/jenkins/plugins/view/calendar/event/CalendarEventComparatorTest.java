@@ -28,9 +28,7 @@ import org.junit.Test;
 import java.text.ParseException;
 
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.number.OrderingComparison.greaterThan;
-import static org.hamcrest.number.OrderingComparison.lessThan;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

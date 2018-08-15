@@ -51,7 +51,7 @@ THE SOFTWARE.
            'buildHistory': '${%Build History}:',
            'buildHistoryEmpty': '${%No past builds}',
            'project': '${%Project}: ',
-           'nextBuild': '${%Next build}: ',
+           'nextScheduledBuild': '${%Next build}: ',
          },
          names: {
            monthNames: [

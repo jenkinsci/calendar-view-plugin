@@ -41,4 +41,13 @@ public class CalendarUtil {
         }
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(cal.getTime());
     }
+
+    public static long minutes(int minutes) {
+        return minutes * 60 * 1000;
+
+    }
+
+    public static long hours(int hours) {
+        return minutes(60) * hours;
+    }
 }

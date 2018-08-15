@@ -30,7 +30,7 @@ import hudson.model.*;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.service.CronJobService;
-import io.jenkins.plugins.view.calendar.time.Now;
+import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.RequestUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -45,6 +45,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
 import static io.jenkins.plugins.view.calendar.util.FieldUtil.defaultIfNull;
 import static io.jenkins.plugins.view.calendar.util.ValidationUtil.*;
 
@@ -372,16 +373,25 @@ public class CalendarView extends ListView {
         setDayMaxTime(req.getParameter("dayMaxTime"));
     }
 
+    public List<Job> getJobs() {
+        final List<TopLevelItem> items = getItems();
+        final List<Job> jobs = new ArrayList<Job>(items.size());
+        for (final TopLevelItem item: items) {
+            if (item instanceof Job) {
+                jobs.add((Job)item);
+            }
+        }
+        return jobs;
+    }
+
     public List<CalendarEvent> getEvents() throws ParseException {
         final StaplerRequest req = Stapler.getCurrentRequest();
 
         final Calendar start = RequestUtil.getParamAsCalendar(req, "start");
         final Calendar end = RequestUtil.getParamAsCalendar(req, "end");
 
-        final List<TopLevelItem> items = getItems();
-
-        final Now now = new Now();
-        return new CalendarEventService(now, new CronJobService(now)).getCalendarEvents(items, start, end);
+        final Moment now = new Moment();
+        return new CalendarEventService(now, new CronJobService(now)).getCalendarEvents(getJobs(), range(start, end));
     }
 
     public String jsonEscape(final String text) {

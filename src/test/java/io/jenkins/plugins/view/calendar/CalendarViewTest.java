@@ -25,6 +25,7 @@ package io.jenkins.plugins.view.calendar;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.html.*;
+import org.junit.Ignore;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.junit.Test;
 import org.junit.Rule;
@@ -34,8 +35,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.Matchers.*;
 
 public class CalendarViewTest {
     @Rule

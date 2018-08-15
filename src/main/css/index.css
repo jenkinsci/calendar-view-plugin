@@ -53,10 +53,10 @@
   text-decoration: none;
 }
 
-.fc-event-container a.event-future,
-.fc-event-container a.event-future:link,
-.fc-event-container a.event-future:active,
-.fc-event-container a.event-future:visited {
+.fc-event-container a.event-state-scheduled,
+.fc-event-container a.event-state-scheduled:link,
+.fc-event-container a.event-state-scheduled:active,
+.fc-event-container a.event-state-scheduled:visited {
   color:black;
 }
 
@@ -65,22 +65,22 @@
   border-color: #888888;
 }
 
-.fc-event.event-success {
+.fc-event.event-result-success {
   background-color: #3a87ad;
   border-color: #3a87ad;
 }
 
-.fc-event.event-failure {
+.fc-event.event-result-failure {
   background-color: #ff0000;
   border-color: #ff0000;
 }
 
-.fc-event.event-unstable {
+.fc-event.event-result-unstable {
   background-color: #a6982b;
   border-color: #a6982b;
 }
 
-.fc-event.event-future {
+.fc-event.event-state-scheduled {
   background-color: #eee;
   border-color: gray;
   border-style: dashed;

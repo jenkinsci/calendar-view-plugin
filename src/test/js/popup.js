@@ -27,7 +27,7 @@ global.CalendarViewOptions = {
   popupText: {
     project: 'ppp',
     build: 'bbb',
-    nextBuild: 'nxb',
+    nextScheduledBuild: 'nxb',
     buildHistory: 'bHist',
     buildHistoryEmpty: 'bEmpty'
   }
@@ -41,8 +41,8 @@ var pastBuild = {
   "start": "2018-07-26T20:00:12",
   "end": "2018-07-26T20:02:12",
   "duration": 120102,
-  "future": false,
-  "className": "event-failure event-id-view-calendar-job-example-16",
+  "state": "finished",
+  "className": "event-result-failure event-state-finished event-id-view-calendar-job-example-16",
   "timestampString": "Vor 1 Tag 21 Stunden gestartet",
   "durationString": "Dauer: 2 Minuten 0 Sekunden",
   "job": {
@@ -57,7 +57,7 @@ var nextScheduledBuild = {
   "id": "view-calendar-job-example",
   "start": "2018-07-28T20:00:16",
   "end": "2018-07-28T20:29:22",
-  "future": true
+  "state": "scheduled" 
 };
 
 var build15 = {
@@ -67,7 +67,7 @@ var build15 = {
   "icon": "<img src=\"build15.png\">",
   "start": "2018-07-25T20:00:00",
   "end": "2018-07-25T20:02:00",
-  "future": false
+  "state": "finished"
 };
 
 var build16 = {
@@ -77,7 +77,7 @@ var build16 = {
   "icon": "<img src=\"build16.png\">",
   "start": "2018-07-26T20:00:12",
   "end": "2018-07-26T20:02:12",
-  "future": false
+  "state": "finished" 
 };
 
 var build17 = {
@@ -87,7 +87,7 @@ var build17 = {
   "icon": "<img src=\"build17.png\">",
   "start": "2018-07-27T20:00:01",
   "end": "2018-07-27T20:02:01",
-  "future": false
+  "state": "running" 
 };
 
 var futureBuild =  {
@@ -98,8 +98,8 @@ var futureBuild =  {
   "start": "2018-07-28T20:00:16",
   "end": "2018-07-28T20:29:22",
   "duration": 1746752,
-  "future": true,
-  "className": "event-future event-id-view-calendar-job-backup",
+  "state": "scheduled",
+  "className": "event-state-future event-id-view-calendar-job-backup",
   "timestampString": "Startet in 2 Stunden 35 Minuten",
   "durationString": "Vorraussichtliche Dauer: 29 Minuten",
   "allDay": false
@@ -129,7 +129,7 @@ describe('popup.dom()', function() {
     expect(html).to.have.string(CalendarViewOptions.popupText.project);
     expect(html).to.have.string(event.job.title);
     expect(html).to.have.string('href="' + event.job.url + '"');
-    expect(html).not.to.have.string(CalendarViewOptions.popupText.nextBuild);
+    expect(html).not.to.have.string(CalendarViewOptions.popupText.nextScheduledBuild);
   });
 
   it('should create dom for past event with scheduled build', function() {
@@ -146,12 +146,12 @@ describe('popup.dom()', function() {
     expect(html).to.have.string(CalendarViewOptions.popupText.project);
     expect(html).to.have.string(event.job.title);
     expect(html).to.have.string('href="' + event.job.url + '"');
-    expect(html).to.have.string(CalendarViewOptions.popupText.nextBuild);
+    expect(html).to.have.string(CalendarViewOptions.popupText.nextScheduledBuild);
   });
 
   it('should create dom for past event with previous build', function() {
     var event = Object.assign({}, pastBuild);
-    event.previousBuild = build15;
+    event.previousStartedBuild = build15;
     var dom = popup.dom(event, view, {close: function() { }});
     var html = dom[0].outerHTML;
 
@@ -164,16 +164,16 @@ describe('popup.dom()', function() {
     expect(html).to.have.string(CalendarViewOptions.popupText.project);
     expect(html).to.have.string(event.job.title);
     expect(html).to.have.string('href="' + event.job.url + '"');
-    expect(html).not.to.have.string(CalendarViewOptions.popupText.nextBuild);
-    expect(html).to.have.string('>' + event.previousBuild.title + '<');
-    expect(html).to.have.string('href="' + event.previousBuild.url + '"');
+    expect(html).not.to.have.string(CalendarViewOptions.popupText.nextScheduledBuild);
+    expect(html).to.have.string('>' + event.previousStartedBuild.title + '<');
+    expect(html).to.have.string('href="' + event.previousStartedBuild.url + '"');
 
     dom.find('.previous time').click();
   });
 
   it('should create dom for past event with next build', function() {
     var event = Object.assign({}, pastBuild);
-    event.nextBuild = build17;
+    event.nextStartedBuild = build17;
     var dom = popup.dom(event, view, {close: function() { }});
     var html = dom[0].outerHTML;
 
@@ -186,9 +186,9 @@ describe('popup.dom()', function() {
     expect(html).to.have.string(CalendarViewOptions.popupText.project);
     expect(html).to.have.string(event.job.title);
     expect(html).to.have.string('href="' + event.job.url + '"');
-    expect(html).not.to.have.string(CalendarViewOptions.popupText.nextBuild);
-    expect(html).to.have.string('>' + event.nextBuild.title + '<');
-    expect(html).to.have.string('href="' + event.nextBuild.url + '"');
+    expect(html).not.to.have.string(CalendarViewOptions.popupText.nextScheduledBuild);
+    expect(html).to.have.string('>' + event.nextStartedBuild.title + '<');
+    expect(html).to.have.string('href="' + event.nextStartedBuild.url + '"');
 
     dom.find('.next time').click();
   });

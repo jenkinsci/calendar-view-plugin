@@ -1,10 +1,11 @@
 package io.jenkins.plugins.view.calendar.event;
 
 import hudson.Util;
-import hudson.model.AbstractProject;
+import hudson.model.Job;
 import hudson.model.Run;
-import hudson.model.TopLevelItem;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
+import io.jenkins.plugins.view.calendar.time.Moment;
+import io.jenkins.plugins.view.calendar.time.MomentRange;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -20,65 +21,31 @@ public class CalendarEventFactory {
         this.calendarEventService = calendarEventService;
     }
 
-    public CalendarEvent createFutureEvent(final TopLevelItem item, final Calendar start, final long duration) {
-        return new CalendarEventImpl(item, start, duration);
+    public ScheduledCalendarEvent createScheduledEvent(final Job job, final Calendar start, final long duration) {
+        return new ScheduledCalendarEventImpl(job, start, duration);
     }
 
-    public CalendarEvent createPastEvent(final TopLevelItem item, final Run build) {
-        return new CalendarEventImpl(item, build);
+    public StartedCalendarEvent createStartedEvent(final Job job, final Run build) {
+        return new StartedCalendarEventImpl(job, build);
     }
 
-    private class CalendarEventImpl implements CalendarEvent {
-        private final String id;
-        private final TopLevelItem item;
-        private final Run build;
-        private final Calendar start;
-        private final Calendar end;
-        private final CalendarEventType type;
-        private final String title;
-        private final String url;
-        private final long duration;
+    private abstract class CalendarEventImpl implements CalendarEvent {
+        protected String id;
+        protected Job job;
+        protected Calendar start;
+        protected Calendar end;
+        protected String title;
+        protected String url;
+        protected long duration;
 
-        private transient List<CalendarEvent> lastEvents;
-        private transient CalendarEvent previousEvent;
-        private transient CalendarEvent nextEvent;
-        private transient CalendarEvent nextScheduledEvent;
-
-        @SuppressWarnings("PMD.NullAssignment")
-        public CalendarEventImpl(final TopLevelItem item, final Calendar start, final long durationInMillis) {
-            this.id = initId(item.getUrl());
-            this.item = item;
-            this.build = null;
-            this.type = CalendarEventType.FUTURE;
-            this.title = item.getFullDisplayName();
-            this.url = item.getUrl();
-            this.duration = durationInMillis;
-            this.start = start;
-            this.end = initEnd(start, durationInMillis);
-        }
-
-        @SuppressWarnings("PMD.NullAssignment")
-        public CalendarEventImpl(final TopLevelItem item, final Run build) {
-            this.id = initId(build.getUrl());
-            this.item = item;
-            this.build = build;
-            this.type = CalendarEventType.fromResult(build.getResult());
-            this.title = build.getFullDisplayName();
-            this.url = build.getUrl();
-            this.duration = build.getDuration();
-            this.start = Calendar.getInstance();
-            this.start.setTimeInMillis(build.getStartTimeInMillis());
-            this.end = initEnd(this.start, build.getDuration());
-        }
-
-        private String initId(final String url) {
+        protected String initId(final String url) {
             return StringUtils.defaultString(url, "")
               .replace("/", "-")
               .toLowerCase(Locale.ENGLISH)
               .replaceAll("-$", "");
         }
 
-        private Calendar initEnd(final Calendar start, final long duration) {
+        protected Calendar initEnd(final Calendar start, final long duration) {
             // duration needs to be at least 1sec otherwise
             // fullcalendar will not properly display the event
             final long dur = (duration < 1000) ? 1000 : duration;
@@ -94,8 +61,8 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public TopLevelItem getItem() {
-            return this.item;
+        public Job getJob() {
+            return this.job;
         }
 
         @Override
@@ -119,16 +86,6 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public CalendarEventType getType() {
-            return this.type;
-        }
-
-        @Override
-        public String getTypeAsClassName() {
-            return "event-" + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-");
-        }
-
-        @Override
         public String getUrl() {
             return this.url;
         }
@@ -144,11 +101,6 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public boolean isFuture() {
-            return build == null;
-        }
-
-        @Override
         public String getTimestampString() {
             final long now = new GregorianCalendar().getTimeInMillis();
             final long difference = Math.abs(now - start.getTimeInMillis());
@@ -161,11 +113,72 @@ public class CalendarEventFactory {
         }
 
         @Override
+        public boolean isInRange(final MomentRange range) {
+            return
+              (new Moment(start).compareTo(range.getStart()) >= 0 && new Moment(start).compareTo(range.getEnd()) < 0) ||
+              (new Moment(end).compareTo(range.getStart()) > 0 && new Moment(end).compareTo(range.getEnd()) < 0) ||
+              (new Moment(start).compareTo(range.getStart()) <= 0 && new Moment(end).compareTo(range.getEnd()) >= 0);
+        }
+
+        @Override
+        public String toString() {
+            return getStartAsDateTime() + " - " + getEndAsDateTime() + ": " + getTitle();
+        }
+    }
+
+    private class ScheduledCalendarEventImpl extends CalendarEventImpl implements ScheduledCalendarEvent {
+        private transient List<StartedCalendarEvent> lastEvents;
+
+        public ScheduledCalendarEventImpl(final Job job, final Calendar start, final long durationInMillis) {
+            super();
+            this.job = job;
+            this.id = initId(job.getUrl());
+            this.title = job.getFullDisplayName();
+            this.url = job.getUrl();
+            this.duration = durationInMillis;
+            this.start = start;
+            this.end = initEnd(start, durationInMillis);
+        }
+
+        @Override
+        public CalendarEventState getState() {
+            return CalendarEventState.SCHEDULED;
+        }
+
+        @Override
         public String getIconClassName() {
-            if (isFuture()) {
-                return ((AbstractProject) this.item).getBuildHealth().getIconClassName();
+            return job.getBuildHealth().getIconClassName();
+        }
+
+        @Override
+        public List<StartedCalendarEvent> getLastEvents() {
+            if (this.lastEvents == null) {
+                this.lastEvents = calendarEventService.getLastEvents(this, 5);
             }
-            return build.getIconColor().getIconClassName();
+            return this.lastEvents;
+        }
+    }
+
+    private class StartedCalendarEventImpl extends CalendarEventImpl implements StartedCalendarEvent {
+        private final Run build;
+        private final CalendarEventState state;
+
+        private transient StartedCalendarEvent previousEvent;
+        private transient StartedCalendarEvent nextEvent;
+        private transient ScheduledCalendarEvent nextScheduledEvent;
+
+        public StartedCalendarEventImpl(final Job job, final Run build) {
+            super();
+            this.id = initId(build.getUrl());
+            this.job = job;
+            this.build = build;
+            this.title = build.getFullDisplayName();
+            this.url = build.getUrl();
+            this.duration = build.isBuilding() ? Math.max(build.getEstimatedDuration(), build.getDuration()) : build.getDuration();
+            this.start = Calendar.getInstance();
+            this.start.setTimeInMillis(build.getStartTimeInMillis());
+            this.end = initEnd(this.start, this.duration);
+            this.state = build.isBuilding() ? CalendarEventState.RUNNING : CalendarEventState.FINISHED;
         }
 
         @Override
@@ -174,15 +187,17 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public List<CalendarEvent> getLastEvents() {
-            if (this.lastEvents == null) {
-                this.lastEvents = calendarEventService.getLastEvents(this, 5);
-            }
-            return this.lastEvents;
+        public CalendarEventState getState() {
+            return state;
         }
 
         @Override
-        public CalendarEvent getPreviousEvent() {
+        public String getIconClassName() {
+            return build.getIconColor().getIconClassName();
+        }
+
+        @Override
+        public StartedCalendarEvent getPreviousStartedEvent() {
             if (previousEvent == null && build != null) {
                 previousEvent = calendarEventService.getPreviousEvent(this);
             }
@@ -190,7 +205,7 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public CalendarEvent getNextEvent() {
+        public StartedCalendarEvent getNextStartedEvent() {
             if (nextEvent == null && build != null) {
                 nextEvent = calendarEventService.getNextEvent(this);
             }
@@ -198,24 +213,12 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public CalendarEvent getNextScheduledEvent() {
+        public ScheduledCalendarEvent getNextScheduledEvent() {
             if (nextScheduledEvent == null && build != null) {
                 nextScheduledEvent = calendarEventService.getNextScheduledEvent(this);
             }
             return nextScheduledEvent;
         }
 
-        @Override
-        public boolean isInRange(final Calendar start, final Calendar end) {
-            return
-              (getStart().compareTo(start) >= 0 && getStart().compareTo(end) < 0) ||
-              (getEnd().compareTo(start) > 0 && getEnd().compareTo(end) < 0) ||
-              (getStart().compareTo(start) <= 0 && getEnd().compareTo(end) >= 0);
-        }
-
-        @Override
-        public String toString() {
-            return getStartAsDateTime() + " - " + getEndAsDateTime() + ": " + getTitle();
-        }
     }
 }

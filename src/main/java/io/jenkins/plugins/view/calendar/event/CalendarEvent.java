@@ -1,15 +1,14 @@
 package io.jenkins.plugins.view.calendar.event;
 
-import hudson.model.Run;
-import hudson.model.TopLevelItem;
+import hudson.model.Job;
+import io.jenkins.plugins.view.calendar.time.MomentRange;
 
 import java.util.Calendar;
-import java.util.List;
 
 public interface CalendarEvent {
     String getId();
 
-    TopLevelItem getItem();
+    Job getJob();
 
     Calendar getStart();
 
@@ -19,17 +18,11 @@ public interface CalendarEvent {
 
     String getEndAsDateTime();
 
-    CalendarEventType getType();
-
-    String getTypeAsClassName();
-
     String getUrl();
 
     String getTitle();
 
     long getDuration();
-
-    boolean isFuture();
 
     String getTimestampString();
 
@@ -37,15 +30,7 @@ public interface CalendarEvent {
 
     String getIconClassName();
 
-    Run getBuild();
+    boolean isInRange(MomentRange range);
 
-    List<CalendarEvent> getLastEvents();
-
-    CalendarEvent getPreviousEvent();
-
-    CalendarEvent getNextEvent();
-
-    CalendarEvent getNextScheduledEvent();
-
-    boolean isInRange(final Calendar start, final Calendar end);
+    CalendarEventState getState();
 }
