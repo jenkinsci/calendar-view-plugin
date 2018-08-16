@@ -47,7 +47,7 @@ public class CalendarEventService {
     public CalendarEventService(final Moment now, final CronJobService cronJobService) {
         this.now = now;
         this.cronJobService = cronJobService;
-        this.calendarEventFactory = new CalendarEventFactory(this);
+        this.calendarEventFactory = new CalendarEventFactory(now, this);
     }
 
     /**

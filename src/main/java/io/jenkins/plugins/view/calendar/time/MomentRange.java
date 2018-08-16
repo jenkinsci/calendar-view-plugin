@@ -18,6 +18,10 @@ public class MomentRange {
         this.end = end;
     }
 
+    public long duration() {
+        return end.getTimeInMillis() - start.getTimeInMillis();
+    }
+
     public Moment getStart() {
         return start;
     }

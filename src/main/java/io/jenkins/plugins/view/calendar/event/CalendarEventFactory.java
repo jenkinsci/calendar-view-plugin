@@ -14,10 +14,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
+
 public class CalendarEventFactory {
+    private final transient Moment now;
     private final transient CalendarEventService calendarEventService;
 
-    public CalendarEventFactory(final CalendarEventService calendarEventService) {
+    public CalendarEventFactory(final Moment now, final CalendarEventService calendarEventService) {
+        this.now = now;
         this.calendarEventService = calendarEventService;
     }
 
@@ -164,8 +168,8 @@ public class CalendarEventFactory {
             this.build = build;
             this.title = build.getFullDisplayName();
             this.url = build.getUrl();
-            this.duration = build.isBuilding() ? Math.max(build.getEstimatedDuration(), build.getDuration()) : build.getDuration();
             this.start = new Moment(build.getStartTimeInMillis());
+            this.duration = build.isBuilding() ? Math.max(range(start, now).duration(), build.getDuration()) : build.getDuration();
             this.end = initEnd(build.getStartTimeInMillis(), this.duration);
             this.state = build.isBuilding() ? CalendarEventState.RUNNING : CalendarEventState.FINISHED;
         }

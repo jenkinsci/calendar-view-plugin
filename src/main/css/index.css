@@ -56,7 +56,11 @@
 .fc-event-container a.event-state-scheduled,
 .fc-event-container a.event-state-scheduled:link,
 .fc-event-container a.event-state-scheduled:active,
-.fc-event-container a.event-state-scheduled:visited {
+.fc-event-container a.event-state-scheduled:visited,
+.fc-event-container a.event-state-running,
+.fc-event-container a.event-state-running:link,
+.fc-event-container a.event-state-running:active,
+.fc-event-container a.event-state-running:visited {
   color:black;
 }
 
@@ -84,6 +88,42 @@
   background-color: #eee;
   border-color: gray;
   border-style: dashed;
+}
+
+.fc-event.event-state-running {
+  border-color: gray;
+  background-color: #eee;
+  animation: blink-animation 1.5s infinite;
+  -webkit-animation: blink-animation 1.5s infinite;
+}
+
+@keyframes blink-animation {
+  0%   { opacity:1; }
+  30%  { opacity:0.8; }
+  50%  { opacity:0; }
+  70%  { opacity:0.8; }
+  100% { opacity:1; }
+}
+@-o-keyframes blink-animation {
+  0%   { opacity:1; }
+  30%  { opacity:0.8; }
+  50%  { opacity:0; }
+  70%  { opacity:0.8; }
+  100% { opacity:1; }
+}
+@-moz-keyframes blink-animation {
+  0%   { opacity:1; }
+  30%  { opacity:0.8; }
+  50%  { opacity:0; }
+  70%  { opacity:0.8; }
+  100% { opacity:1; }
+}
+@-webkit-keyframes blink-animation {
+  0%   { opacity:1; }
+  30%  { opacity:0.8; }
+  50%  { opacity:0; }
+  70%  { opacity:0.8; }
+  100% { opacity:1; }
 }
 
 .tippy-tooltip.jenkins-theme {
