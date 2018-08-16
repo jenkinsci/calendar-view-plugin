@@ -32,8 +32,8 @@ public class CalendarEventFactory {
     private abstract class CalendarEventImpl implements CalendarEvent {
         protected String id;
         protected Job job;
-        protected Calendar start;
-        protected Calendar end;
+        protected Moment start;
+        protected Moment end;
         protected String title;
         protected String url;
         protected long duration;
@@ -45,14 +45,14 @@ public class CalendarEventFactory {
               .replaceAll("-$", "");
         }
 
-        protected Calendar initEnd(final Calendar start, final long duration) {
+        protected Moment initEnd(final long timeInMillis, final long duration) {
             // duration needs to be at least 1sec otherwise
             // fullcalendar will not properly display the event
             final long dur = (duration < 1000) ? 1000 : duration;
             final Calendar end = Calendar.getInstance();
-            end.setTime(start.getTime());
+            end.setTimeInMillis(timeInMillis);
             end.add(Calendar.SECOND, (int) (dur / 1000));
-            return end;
+            return new Moment(end);
         }
 
         @Override
@@ -66,12 +66,12 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public Calendar getStart() {
+        public Moment getStart() {
             return start;
         }
 
         @Override
-        public Calendar getEnd() {
+        public Moment getEnd() {
             return this.end;
         }
 
@@ -105,14 +105,14 @@ public class CalendarEventFactory {
         @Override
         public boolean isInRange(final MomentRange range) {
             return
-              (new Moment(start).compareTo(range.getStart()) >= 0 && new Moment(start).compareTo(range.getEnd()) < 0) ||
-              (new Moment(end).compareTo(range.getStart()) > 0 && new Moment(end).compareTo(range.getEnd()) < 0) ||
-              (new Moment(start).compareTo(range.getStart()) <= 0 && new Moment(end).compareTo(range.getEnd()) >= 0);
+              (start.compareTo(range.getStart()) >= 0 && start.compareTo(range.getEnd()) < 0) ||
+              (end.compareTo(range.getStart()) > 0 && end.compareTo(range.getEnd()) < 0) ||
+              (start.compareTo(range.getStart()) <= 0 && end.compareTo(range.getEnd()) >= 0);
         }
 
         @Override
         public String toString() {
-            return DateUtil.formatDateTime(start) + " - " + DateUtil.formatDateTime(end) + ": " + getTitle();
+            return DateUtil.formatDateTime(start.getTime()) + " - " + DateUtil.formatDateTime(end.getTime()) + ": " + getTitle();
         }
     }
 
@@ -126,8 +126,8 @@ public class CalendarEventFactory {
             this.title = job.getFullDisplayName();
             this.url = job.getUrl();
             this.duration = durationInMillis;
-            this.start = start;
-            this.end = initEnd(start, durationInMillis);
+            this.start = new Moment(start);
+            this.end = initEnd(start.getTimeInMillis(), durationInMillis);
         }
 
         @Override
@@ -165,9 +165,8 @@ public class CalendarEventFactory {
             this.title = build.getFullDisplayName();
             this.url = build.getUrl();
             this.duration = build.isBuilding() ? Math.max(build.getEstimatedDuration(), build.getDuration()) : build.getDuration();
-            this.start = Calendar.getInstance();
-            this.start.setTimeInMillis(build.getStartTimeInMillis());
-            this.end = initEnd(this.start, this.duration);
+            this.start = new Moment(build.getStartTimeInMillis());
+            this.end = initEnd(build.getStartTimeInMillis(), this.duration);
             this.state = build.isBuilding() ? CalendarEventState.RUNNING : CalendarEventState.FINISHED;
         }
 

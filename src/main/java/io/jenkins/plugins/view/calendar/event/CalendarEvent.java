@@ -1,6 +1,7 @@
 package io.jenkins.plugins.view.calendar.event;
 
 import hudson.model.Job;
+import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
 
 import java.util.Calendar;
@@ -10,9 +11,9 @@ public interface CalendarEvent {
 
     Job getJob();
 
-    Calendar getStart();
+    Moment getStart();
 
-    Calendar getEnd();
+    Moment getEnd();
 
     String getUrl();
 

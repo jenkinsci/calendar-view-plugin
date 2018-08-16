@@ -23,6 +23,8 @@
  */
 package io.jenkins.plugins.view.calendar.test;
 
+import io.jenkins.plugins.view.calendar.time.Moment;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,7 +46,14 @@ public class CalendarUtil {
 
     public static long minutes(int minutes) {
         return minutes * 60 * 1000;
+    }
 
+    public static Moment mom(String date) throws ParseException {
+        return new Moment(cal(date));
+    }
+
+    public static Moment mom(Calendar cal) throws ParseException {
+        return new Moment(cal);
     }
 
     public static long hours(int hours) {

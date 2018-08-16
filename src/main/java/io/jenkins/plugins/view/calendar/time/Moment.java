@@ -3,6 +3,7 @@ package io.jenkins.plugins.view.calendar.time;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 
 import java.util.Calendar;
+import java.util.Date;
 
 @SuppressWarnings("PMD.ShortClassName")
 public class Moment implements Comparable<Object> {
@@ -10,6 +11,11 @@ public class Moment implements Comparable<Object> {
 
     public Moment() {
        this(Calendar.getInstance());
+    }
+
+    public Moment(long timeInMillis) {
+        this.calendar = Calendar.getInstance();
+        this.calendar.setTimeInMillis(timeInMillis);
     }
 
     public Moment(final Calendar cal) {
@@ -30,6 +36,10 @@ public class Moment implements Comparable<Object> {
         previousMinute.set(Calendar.MILLISECOND, 0);
         previousMinute.add(Calendar.MINUTE, -1);
         return new Moment(previousMinute);
+    }
+
+    public Date getTime() {
+        return calendar.getTime();
     }
 
     @Override
@@ -84,6 +94,6 @@ public class Moment implements Comparable<Object> {
 
     @Override
     public String toString() {
-        return DateUtil.formatDateTime(calendar);
+        return DateUtil.formatDateTime(calendar.getTime());
     }
 }

@@ -35,8 +35,8 @@ public final class DateUtil {
     private DateUtil() { }
 
     @SuppressWarnings("PMD.SimpleDateFormatNeedsLocale")
-    public static String formatDateTime(final Calendar cal)  {
-        return new SimpleDateFormat(FORMAT_DATETIME).format(cal.getTime());
+    public static String formatDateTime(final Date date)  {
+        return new SimpleDateFormat(FORMAT_DATETIME).format(date);
     }
 
     @SuppressWarnings("PMD.SimpleDateFormatNeedsLocale")

@@ -285,11 +285,11 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(asList(project), range(start, end));
 
             assertThat(calendarEvents, hasSize(3));
-            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
             assertThat(calendarEvents.get(0).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).getStart(), is(mom("2018-01-05 23:44:00 CET")));
             assertThat(calendarEvents.get(1).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).getStart(), is(mom("2018-01-06 23:44:00 CET")));
             assertThat(calendarEvents.get(2).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -304,11 +304,11 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(asList(project), range(start, end));
 
             assertThat(calendarEvents, hasSize(3));
-            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
             assertThat(calendarEvents.get(0).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).getStart(), is(mom("2018-01-05 23:44:00 CET")));
             assertThat(calendarEvents.get(1).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).getStart(), is(mom("2018-01-06 23:44:00 CET")));
             assertThat(calendarEvents.get(2).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -326,11 +326,11 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(calendarEvents, hasSize(3));
-            assertThat(str(calendarEvents.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(calendarEvents.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
             assertThat(calendarEvents.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(calendarEvents.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(calendarEvents.get(1).getStart(), is(mom("2018-01-05 23:44:00 CET")));
             assertThat(calendarEvents.get(1).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(calendarEvents.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(calendarEvents.get(2).getStart(), is(mom("2018-01-06 23:44:00 CET")));
             assertThat(calendarEvents.get(1).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -348,11 +348,11 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(3));
-            assertThat(str(events.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-05 23:44:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-06 23:44:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -369,11 +369,11 @@ public class CalendarEventServiceTest {
 
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
-            assertThat(str(events.get(0).getStart()), is("2018-01-04 23:44:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(1).getStart()), is("2018-01-05 23:44:00 CET"));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-05 23:44:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(2).getStart()), is("2018-01-06 23:44:00 CET"));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-06 23:44:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.SCHEDULED));
         }
     }
@@ -395,13 +395,13 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2017-12-31 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(1).getStart()), is("2018-01-01 00:00:00 CET"));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-01 00:00:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(2).getStart()), is("2018-01-01 00:01:00 CET"));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-01 00:01:00 CET")));
             assertThat(events.get(2).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(3).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(3).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -421,13 +421,13 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2017-12-31 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(1).getStart()), is("2018-01-01 00:00:00 CET"));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-01 00:00:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(2).getStart()), is("2018-01-01 00:01:00 CET"));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-01 00:01:00 CET")));
             assertThat(events.get(2).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(3).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(3).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -448,13 +448,13 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2017-12-31 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(1).getStart()), is("2018-01-01 00:00:00 CET"));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-01 00:00:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(2).getStart()), is("2018-01-01 00:01:00 CET"));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-01 00:01:00 CET")));
             assertThat(events.get(2).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(3).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(3).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -475,13 +475,13 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2017-12-31 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(1).getStart()), is("2018-01-01 00:00:00 CET"));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-01 00:00:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(2).getStart()), is("2018-01-01 00:01:00 CET"));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-01 00:01:00 CET")));
             assertThat(events.get(2).getState(), is(CalendarEventState.SCHEDULED));
-            assertThat(str(events.get(3).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(3).getState(), is(CalendarEventState.SCHEDULED));
         }
 
@@ -503,13 +503,13 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2017-12-31 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(1).getStart()), is("2018-01-01 00:00:00 CET"));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-01 00:00:00 CET")));
             assertThat(events.get(1).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(2).getStart()), is("2018-01-01 00:01:00 CET"));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-01 00:01:00 CET")));
             assertThat(events.get(2).getState(), is(CalendarEventState.RUNNING));
-            assertThat(str(events.get(3).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(3).getState(), is(CalendarEventState.SCHEDULED));
         }
     }
@@ -531,7 +531,7 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(1));
-            assertThat(str(events.get(0).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
         }
 
@@ -551,7 +551,7 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(1));
-            assertThat(str(events.get(0).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
         }
 
@@ -572,7 +572,7 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(1));
-            assertThat(str(events.get(0).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
         }
 
@@ -593,7 +593,7 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(1));
-            assertThat(str(events.get(0).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
         }
 
@@ -615,7 +615,7 @@ public class CalendarEventServiceTest {
             List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
 
             assertThat(events, hasSize(1));
-            assertThat(str(events.get(0).getStart()), is("2018-01-01 23:59:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
         }
     }
@@ -657,10 +657,10 @@ public class CalendarEventServiceTest {
                 asList(project), range(start, end), range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2018-01-01 21:00:00 CET"));
-            assertThat(str(events.get(1).getStart()), is("2018-01-02 21:00:00 CET"));
-            assertThat(str(events.get(2).getStart()), is("2018-01-03 21:00:00 CET"));
-            assertThat(str(events.get(3).getStart()), is("2018-01-04 21:00:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-01 21:00:00 CET")));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-02 21:00:00 CET")));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-03 21:00:00 CET")));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-04 21:00:00 CET")));
         }
 
         @Test
@@ -674,10 +674,10 @@ public class CalendarEventServiceTest {
                 asList(project), range(start, end), range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2018-01-01 21:48:00 CET"));
-            assertThat(str(events.get(1).getStart()), is("2018-01-02 21:48:00 CET"));
-            assertThat(str(events.get(2).getStart()), is("2018-01-03 21:48:00 CET"));
-            assertThat(str(events.get(3).getStart()), is("2018-01-04 21:48:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-01 21:48:00 CET")));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-02 21:48:00 CET")));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-03 21:48:00 CET")));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-04 21:48:00 CET")));
         }
     }
 
@@ -718,10 +718,10 @@ public class CalendarEventServiceTest {
                 asList(project), range(start, end), range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2018-01-04 21:00:00 CET"));
-            assertThat(str(events.get(1).getStart()), is("2018-01-03 21:00:00 CET"));
-            assertThat(str(events.get(2).getStart()), is("2018-01-02 21:00:00 CET"));
-            assertThat(str(events.get(3).getStart()), is("2018-01-01 21:00:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-04 21:00:00 CET")));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-03 21:00:00 CET")));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-02 21:00:00 CET")));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-01 21:00:00 CET")));
         }
 
         @Test
@@ -735,10 +735,10 @@ public class CalendarEventServiceTest {
                     asList(project), range(start, end), range(start, end));
 
             assertThat(events, hasSize(4));
-            assertThat(str(events.get(0).getStart()), is("2018-01-04 21:48:00 CET"));
-            assertThat(str(events.get(1).getStart()), is("2018-01-03 21:48:00 CET"));
-            assertThat(str(events.get(2).getStart()), is("2018-01-02 21:48:00 CET"));
-            assertThat(str(events.get(3).getStart()), is("2018-01-01 21:48:00 CET"));
+            assertThat(events.get(0).getStart(), is(mom("2018-01-04 21:48:00 CET")));
+            assertThat(events.get(1).getStart(), is(mom("2018-01-03 21:48:00 CET")));
+            assertThat(events.get(2).getStart(), is(mom("2018-01-02 21:48:00 CET")));
+            assertThat(events.get(3).getStart(), is(mom("2018-01-01 21:48:00 CET")));
         }
     }
 
