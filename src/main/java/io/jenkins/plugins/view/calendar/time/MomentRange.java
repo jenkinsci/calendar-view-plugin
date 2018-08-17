@@ -19,7 +19,7 @@ public class MomentRange {
     }
 
     public long duration() {
-        return end.getTimeInMillis() - start.getTimeInMillis();
+        return duration(start, end);
     }
 
     public static long duration(final Moment m1, final Moment m2) {
