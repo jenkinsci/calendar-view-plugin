@@ -42,11 +42,10 @@ public class CalendarEventFactory {
         protected String url;
         protected long duration;
 
-        protected String initId(final String url) {
+        protected String initId(final String url, final long startTimeInMillis) {
             return StringUtils.defaultString(url, "")
               .replace("/", "-")
-              .toLowerCase(Locale.ENGLISH)
-              .replaceAll("-$", "");
+              .toLowerCase(Locale.ENGLISH) + startTimeInMillis;
         }
 
         protected Moment initEnd(final long timeInMillis, final long duration) {
@@ -126,7 +125,7 @@ public class CalendarEventFactory {
         public ScheduledCalendarEventImpl(final Job job, final Calendar start, final long durationInMillis) {
             super();
             this.job = job;
-            this.id = initId(job.getUrl());
+            this.id = initId(job.getUrl(), start.getTimeInMillis());
             this.title = job.getFullDisplayName();
             this.url = job.getUrl();
             this.duration = durationInMillis;
@@ -163,7 +162,7 @@ public class CalendarEventFactory {
 
         public StartedCalendarEventImpl(final Job job, final Run build) {
             super();
-            this.id = initId(build.getUrl());
+            this.id = initId(job.getUrl(), build.getStartTimeInMillis());
             this.job = job;
             this.build = build;
             this.title = build.getFullDisplayName();
