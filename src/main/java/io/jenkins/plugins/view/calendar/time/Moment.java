@@ -13,7 +13,7 @@ public class Moment implements Comparable<Object> {
        this(Calendar.getInstance());
     }
 
-    public Moment(long timeInMillis) {
+    public Moment(final long timeInMillis) {
         this.calendar = Calendar.getInstance();
         this.calendar.setTimeInMillis(timeInMillis);
     }

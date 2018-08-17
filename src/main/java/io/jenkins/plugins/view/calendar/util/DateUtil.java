@@ -25,7 +25,6 @@ package io.jenkins.plugins.view.calendar.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 public final class DateUtil {
