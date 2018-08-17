@@ -6,6 +6,6 @@ Possible new features for future releases (in no particular order):
 - [ ] Auto-refresh button in toolbar
 - [ ] Directly accessible calendar view for a job from the action menu
 - [ ] Support for green balls
-- [ ] Link directly to specific day view
-- [ ] Show calendar week and link directly to specific week view
+- [x] Link directly to specific day view
+- [x] Show calendar week and link directly to specific week view
 - [ ] Lower opacity for events in other months
