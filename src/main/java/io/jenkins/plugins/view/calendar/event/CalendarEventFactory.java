@@ -168,9 +168,14 @@ public class CalendarEventFactory {
             this.title = build.getFullDisplayName();
             this.url = build.getUrl();
             this.start = new Moment(build.getStartTimeInMillis());
-            this.duration = build.isBuilding() ? Math.max(range(start, now).duration(), build.getDuration()) : build.getDuration();
-            this.end = initEnd(build.getStartTimeInMillis(), this.duration);
-            this.state = build.isBuilding() ? CalendarEventState.RUNNING : CalendarEventState.FINISHED;
+            if (build.isBuilding()) {
+                this.duration = Math.max(MomentRange.duration(start, now), build.getEstimatedDuration());
+                this.state = CalendarEventState.RUNNING;
+            } else {
+                this.duration = build.getDuration();
+                this.state = CalendarEventState.FINISHED;
+            }
+            this.end = initEnd(start.getTimeInMillis(), this.duration);
         }
 
         @Override

@@ -12,7 +12,7 @@ public class MomentRange {
 
     public MomentRange(final Moment start, final Moment end) {
         if (!isValidRange(start, end)) {
-            throw new IllegalArgumentException("start has to be before end");
+            throw new IllegalArgumentException("start has to be before end: " + start + " < " + end);
         }
         this.start = start;
         this.end = end;
@@ -20,6 +20,10 @@ public class MomentRange {
 
     public long duration() {
         return end.getTimeInMillis() - start.getTimeInMillis();
+    }
+
+    public static long duration(final Moment m1, final Moment m2) {
+        return m2.getTimeInMillis() - m1.getTimeInMillis();
     }
 
     public Moment getStart() {

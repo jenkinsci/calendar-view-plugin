@@ -774,12 +774,11 @@ public class CalendarEventServiceTest {
 
         @Test
         public void testWithRunningBuilds() throws ParseException {
+            Calendar now = cal("2018-01-05 00:00:00 UTC");
             Calendar start = cal("2018-01-01 00:00:00 UTC");
             Calendar end = cal("2018-01-05 00:00:00 UTC");
 
             List<FreeStyleProject> projects = asList(
-                mockRunningFreeStyleProject("build1", "2017-12-31 23:49:59 UTC", minutes(10)),
-                mockRunningFreeStyleProject("build2", "2017-12-31 23:50:00 UTC", minutes(10)),
                 mockRunningFreeStyleProject("build3", "2017-12-31 23:59:59 UTC", minutes(10)),
                 mockRunningFreeStyleProject("build4", "2018-01-01 00:00:00 UTC", minutes(10)),
                 mockRunningFreeStyleProject("build5", "2018-01-01 00:01:00 UTC", minutes(10)),
@@ -787,18 +786,18 @@ public class CalendarEventServiceTest {
                 mockRunningFreeStyleProject("build7", "2018-01-05 00:00:00 UTC", minutes(10))
             );
 
-            List<StartedCalendarEvent> events = getCalendarEventService().getStartedEvents(projects, range(start, end), null);
+            List<StartedCalendarEvent> events = getCalendarEventService(now).getStartedEvents(projects, range(start, end), null);
             assertThat(events, hasSize(4));
             assertThat(titlesOf(events), containsInAnyOrder("build3", "build4", "build5", "build6"));
         }
 
         @Test
         public void testWithFinishedAndRunningBuilds() throws ParseException {
+            Calendar now = cal("2018-01-05 00:00:00 UTC");
             Calendar start = cal("2018-01-01 00:00:00 UTC");
             Calendar end = cal("2018-01-05 00:00:00 UTC");
 
             List<FreeStyleProject> projects = asList(
-                    mockRunningFreeStyleProject("build1", "2017-12-31 23:49:59 UTC", minutes(10)),
                     mockFinishedFreeStyleProject("build2", "2017-12-31 23:50:00 UTC", minutes(10)),
                     mockRunningFreeStyleProject("build3", "2017-12-31 23:59:59 UTC", minutes(10)),
                     mockFinishedFreeStyleProject("build4", "2018-01-01 00:00:00 UTC", minutes(10)),
@@ -809,11 +808,11 @@ public class CalendarEventServiceTest {
 
             List<StartedCalendarEvent> events;
 
-            events = getCalendarEventService().getFinishedEvents(projects, range(start, end));
+            events = getCalendarEventService(now).getFinishedEvents(projects, range(start, end));
             assertThat(events, hasSize(2));
             assertThat(titlesOf(events), containsInAnyOrder("build4", "build6"));
 
-            events = getCalendarEventService().getRunningEvents(projects, range(start, end));
+            events = getCalendarEventService(now).getRunningEvents(projects, range(start, end));
             assertThat(events, hasSize(2));
             assertThat(titlesOf(events), containsInAnyOrder("build3", "build5"));
         }
@@ -874,6 +873,9 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = new FreeStyleProject(mock(ItemGroup.class), "project") {
                 @Override
                 public FreeStyleBuild getLastBuild() { return build4; }
+
+                @Override
+                public String getShortUrl() { return ""; }
             };
 
             CalendarEvent event = mock(CalendarEvent.class);
@@ -912,6 +914,9 @@ public class CalendarEventServiceTest {
             MatrixProject project = new MatrixProject(mock(ItemGroup.class), "project") {
                 @Override
                 public MatrixBuild getLastBuild() { return build4; }
+
+                @Override
+                public String getShortUrl() { return ""; }
             };
 
             CalendarEvent event = mock(CalendarEvent.class);
@@ -958,6 +963,7 @@ public class CalendarEventServiceTest {
 
             StartedCalendarEvent event = mock(StartedCalendarEvent.class);
             when(event.getBuild()).thenReturn(build);
+            when(event.getJob()).thenReturn(mock(Job.class));
 
             StartedCalendarEvent previousEvent = getCalendarEventService().getPreviousEvent(event);
             assertThat(previousEvent, is(notNullValue()));
@@ -981,14 +987,16 @@ public class CalendarEventServiceTest {
         }
 
         @Test
-        public void testHasPreviousBuild() {
+        public void testHasPreviousBuild() throws ParseException {
             Run nextBuild = mock(Run.class);
+            when(nextBuild.getStartTimeInMillis()).thenReturn(cal("2018-01-01 00:00:00 CET").getTimeInMillis());
 
             Run build = mock(Run.class);
             when(build.getNextBuild()).thenReturn(nextBuild);
 
             StartedCalendarEvent event = mock(StartedCalendarEvent.class);
             when(event.getBuild()).thenReturn(build);
+            when(event.getJob()).thenReturn(mock(Job.class));
 
             StartedCalendarEvent nextEvent = getCalendarEventService().getNextEvent(event);
             assertThat(nextEvent, is(notNullValue()));

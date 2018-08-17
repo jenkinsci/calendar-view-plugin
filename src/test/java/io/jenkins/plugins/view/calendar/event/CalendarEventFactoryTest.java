@@ -51,7 +51,6 @@ public class CalendarEventFactoryTest {
 
     private static TimeZone defaultTimeZone;
     private static Locale defaultLocale;
-    private CalendarEventFactory calendarEventFactory;
 
     @BeforeClass
     public static void beforeClass() {
@@ -68,12 +67,10 @@ public class CalendarEventFactoryTest {
         Locale.setDefault(CalendarEventFactoryTest.defaultLocale);
     }
 
-    @Before
-    public void initCalendarEventFactory() {
-        final Moment now = new Moment();
+    public CalendarEventFactory getCalendarEventFactory(Moment now) {
         final CronJobService cronJobService = new CronJobService(now);
         final CalendarEventService calendarEventService = new CalendarEventService(now, cronJobService);
-        this.calendarEventFactory = new CalendarEventFactory(calendarEventService);
+        return new CalendarEventFactory(now, calendarEventService);
     }
 
     @Test
@@ -89,7 +86,8 @@ public class CalendarEventFactoryTest {
         when(project.getUrl()).thenReturn("example/item/url/");
         when(project.getBuildHealth()).thenReturn(health);
 
-        ScheduledCalendarEvent event = calendarEventFactory.createScheduledEvent(project, start, duration);
+        Moment now = new Moment();
+        ScheduledCalendarEvent event = getCalendarEventFactory(now).createScheduledEvent(project, start, duration);
         assertThat(event.getJob(), is((Job)project));
         assertThat(event.getTitle(), is("Example Project"));
         assertThat(event.getStart(), is(mom(start)));
@@ -98,7 +96,7 @@ public class CalendarEventFactoryTest {
         assertThat(event.getDuration(), is(duration));
         assertThat(event.getDurationString(), containsString("1 Minute"));
         assertThat(event.getUrl(), is("example/item/url/"));
-        assertThat(event.getId(), is("example-item-url"));
+        assertThat(event.getId(), is("example-item-url-1514764800000"));
         assertThat(event.getIconClassName(), is("health-icon-class-name"));
         assertThat(event.getLastEvents(), is(notNullValue()));
         assertThat(event.getLastEvents(), hasSize(0));
@@ -107,23 +105,23 @@ public class CalendarEventFactoryTest {
 
     @Test
     public void testFinishedEvent() throws ParseException {
-        testStartedEvent(Result.SUCCESS, BallColor.BLUE, "icon-blue",false, CalendarEventState.FINISHED);
-        testStartedEvent(Result.FAILURE, BallColor.RED, "icon-red", false, CalendarEventState.FINISHED);
-        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, "icon-yellow", false, CalendarEventState.FINISHED);
-        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, "icon-grey", false, CalendarEventState.FINISHED);
-        testStartedEvent(Result.ABORTED, BallColor.GREY, "icon-grey", false, CalendarEventState.FINISHED);
+        testStartedEvent(Result.SUCCESS, BallColor.BLUE, false,"icon-blue", CalendarEventState.FINISHED);
+        testStartedEvent(Result.FAILURE, BallColor.RED, false, "icon-red",  CalendarEventState.FINISHED);
+        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, false, "icon-yellow", CalendarEventState.FINISHED);
+        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, false, "icon-grey", CalendarEventState.FINISHED);
+        testStartedEvent(Result.ABORTED, BallColor.GREY, false, "icon-grey", CalendarEventState.FINISHED);
     }
 
         @Test
     public void testRunningEvent() throws ParseException {
-        testStartedEvent(Result.SUCCESS, BallColor.BLUE, "icon-blue", true, CalendarEventState.RUNNING);
-        testStartedEvent(Result.FAILURE, BallColor.RED, "icon-red", true, CalendarEventState.RUNNING);
-        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, "icon-yellow", true, CalendarEventState.RUNNING);
-        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, "icon-grey", true, CalendarEventState.RUNNING);
-        testStartedEvent(Result.ABORTED, BallColor.GREY, "icon-grey", true, CalendarEventState.RUNNING);
+        testStartedEvent(Result.SUCCESS, BallColor.BLUE, true, "icon-blue", CalendarEventState.RUNNING);
+        testStartedEvent(Result.FAILURE, BallColor.RED, true, "icon-red", CalendarEventState.RUNNING);
+        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, true, "icon-yellow", CalendarEventState.RUNNING);
+        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, true, "icon-grey", CalendarEventState.RUNNING);
+        testStartedEvent(Result.ABORTED, BallColor.GREY, true, "icon-grey", CalendarEventState.RUNNING);
     }
 
-    public void testStartedEvent(Result result, BallColor ballColor, String iconClass, boolean running, CalendarEventState state) throws ParseException {
+    public void testStartedEvent(Result result, BallColor ballColor, boolean running, String expectedIconClass, CalendarEventState expectedState) throws ParseException {
         Calendar start = cal("2018-01-01 00:00:00 UTC");
         Calendar end = cal("2018-01-01 00:01:00 UTC");
         long duration =  60 * 1000;
@@ -148,7 +146,8 @@ public class CalendarEventFactoryTest {
         when(project.getTriggers()).thenReturn(triggers);
         when(project.isBuilding()).thenReturn(running);
 
-        StartedCalendarEvent event = calendarEventFactory.createStartedEvent(project, build);
+        Moment now = new Moment(end);
+        StartedCalendarEvent event = getCalendarEventFactory(now).createStartedEvent(project, build);
         assertThat(event.getJob(), is((Job)project));
         assertThat(event.getTitle(), is("Example Build #1"));
         assertThat(event.getStart(), is(mom(start)));
@@ -156,10 +155,10 @@ public class CalendarEventFactoryTest {
         assertThat(event.getDuration(), is(duration));
         assertThat(event.getDurationString(), containsString("1 Minute"));
         assertThat(event.getUrl(), is("example/build/url/"));
-        assertThat(event.getId(), is("example-build-url"));
+        assertThat(event.getId(), is("example-item-url-1514764800000"));
         assertThat(event.getBuild(), is(build));
-        assertThat(event.getState(), is(state));
-        assertThat(event.getIconClassName(), is(iconClass));
+        assertThat(event.getState(), is(expectedState));
+        assertThat(event.getIconClassName(), is(expectedIconClass));
         assertThat(event.getNextScheduledEvent(), is(notNullValue()));
         assertThat(event.getNextScheduledEvent().getState(), is(CalendarEventState.SCHEDULED));
         assertThat(event.getPreviousStartedEvent(), is(notNullValue()));
@@ -176,66 +175,68 @@ public class CalendarEventFactoryTest {
 
         Job item = mock(Job.class);
 
+        Moment now = new Moment();
+
         // MomentRange:       |           |
         // Event:       #####
         Calendar start1 = cal("2018-01-01 00:00:00 UTC");
-        CalendarEvent event1 = calendarEventFactory.createScheduledEvent(item, start1, hours(6));
+        CalendarEvent event1 = getCalendarEventFactory(now).createScheduledEvent(item, start1, hours(6));
         assertThat(event1.getEnd(), is(mom("2018-01-01 06:00:00 UTC")));
         assertThat(event1.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:                   #####
         Calendar start2 = cal("2018-01-02 00:00:00 UTC");
-        CalendarEvent event2 = calendarEventFactory.createScheduledEvent(item, start2, hours(6));
+        CalendarEvent event2 = getCalendarEventFactory(now).createScheduledEvent(item, start2, hours(6));
         assertThat(event2.getEnd(), is(mom("2018-01-02 06:00:00 UTC")));
         assertThat(event2.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event:   #####
         Calendar start3 = cal("2017-12-31 18:00:00 UTC");
-        CalendarEvent event3 = calendarEventFactory.createScheduledEvent(item, start3, hours(6));
+        CalendarEvent event3 = getCalendarEventFactory(now).createScheduledEvent(item, start3, hours(6));
         assertThat(event3.getEnd(), is(mom("2018-01-01 00:00:00 UTC")));
         assertThat(event3.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event:               #####
         Calendar start4 = cal("2018-01-01 18:00:00 UTC");
-        CalendarEvent event4 = calendarEventFactory.createScheduledEvent(item, start4, hours(6));
+        CalendarEvent event4 = getCalendarEventFactory(now).createScheduledEvent(item, start4, hours(6));
         assertThat(event4.getEnd(), is(mom("2018-01-02 00:00:00 UTC")));
         assertThat(event4.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:     #####
         Calendar start5 = cal("2017-12-31 21:00:00 UTC");
-        CalendarEvent event5 = calendarEventFactory.createScheduledEvent(item, start5, hours(6));
+        CalendarEvent event5 = getCalendarEventFactory(now).createScheduledEvent(item, start5, hours(6));
         assertThat(event5.getEnd(), is(mom("2018-01-01 03:00:00 UTC")));
         assertThat(event5.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:                 #####
         Calendar start6 = cal("2018-01-01 21:00:00 UTC");
-        CalendarEvent event6 = calendarEventFactory.createScheduledEvent(item, start6, hours(6));
+        CalendarEvent event6 = getCalendarEventFactory(now).createScheduledEvent(item, start6, hours(6));
         assertThat(event6.getEnd(), is(mom("2018-01-02 03:00:00 UTC")));
         assertThat(event6.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:                     #####
         Calendar start7 = cal("2018-01-02 03:00:00 UTC");
-        CalendarEvent event7 = calendarEventFactory.createScheduledEvent(item, start7, hours(6));
+        CalendarEvent event7 = getCalendarEventFactory(now).createScheduledEvent(item, start7, hours(6));
         assertThat(event7.getEnd(), is(mom("2018-01-02 09:00:00 UTC")));
         assertThat(event7.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event: #####
         Calendar start8 = cal("2017-12-31 03:00:00 UTC");
-        CalendarEvent event8 = calendarEventFactory.createScheduledEvent(item, start8, hours(6));
+        CalendarEvent event8 = getCalendarEventFactory(now).createScheduledEvent(item, start8, hours(6));
         assertThat(event8.getEnd(), is(mom("2017-12-31 09:00:00 UTC")));
         assertThat(event8.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event:      ###############
         Calendar start9 = cal("2017-12-31 21:00:00 UTC");
-        CalendarEvent event9 = calendarEventFactory.createScheduledEvent(item, start9, hours(30));
+        CalendarEvent event9 = getCalendarEventFactory(now).createScheduledEvent(item, start9, hours(30));
         assertThat(event9.getEnd(), is(mom("2018-01-02 03:00:00 UTC")));
         assertThat(event9.isInRange(range), is(true));
     }
@@ -251,7 +252,8 @@ public class CalendarEventFactoryTest {
 
         AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
 
-        StartedCalendarEvent event = calendarEventFactory.createStartedEvent(project, build);
+        Moment now = new Moment(start);
+        StartedCalendarEvent event = getCalendarEventFactory(now).createStartedEvent(project, build);
         assertThat(event.getStart(), is(mom(start)));
         assertThat(event.getEnd(), is(mom(end)));
     }
