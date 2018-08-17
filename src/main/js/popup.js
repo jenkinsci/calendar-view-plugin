@@ -25,6 +25,7 @@
 import $ from 'jquery';
 import moment from 'moment';
 import tippy from 'tippy.js';
+import * as events from './events.js';
 
 function head(event, options) {
   var $head = $('<div class="tooltip-head"></div>')
@@ -109,13 +110,13 @@ function dateLink(build, view) {
   var dateFormat = CalendarViewOptions.formats[view.type].popupBuildTimeFormat;
   var $dateLink = $('<a class="time" href="#"></a>');
   $dateLink.click(function() {
-    closeAll();
     if (view.intervalStart.isSameOrBefore(date) && view.intervalEnd.isAfter(date)) {
-      openForEventId(build.id, view);
+      events.select({eventId: build.id, view: view});
     } else {
-      CalendarViewOptions.gotoEventId = build.id;
+      events.preselect({eventId: build.id, view: view});
       view.calendar.gotoDate(date);
     }
+    events.selectTimeout(700);
     return false;
   });
   return $dateLink.append($('<time></time>').text(date.format(dateFormat)));
@@ -127,35 +128,32 @@ export function dom(event, view, options) {
     .append(body(event, view));
 }
 
-export function openForEvent(event, view, target, manual) {
-  var $popup = dom(event, view, {
-    close: function() { popupInstance.hide(); }
+export function open(options) {
+  var $popup = dom(options.event, options.view, {
+    close: function() {
+      events.unselect();
+    }
   });
-
-  var popupInstance = tippy.one(target, {
+  var popupInstance = tippy.one(options.target, {
     html: $popup[0],
     arrow: true,
     animation: 'fade',
     interactive: true,
     theme: 'jenkins',
-    trigger: manual ? 'manual' : 'mouseenter focus',
     size: 'large',
+    onHide: function() {
+      if (events.hasSelected()) {
+        events.unselect();
+      }
+    },
     onHidden: function() {
       popupInstance.destroy();
     }
   });
-  if (manual) {
-    popupInstance.show();
-  }
+  popupInstance.show();
 }
 
-export function openForEventId(eventId, view) {
-  var event = view.calendar.clientEvents(function(e) { return e.id === eventId; })[0];
-  var target = $('.event-id-' + eventId)[0];
-  openForEvent(event, view, target, true);
-}
-
-export function closeAll() {
+export function close() {
   $('*[data-tippy]').each(function(i, el) {
     el._tippy.destroy();
   });

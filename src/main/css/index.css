@@ -126,6 +126,15 @@
   100% { opacity:1; }
 }
 
+.event-selected {
+  opacity:0.6;
+}
+.event-state-scheduled.event-selected {
+  opacity:1;
+  background:#ddd;
+}
+
+
 .tippy-tooltip.jenkins-theme {
   background-color: white;
   border: 1px solid #ccc;

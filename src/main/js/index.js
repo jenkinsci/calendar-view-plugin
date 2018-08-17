@@ -30,9 +30,11 @@ import '../../../node_modules/fullcalendar/dist/fullcalendar.css';
 import '../css/index.css';
 
 import * as hashParams from './hash-params.js';
-import * as popup from './popup.js';
+import * as events from './events.js';
 
 const hashParamOptions = hashParams.parse(window.location.hash);
+
+var timeout = null;
 
 $(function() {
   $('#calendar-view').fullCalendar({
@@ -90,14 +92,19 @@ $(function() {
       window.location = hashParams.serialize({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
     },
     eventAfterAllRender: function(view) {
-      if (CalendarViewOptions.gotoEventId) {
-        popup.openForEventId(CalendarViewOptions.gotoEventId, view);
-        CalendarViewOptions.gotoEventId = null;
-      }
+      events.select();
     },
     eventMouseover: function(event, jsEvent, view) {
-      var target = $(jsEvent.target || jsEvent.srcElement).closest('.fc-event')[0];
-      popup.openForEvent(event, view, target, false);
+      timeout = setTimeout(function() {
+        events.select({eventId: event.id, view: view});
+        timeout = null;
+      }, events.selectTimeout());
+    },
+    eventMouseout: function(event, jsEvent, view) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
     }
   });
 });
