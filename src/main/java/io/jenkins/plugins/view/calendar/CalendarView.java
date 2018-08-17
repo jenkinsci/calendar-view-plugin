@@ -411,8 +411,8 @@ public class CalendarView extends ListView {
     }
 
     public boolean isGreenBallsEnabled() {
-        Plugin greenballs = Jenkins.getInstance().getPlugin("greenballs");
-        return (greenballs != null) ? true : false;
+        final Plugin greenballs = Jenkins.getInstance().getPlugin("greenballs");
+        return (greenballs == null) ? false : true;
     }
 
     @Extension
