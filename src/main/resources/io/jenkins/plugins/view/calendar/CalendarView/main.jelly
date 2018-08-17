@@ -37,6 +37,14 @@ THE SOFTWARE.
     </div>
 
     <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
+    <j:if test="${it.greenBallsEnabled}">
+      <style>
+        .fc-event.event-result-success {
+          background-color: #528b02;
+          border-color: #528b02;
+        }
+      </style>
+    </j:if>
     <script>
        CalendarViewOptions = {
          defaultView: '${it.calendarViewType.name().toLowerCase()}-view',
