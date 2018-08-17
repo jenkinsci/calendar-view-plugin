@@ -83,11 +83,13 @@ $(function() {
     },
     weekends: CalendarViewOptions.weekSettings.weekends,
     firstDay: CalendarViewOptions.weekSettings.firstDay,
+    weekNumbers: CalendarViewOptions.weekSettings.weekNumbers,
     monthNames: CalendarViewOptions.names.monthNames,
     monthNamesShort: CalendarViewOptions.names.monthNamesShort,
     dayNames: CalendarViewOptions.names.dayNames,
     dayNamesShort: CalendarViewOptions.names.dayNamesShort,
     buttonText: CalendarViewOptions.buttonText,
+    navLinks: true,
     viewRender: function(view, element) {
       window.location = hashParams.serialize({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
     },

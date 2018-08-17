@@ -103,6 +103,7 @@ THE SOFTWARE.
          },
          weekSettings: {
            weekends: ${(it.useCustomWeekSettings) ? it.weekSettingsShowWeekends : true},
+           weekNumbers: ${(it.useCustomWeekSettings) ? it.weekSettingsShowWeekNumbers : true},
            firstDay: ${(it.useCustomWeekSettings) ? it.weekSettingsFirstDay : 1},
          },
          formats: {

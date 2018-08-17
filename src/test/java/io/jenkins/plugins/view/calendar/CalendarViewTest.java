@@ -78,6 +78,7 @@ public class CalendarViewTest {
         assertThat(calendarView.isUseCustomSlotSettings(), equalTo(false));
 
         assertThat(calendarView.isWeekSettingsShowWeekends(), equalTo(true));
+        assertThat(calendarView.isWeekSettingsShowWeekNumbers(), equalTo(true));
         assertThat(calendarView.getWeekSettingsFirstDay(), equalTo(1));
 
         assertThat(calendarView.getMonthTitleFormat(), equalTo(""));
@@ -114,6 +115,7 @@ public class CalendarViewTest {
 
         calendarView.setUseCustomWeekSettings(true);
         calendarView.setWeekSettingsShowWeekends(false);
+        calendarView.setWeekSettingsShowWeekNumbers(false);
         calendarView.setWeekSettingsFirstDay(3);
 
         j.configRoundtrip(calendarView);
@@ -125,6 +127,7 @@ public class CalendarViewTest {
         assertThat(calendarView.isUseCustomSlotSettings(), equalTo(false));
 
         assertThat(calendarView.isWeekSettingsShowWeekends(), equalTo(false));
+        assertThat(calendarView.isWeekSettingsShowWeekNumbers(), equalTo(false));
         assertThat(calendarView.getWeekSettingsFirstDay(), equalTo(3));
 
         assertThat(calendarView.getMonthTitleFormat(), equalTo(""));
@@ -186,6 +189,7 @@ public class CalendarViewTest {
         assertThat(calendarView.isUseCustomSlotSettings(), equalTo(false));
 
         assertThat(calendarView.isWeekSettingsShowWeekends(), equalTo(true));
+        assertThat(calendarView.isWeekSettingsShowWeekNumbers(), equalTo(true));
         assertThat(calendarView.getWeekSettingsFirstDay(), equalTo(1));
 
         assertThat(calendarView.getMonthTitleFormat(), equalTo("abc"));
@@ -237,6 +241,7 @@ public class CalendarViewTest {
         assertThat(calendarView.isUseCustomSlotSettings(), equalTo(true));
 
         assertThat(calendarView.isWeekSettingsShowWeekends(), equalTo(true));
+        assertThat(calendarView.isWeekSettingsShowWeekNumbers(), equalTo(true));
         assertThat(calendarView.getWeekSettingsFirstDay(), equalTo(1));
 
         assertThat(calendarView.getMonthTitleFormat(), equalTo(""));

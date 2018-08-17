@@ -67,6 +67,7 @@ public class CalendarView extends ListView {
     private Boolean useCustomSlotSettings;
 
     private Boolean weekSettingsShowWeekends;
+    private Boolean weekSettingsShowWeekNumbers;
     private Integer weekSettingsFirstDay;
 
     private String monthTitleFormat;
@@ -137,6 +138,14 @@ public class CalendarView extends ListView {
 
     public void setWeekSettingsShowWeekends(final boolean weekSettingsShowWeekends) {
         this.weekSettingsShowWeekends = weekSettingsShowWeekends;
+    }
+
+    public boolean isWeekSettingsShowWeekNumbers() {
+        return defaultIfNull(weekSettingsShowWeekNumbers, true);
+    }
+
+    public void setWeekSettingsShowWeekNumbers(final boolean weekSettingsShowWeekNumbers) {
+        this.weekSettingsShowWeekNumbers = weekSettingsShowWeekNumbers;
     }
 
     public int getWeekSettingsFirstDay() {
@@ -345,6 +354,7 @@ public class CalendarView extends ListView {
         setUseCustomSlotSettings(req.getParameter("useCustomSlotSettings") != null);
 
         setWeekSettingsShowWeekends(req.getParameter("weekSettingsShowWeekends") != null);
+        setWeekSettingsShowWeekNumbers(req.getParameter("weekSettingsShowWeekNumbers") != null);
         setWeekSettingsFirstDay(Integer.parseInt(req.getParameter("weekSettingsFirstDay")));
 
         setMonthTitleFormat(req.getParameter("monthTitleFormat"));

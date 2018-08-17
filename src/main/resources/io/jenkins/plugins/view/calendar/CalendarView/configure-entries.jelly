@@ -39,9 +39,10 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 
         <f:optionalBlock name="useCustomWeekSettings" title="${%Use custom week day settings}"
                          checked="${it.useCustomWeekSettings}">
-            <f:entry title="${%Weekends}">
+            <f:entry title="${%Weeks}">
                 <div>
                     <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends"/> ${%Show weekends}
+                    <f:checkbox name="weekSettingsShowWeekNumbers" field="weekSettingsShowWeekNumbers"/> ${%Show week numbers}
                 </div>
             </f:entry>
             <f:entry title="${%First day of week}">
@@ -55,6 +56,11 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
                         <f:option value="5" selected="${it.weekSettingsFirstDay==5}">${%Friday}</f:option>
                         <f:option value="6" selected="${it.weekSettingsFirstDay==6}">${%Saturday}</f:option>
                     </select>
+                </div>
+            </f:entry>
+            <f:entry title="${%Week numbers}">
+                <div>
+                    <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends"/> ${%Show week}
                 </div>
             </f:entry>
         </f:optionalBlock>
