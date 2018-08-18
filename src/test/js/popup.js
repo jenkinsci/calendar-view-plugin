@@ -5,7 +5,13 @@
 require('babel-register')({ presets: [ 'env' ] })
 
 var JSDOM = require('jsdom').JSDOM;
-var jquery = require('jquery')(new JSDOM('<html></html>').window);
+var w = new JSDOM('<html></html>').window;
+var jquery = require('jquery')(w);
+
+global.window = w;
+global.navigator = w.navigator;
+global.Element = w.Element;
+global.document = w.document;
 
 var mockery = require('mockery');
 mockery.enable({ useCleanCache: true });
