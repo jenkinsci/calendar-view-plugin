@@ -31,6 +31,7 @@ import '../css/index.css';
 
 import * as hashParams from './hash-params.js';
 import * as events from './events.js';
+import * as scroll from './scroll.js';
 
 const hashParamOptions = hashParams.parse(window.location.hash);
 
@@ -95,6 +96,7 @@ $(function() {
     },
     eventAfterAllRender: function(view) {
       events.select();
+      scroll.toSelected();
     },
     eventMouseover: function(event, jsEvent, view) {
       timeout = setTimeout(function() {

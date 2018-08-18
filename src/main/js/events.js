@@ -41,7 +41,7 @@ function getSelectedEvent() {
   })[0];
 }
 
-function getSelectedElement() {
+export function getSelectedElement() {
   return $('.event-id-' + selectedEvent.eventId)[0];
 }
 

@@ -26,6 +26,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import tippy from 'tippy.js';
 import * as events from './events.js';
+import * as scroll from './scroll.js';
 
 function head(event, options) {
   var $head = $('<div class="tooltip-head"></div>')
@@ -112,6 +113,7 @@ function dateLink(build, view) {
   $dateLink.click(function() {
     if (view.intervalStart.isSameOrBefore(date) && view.intervalEnd.isAfter(date)) {
       events.select({eventId: build.id, view: view});
+      scroll.toSelected();
     } else {
       events.preselect({eventId: build.id, view: view});
       view.calendar.gotoDate(date);
