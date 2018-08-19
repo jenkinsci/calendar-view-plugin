@@ -3,7 +3,7 @@
 [![Dependency Status](https://david-dm.org/jenkinsci/calendar-view-plugin.svg)](https://david-dm.org/jenkinsci/calendar-view-plugin)
 [![devDependency Status](https://david-dm.org/jenkinsci/calendar-view-plugin/dev-status.svg)](https://david-dm.org/jenkinsci/calendar-view-plugin?type=dev)
 [![Code Climate](https://codeclimate.com/github/jenkinsci/calendar-view-plugin/badges/gpa.svg)](https://codeclimate.com/github/jenkinsci/calendar-view-plugin)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a04ec3c3de0444699ecb2d123a9b7697)](https://www.codacy.com/app/svenschoenung/calendar-view-plugin)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a04ec3c3de0444699ecb2d123a9b7697)](https://www.codacy.com/app/svenschoenung/calendar-view-plugin) [![Greenkeeper badge](https://badges.greenkeeper.io/jenkinsci/calendar-view-plugin.svg)](https://greenkeeper.io/)
 
 # Jenkins Calendar View Plugin
 
