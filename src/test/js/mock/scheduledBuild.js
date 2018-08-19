@@ -10,7 +10,7 @@ module.exports = function() {
     state: 'scheduled',
     className: 'event-state-future event-id-view-calendar-job-backup',
     timestampString: 'Startet in 2 Stunden 35 Minuten',
-    duratinString: 'Vorraussichtliche Dauer: 29 Minuten',
-    allDay': false
+    durationString: 'Vorraussichtliche Dauer: 29 Minuten',
+    allDay: false
   };
 };
