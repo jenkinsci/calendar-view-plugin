@@ -152,7 +152,9 @@ export function open(options) {
       popupInstance.destroy();
     }
   });
-  popupInstance.show();
+  if (popupInstance) {
+    popupInstance.show();
+  }
 }
 
 export function close() {
