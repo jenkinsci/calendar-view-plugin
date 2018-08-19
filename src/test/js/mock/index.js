@@ -5,5 +5,5 @@ module.exports = {
   scheduledBuild: require('./scheduledBuild.js'),
   nextScheduledBuild: require('./nextScheduledBuild.js'),
   build: require('./build.js'),
-  view: require('./view.js'),
+  view: require('./view.js')
 };

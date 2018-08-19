@@ -2,7 +2,7 @@
 
 /* global describe:false, it:false */
 
-require('babel-register')({ presets: [ 'env' ] })
+require('babel-register')({ presets: [ 'env' ] });
 
 var chai = require('chai');
 var expect = chai.expect;
@@ -50,7 +50,6 @@ describe('hashParams.parse()', function() {
   });
 });
 
-
 describe('hashParams.serialize()', function() {
   it('should return string with only a hash sign for empty object/null/undefined', function() {
     expect(hashParams.serialize(null)).to.eql('#');
@@ -77,8 +76,4 @@ describe('hashParams.serialize()', function() {
     expect(hashParams.serialize({params1: 'val1', params2: undefined})).to.be.eql('#params1=val1');
     expect(hashParams.serialize({params1: 'val1', params2: null})).to.be.eql('#params1=val1');
   });
-
-
-
 });
-

@@ -1,8 +1,7 @@
 'use strict';
 
-/* global describe:false, it:false */
+/* global describe:false, it:false, beforeEach:false */
 
-var moment = require('moment');
 var chai = require('chai');
 var expect = chai.expect;
 
@@ -137,7 +136,4 @@ describe('popup.dom()', function() {
     expect(html).to.have.string('href="' + build16.url + '"');
     expect(html).to.have.string('href="' + build17.url + '"');
   });
-
-
 });
-
