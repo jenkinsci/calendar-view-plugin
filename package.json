@@ -5,8 +5,6 @@
   "main": "src/main/js/index.js",
   "scripts": {
     "test": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js'",
-    "events": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/events.js'",
-    "popup": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/popup.js'",
     "coverage": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js' && nyc report --reporter=html",
     "codecov": "nyc --exclude 'src/test/js/**/*.js' report --reporter=text-lcov > coverage.lcov && codecov",
     "dev": "webpack --watch --mode development"
