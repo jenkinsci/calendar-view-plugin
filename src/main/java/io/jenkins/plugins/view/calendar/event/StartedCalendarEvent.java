@@ -24,7 +24,10 @@
 package io.jenkins.plugins.view.calendar.event;
 
 import hudson.model.Run;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+@Restricted(NoExternalUse.class)
 public interface StartedCalendarEvent extends CalendarEvent {
     Run getBuild();
 

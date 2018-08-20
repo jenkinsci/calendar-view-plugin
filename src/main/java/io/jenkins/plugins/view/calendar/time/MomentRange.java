@@ -23,8 +23,12 @@
  */
 package io.jenkins.plugins.view.calendar.time;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
 import java.util.Calendar;
 
+@Restricted(NoExternalUse.class)
 public class MomentRange {
     private final Moment start;
     private final Moment end;

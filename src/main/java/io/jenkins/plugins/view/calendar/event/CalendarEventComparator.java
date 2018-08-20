@@ -23,9 +23,13 @@
  */
 package io.jenkins.plugins.view.calendar.event;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
 import java.io.Serializable;
 import java.util.Comparator;
 
+@Restricted(NoExternalUse.class)
 public class CalendarEventComparator implements Comparator<CalendarEvent>, Serializable {
 
     private static final long serialVersionUID = -3188090417065119856L;

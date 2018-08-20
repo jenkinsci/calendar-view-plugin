@@ -24,11 +24,14 @@
 package io.jenkins.plugins.view.calendar.time;
 
 import io.jenkins.plugins.view.calendar.util.DateUtil;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.util.Calendar;
 import java.util.Date;
 
 @SuppressWarnings("PMD.ShortClassName")
+@Restricted(NoExternalUse.class)
 public class Moment implements Comparable<Object> {
     private final Calendar calendar;
 

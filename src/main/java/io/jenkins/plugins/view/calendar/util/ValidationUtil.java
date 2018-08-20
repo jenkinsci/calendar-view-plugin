@@ -24,12 +24,15 @@
 package io.jenkins.plugins.view.calendar.util;
 
 import hudson.model.Descriptor;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Restricted(NoExternalUse.class)
 public final class ValidationUtil {
 
     private ValidationUtil() { }

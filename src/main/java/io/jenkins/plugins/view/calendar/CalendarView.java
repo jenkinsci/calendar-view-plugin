@@ -35,6 +35,8 @@ import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.RequestUtil;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
@@ -56,6 +58,7 @@ import static io.jenkins.plugins.view.calendar.util.ValidationUtil.*;
     "PMD.ExcessivePublicCount",
     "PMD.TooManyFields"
 })
+@Restricted(NoExternalUse.class)
 public class CalendarView extends ListView {
 
     public static enum CalendarViewType {

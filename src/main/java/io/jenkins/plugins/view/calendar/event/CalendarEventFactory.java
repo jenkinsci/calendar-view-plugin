@@ -31,12 +31,15 @@ import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+@Restricted(NoExternalUse.class)
 public class CalendarEventFactory {
     private final transient Moment now;
     private final transient CalendarEventService calendarEventService;

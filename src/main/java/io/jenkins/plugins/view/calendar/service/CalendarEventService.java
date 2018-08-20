@@ -29,6 +29,8 @@ import hudson.util.RunList;
 import io.jenkins.plugins.view.calendar.event.*;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +40,7 @@ import java.util.List;
 import static io.jenkins.plugins.view.calendar.time.MomentRange.isValidRange;
 import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
 
+@Restricted(NoExternalUse.class)
 public class CalendarEventService {
 
     private final transient CronJobService cronJobService;

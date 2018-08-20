@@ -23,11 +23,14 @@
  */
 package io.jenkins.plugins.view.calendar.util;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.text.ParseException;
 import java.util.Calendar;
 
+@Restricted(NoExternalUse.class)
 public final class RequestUtil {
 
     private RequestUtil() {}

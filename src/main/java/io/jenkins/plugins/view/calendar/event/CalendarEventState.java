@@ -23,6 +23,10 @@
  */
 package io.jenkins.plugins.view.calendar.event;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
+@Restricted(NoExternalUse.class)
 public enum CalendarEventState {
     FINISHED, RUNNING, SCHEDULED;
 }

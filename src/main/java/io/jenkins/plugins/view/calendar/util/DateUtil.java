@@ -23,10 +23,14 @@
  */
 package io.jenkins.plugins.view.calendar.util;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@Restricted(NoExternalUse.class)
 public final class DateUtil {
     public static final String FORMAT_DATE = "yyyy-MM-dd";
     public static final String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";

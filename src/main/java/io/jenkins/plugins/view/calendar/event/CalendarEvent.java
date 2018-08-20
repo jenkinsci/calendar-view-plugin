@@ -26,7 +26,10 @@ package io.jenkins.plugins.view.calendar.event;
 import hudson.model.Job;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+@Restricted(NoExternalUse.class)
 public interface CalendarEvent {
     String getId();
 

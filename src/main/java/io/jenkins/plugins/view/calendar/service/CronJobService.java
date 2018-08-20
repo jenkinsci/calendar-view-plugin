@@ -33,9 +33,12 @@ import hudson.triggers.Trigger;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.util.*;
 
+@Restricted(NoExternalUse.class)
 public class CronJobService {
 
     private final transient Moment now;
