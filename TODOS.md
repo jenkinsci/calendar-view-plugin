@@ -2,7 +2,7 @@
 
 Possible new features for future releases (in no particular order):
 
-- [ ] Scroll to popup to keep it in view
+- [x] Scroll to popup to keep it in view
 - [ ] Auto-refresh button in toolbar
 - [ ] Directly accessible calendar view for a job from the action menu
 - [x] Support for green balls
