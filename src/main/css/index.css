@@ -56,11 +56,7 @@
 .fc-event-container a.event-state-scheduled,
 .fc-event-container a.event-state-scheduled:link,
 .fc-event-container a.event-state-scheduled:active,
-.fc-event-container a.event-state-scheduled:visited,
-.fc-event-container a.event-state-running,
-.fc-event-container a.event-state-running:link,
-.fc-event-container a.event-state-running:active,
-.fc-event-container a.event-state-running:visited {
+.fc-event-container a.event-state-scheduled:visited {
   color:black;
 }
 
@@ -91,8 +87,8 @@
 }
 
 .fc-event.event-state-running {
-  border-color: gray;
-  background-color: #eee;
+  border-color:white;
+  border-style: dashed;
   animation: blink-animation 1.5s infinite;
   -webkit-animation: blink-animation 1.5s infinite;
 }

@@ -37,7 +37,7 @@ THE SOFTWARE.
     "end": "<i:formatDate value="${event.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
     "duration": ${event.duration},
     "state": "${event.state.toString().toLowerCase()}",
-    "className": "<j:if test="${event.state == 'FINISHED'}">event-result-${event.build.result.toString().toLowerCase()}</j:if> event-state-${event.state.toString().toLowerCase()} event-id-${event.id}",
+    "className": "event-result-<j:if test="${event.state == 'FINISHED'}">${event.build.result.toString().toLowerCase()}</j:if><j:if test="${event.state == 'RUNNING'}">${event.job.lastCompletedBuild.result.toString().toLowerCase()}</j:if> event-state-${event.state.toString().toLowerCase()} event-id-${event.id}",
     <j:if test="${event.state == 'SCHEDULED'}">
       "timestampString": "<j:out value="${%startsIn(event.timestampString)}"/>",
       <j:if test="${event.duration lt 0}">
