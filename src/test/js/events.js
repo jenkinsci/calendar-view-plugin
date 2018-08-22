@@ -37,4 +37,3 @@ describe('events.select()', function() {
     expect(events.hasSelected()).to.not.be.ok;
   });
 });
-
