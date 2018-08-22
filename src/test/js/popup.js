@@ -8,12 +8,10 @@ var expect = chai.expect;
 var requireUncached = require('require-uncached');
 var mock = require('./mock');
 
-var pastBuild = mock.pastBuild();
-var scheduledBuild = mock.scheduledBuild();
-var nextScheduledBuild = mock.nextScheduledBuild();
-var build15 = mock.build(15);
-var build16 = mock.build(16);
-var build17 = mock.build(17);
+var build15 = mock.build(15, 'finished');
+var build16 = mock.build(16, 'finished');
+var build17 = mock.build(17, 'running');
+
 var view = mock.view([build15]);
 
 var popup;
@@ -25,8 +23,8 @@ describe('popup.dom()', function() {
     popup = requireUncached('../../main/js/popup.js');
   });
 
-  it('should create dom for past event', function() {
-    var event = Object.assign({}, pastBuild);
+  it('should create dom for finished event', function() {
+    var event = mock.startedBuild('finished');
     var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
@@ -41,9 +39,9 @@ describe('popup.dom()', function() {
     expect(html).not.to.have.string(CalendarViewOptions.popupText.nextScheduledBuild);
   });
 
-  it('should create dom for past event with scheduled build', function() {
-    var event = Object.assign({}, pastBuild);
-    event.nextScheduledBuild = nextScheduledBuild;
+  it('should create dom for finished event with scheduled build', function() {
+    var event = mock.startedBuild('finished');
+    event.nextScheduledBuild = mock.scheduledBuild();
     var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
@@ -58,9 +56,9 @@ describe('popup.dom()', function() {
     expect(html).to.have.string(CalendarViewOptions.popupText.nextScheduledBuild);
   });
 
-  it('should create dom for past event with previous build', function() {
-    var event = Object.assign({}, pastBuild);
-    event.previousStartedBuild = build15;
+  it('should create dom for finished event with previous build', function() {
+    var event = mock.startedBuild('finished');
+    event.previousStartedBuild = mock.build(15, 'finished');
     var dom = popup.dom(event, view, {close: function() { }});
     var html = dom[0].outerHTML;
 
@@ -80,9 +78,9 @@ describe('popup.dom()', function() {
     dom.find('.previous time').click();
   });
 
-  it('should create dom for past event with next build', function() {
-    var event = Object.assign({}, pastBuild);
-    event.nextStartedBuild = build17;
+  it('should create dom for finished event with next build', function() {
+    var event = mock.startedBuild('finished');
+    event.nextStartedBuild = mock.build(17, 'finished');
     var dom = popup.dom(event, view, {close: function() { }});
     var html = dom[0].outerHTML;
 
@@ -102,8 +100,42 @@ describe('popup.dom()', function() {
     dom.find('.next time').click();
   });
 
+  it('should create dom for running event', function() {
+    var event = mock.startedBuild('running');
+    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+
+    expect(html).to.have.string('>' + event.title + '<');
+    expect(html).to.have.string('href="' + event.url + '"');
+    expect(html).to.have.string(event.icon);
+    expect(html).to.have.string(CalendarViewOptions.popupText.build);
+    expect(html).to.have.string(event.timestampString);
+    expect(html).to.have.string(event.durationString);
+    expect(html).to.have.string(CalendarViewOptions.popupText.buildHistory);
+    expect(html).to.have.string(CalendarViewOptions.popupText.buildHistoryEmpty);
+  });
+
+  it('should create dom for running event with build history', function() {
+    var event = mock.startedBuild('running');
+    event.builds = [build15, build16, build17];
+    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+
+    expect(html).to.have.string('>' + event.title + '<');
+    expect(html).to.have.string('href="' + event.url + '"');
+    expect(html).to.have.string(event.icon);
+    expect(html).to.have.string(CalendarViewOptions.popupText.build);
+    expect(html).to.have.string(event.timestampString);
+    expect(html).to.have.string(event.durationString);
+    expect(html).to.have.string(CalendarViewOptions.popupText.buildHistory);
+    expect(html).to.have.string(build15.title);
+    expect(html).to.have.string(build16.title);
+    expect(html).to.have.string(build17.title);
+    expect(html).to.have.string('href="' + build15.url + '"');
+    expect(html).to.have.string('href="' + build16.url + '"');
+    expect(html).to.have.string('href="' + build17.url + '"');
+  });
+
   it('should create dom for scheduled event', function() {
-    var event = Object.assign({}, scheduledBuild);
+    var event = mock.startedBuild('scheduled');
     event.builds = [];
     var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
 
@@ -118,7 +150,7 @@ describe('popup.dom()', function() {
   });
 
   it('should create dom for scheduled event with build history', function() {
-    var event = Object.assign({}, scheduledBuild);
+    var event = mock.startedBuild('scheduled');
     event.builds = [build15, build16, build17];
     var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
 

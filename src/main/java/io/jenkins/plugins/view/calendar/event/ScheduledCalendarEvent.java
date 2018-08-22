@@ -26,9 +26,6 @@ package io.jenkins.plugins.view.calendar.event;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import java.util.List;
-
 @Restricted(NoExternalUse.class)
 public interface ScheduledCalendarEvent extends CalendarEvent {
-    List<StartedCalendarEvent> getLastEvents();
 }

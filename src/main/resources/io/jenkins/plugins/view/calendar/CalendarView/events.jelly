@@ -38,8 +38,13 @@ THE SOFTWARE.
     "duration": ${event.duration},
     "state": "${event.state.toString().toLowerCase()}",
     "className": "event-result-<j:if test="${event.state == 'FINISHED'}">${event.build.result.toString().toLowerCase()}</j:if><j:if test="${event.state == 'RUNNING'}">${event.job.lastCompletedBuild.result.toString().toLowerCase()}</j:if> event-state-${event.state.toString().toLowerCase()} event-id-${event.id}",
-    <j:if test="${event.state == 'SCHEDULED'}">
+    <j:if test="${event.state == 'SCHEDULED' || event.state == 'RUNNING'}">
+      <j:if test="${event.state == 'SCHEDULED'}">
       "timestampString": "<j:out value="${%startsIn(event.timestampString)}"/>",
+      </j:if>
+      <j:if test="${event.state == 'RUNNING'}">
+      "timestampString": "<j:out value="${%startedAgo(event.timestampString)}"/>",
+      </j:if>
       <j:if test="${event.duration lt 0}">
       "durationString": "<j:out value="${%estimatedDuration}: ${%unknownDuration}"/>",
       </j:if>
@@ -48,19 +53,19 @@ THE SOFTWARE.
       </j:if>
       "builds": [
       <j:forEach var="lastEvent" items="${event.lastEvents}" varStatus="lastEventLoop">
-      <j:set var="lastEventIcon"><l:icon class="${lastEvent.iconClassName} icon-sm"/></j:set>
-        {
+          <j:set var="lastEventIcon"><l:icon class="${lastEvent.iconClassName} icon-sm"/></j:set>
+          {
           "id": "<j:out value="${it.jsonEscape(lastEvent.id)}"/>",
           "title": "<j:out value="${it.jsonEscape(lastEvent.build.displayName)}"/>",
           "url": "<j:out value="${it.jsonEscape(rootURL + '/' + lastEvent.url)}"/>",
           "icon": "<j:out value="${it.jsonEscape(lastEventIcon)}"/>",
           "start": "<i:formatDate value="${lastEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
           "end": "<i:formatDate value="${lastEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
-        }<j:if test="${!lastEventLoop.last}">,</j:if>
+          }<j:if test="${!lastEventLoop.last}">,</j:if>
       </j:forEach>
       ],
     </j:if>
-    <j:if test="${event.state == 'FINISHED' || event.state == 'RUNNING'}">
+    <j:if test="${event.state == 'FINISHED'}">
        "timestampString": "${%startedAgo(event.timestampString)}",
        "durationString": "${%duration}: ${event.durationString}",
        <j:set var="jobIcon"><l:icon class="${event.job.buildHealth.iconClassName} icon-sm"/></j:set>

@@ -29,6 +29,8 @@ import io.jenkins.plugins.view.calendar.time.MomentRange;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+import java.util.List;
+
 @Restricted(NoExternalUse.class)
 public interface CalendarEvent {
     String getId();
@@ -54,4 +56,6 @@ public interface CalendarEvent {
     boolean isInRange(MomentRange range);
 
     CalendarEventState getState();
+
+    List<StartedCalendarEvent> getLastEvents();
 }

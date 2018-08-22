@@ -38,24 +38,32 @@ function head(event, options) {
 }
 
 function body(event, view) {
-  return $('<div class="tooltip-body"></div>')
-    .append(left(event))
-    .append(right(event, view))
-    .append(bottom(event, view));
+  if (event.state === 'scheduled') {
+    return $('<div class="tooltip-body"></div>')
+      .append(buildInfo(event, view))
+      .append(buildHistory(event, view));
+  }
+  if (event.state === 'running') {
+    return $('<div class="tooltip-body"></div>')
+      .append(buildInfo(event, view))
+      .append(buildHistory(event, view));
+  }
+  if (event.state === 'finished') {
+    return $('<div class="tooltip-body"></div>')
+      .append(buildInfo(event, view))
+      .append(nextScheduledBuild(event, view))
+      .append(prevAndNextBuild(event, view));
+  }
 }
 
-function left(event) {
+function buildInfo(event) {
   return $('<div class="tooltip-left"></div>')
     .append($('<b></b>').text(CalendarViewOptions.popupText.build))
     .append($('<div class="timestamp"></div>').text(event.timestampString))
     .append($('<div class="duration"></div>').text(event.durationString));
 }
 
-function right(event, view) {
-  return (event.state === 'scheduled') ? rightForFutureBuild(event, view) : rightForPastBuild(event, view);
-}
-
-function rightForPastBuild(event, view) {
+function nextScheduledBuild(event, view) {
   return $('<div class="tooltip-right"></div>')
     .append($('<b></b>').text(CalendarViewOptions.popupText.project))
     .append($('<div></div>')
@@ -66,22 +74,22 @@ function rightForPastBuild(event, view) {
       .append(event.nextScheduledBuild ? [CalendarViewOptions.popupText.nextScheduledBuild, dateLink(event.nextScheduledBuild, view)] : ''));
 }
 
-function rightForFutureBuild(event, view) {
+function buildHistory(event, view) {
   return $('<div class="tooltip-right"></div>')
     .append($('<b></b>').text(CalendarViewOptions.popupText.buildHistory))
-    .append($('<ul></ul>').append((event.builds.length > 0) ? buildHistory(event, view) : noBuildHistory()));
+    .append($('<ul></ul>').append((event.builds && event.builds.length > 0) ? buildHistoryEntries(event, view) : noBuildHistoryEntries()));
 }
 
-function noBuildHistory() {
+function noBuildHistoryEntries() {
   return $('<li></li>').text(CalendarViewOptions.popupText.buildHistoryEmpty);
 }
 
-function buildHistory(event, view) {
+function buildHistoryEntries(event, view) {
   return event.builds.map(function(b) { return $('<li></li>').append(build(b, view)); });
 }
 
-function bottom(event, view) {
-  if (event.state === 'scheduled' || (!event.previousStartedBuild && !event.nextStartedBuild)) {
+function prevAndNextBuild(event, view) {
+  if (!event.previousStartedBuild && !event.nextStartedBuild) {
     return '';
   }
   var $bottom = $('<div class="tooltip-bottom"></div>');

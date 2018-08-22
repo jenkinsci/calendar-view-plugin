@@ -65,6 +65,7 @@ public class CalendarEventFactory {
         protected String title;
         protected String url;
         protected long duration;
+        private transient List<StartedCalendarEvent> lastEvents;
 
         protected String initId(final String url, final long startTimeInMillis) {
             return StringUtils.defaultString(url, "")
@@ -141,11 +142,17 @@ public class CalendarEventFactory {
         public String toString() {
             return DateUtil.formatDateTime(start.getTime()) + " - " + DateUtil.formatDateTime(end.getTime()) + ": " + getTitle();
         }
+
+        @Override
+        public List<StartedCalendarEvent> getLastEvents() {
+            if (this.lastEvents == null) {
+                this.lastEvents = calendarEventService.getLastEvents(this, 5);
+            }
+            return this.lastEvents;
+        }
     }
 
     private class ScheduledCalendarEventImpl extends CalendarEventImpl implements ScheduledCalendarEvent {
-        private transient List<StartedCalendarEvent> lastEvents;
-
         public ScheduledCalendarEventImpl(final Job job, final Calendar start, final long durationInMillis) {
             super();
             this.job = job;
@@ -165,14 +172,6 @@ public class CalendarEventFactory {
         @Override
         public String getIconClassName() {
             return job.getBuildHealth().getIconClassName();
-        }
-
-        @Override
-        public List<StartedCalendarEvent> getLastEvents() {
-            if (this.lastEvents == null) {
-                this.lastEvents = calendarEventService.getLastEvents(this, 5);
-            }
-            return this.lastEvents;
         }
     }
 
