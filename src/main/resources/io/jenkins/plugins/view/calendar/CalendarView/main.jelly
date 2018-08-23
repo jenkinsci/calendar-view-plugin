@@ -43,6 +43,9 @@ THE SOFTWARE.
           background-color: #528b02;
           border-color: #528b02;
         }
+        .fc-event.event-result-success.event-selected {
+          background-color: #7cad37;
+        }
       </style>
     </j:if>
     <script>

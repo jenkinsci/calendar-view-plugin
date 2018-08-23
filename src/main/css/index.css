@@ -122,19 +122,19 @@
   100% { opacity:1; }
 }
 
-.event-selected {
+.fc-event.event-selected {
   background:#aaa;
 }
-.event-result-success.event-selected {
+.fc-event.event-result-success.event-selected {
   background:#6ea5c0;
 }
-.event-result-failure.event-selected {
+.fc-event.event-result-failure.event-selected {
   background:#ff8888;
 }
-.event-result-unstable.event-selected {
+.fc-event.event-result-unstable.event-selected {
   background:#cac06f;
 }
-.event-state-scheduled.event-selected {
+.fc-event.event-state-scheduled.event-selected {
   background:#ddd;
 }
 
