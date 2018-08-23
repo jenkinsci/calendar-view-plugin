@@ -91,6 +91,18 @@ $ ./npmw run dev
 
 ## Changelog
 
+### v0.3.0 (released 2018-08-24)
+* Feature: add option to show week numbers
+* Feature: navigate to day and week views via day and week numbers
+* Feature: show successful builds as green when the [Green Balls Plugin](https://plugins.jenkins.io/greenballs) is installed
+* Feature: highlight selected builds
+* Fix: delay popups to prevent them from showing up unwanted
+* Fix: scroll to builds that are outside of viewport when navigating back and forth between builds
+* Fix: builds that last the entire visible time range are now included
+* Fix: start time for future builds used current seconds instead of always starting at zero seconds
+* Fix: scheduled builds with hashes in cron expression had wrong start time
+* Fix: builds showed up as past and future builds while they were running
+
 ### v0.2.1 (released 2018-08-06)
 * Fix: [[JENKINS-52797]](https://issues.jenkins-ci.org/browse/JENKINS-52797) ClassCastException for Matrix Projects
 * Fix: calcution of next start date was wrong when there were multiple cron expressions
