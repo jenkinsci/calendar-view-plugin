@@ -123,13 +123,20 @@
 }
 
 .event-selected {
-  opacity:0.6;
+  background:#aaa;
+}
+.event-result-success.event-selected {
+  background:#6ea5c0;
+}
+.event-result-failure.event-selected {
+  background:#ff8888;
+}
+.event-result-unstable.event-selected {
+  background:#cac06f;
 }
 .event-state-scheduled.event-selected {
-  opacity:1;
   background:#ddd;
 }
-
 
 .tippy-tooltip.jenkins-theme {
   background-color: white;
