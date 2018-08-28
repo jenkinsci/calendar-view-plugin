@@ -9,3 +9,5 @@ Possible new features for future releases (in no particular order):
 - [x] Link directly to specific day view
 - [x] Show calendar week and link directly to specific week view
 - [ ] Lower opacity for events in other months
+- [ ] Support pipelines
+- [ ] Support blue ocean?
