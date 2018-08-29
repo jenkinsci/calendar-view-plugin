@@ -26,14 +26,13 @@
  */
 package io.jenkins.plugins.view.calendar;
 
-import hudson.Plugin;
 import hudson.model.*;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.service.CronJobService;
 import io.jenkins.plugins.view.calendar.time.Moment;
+import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import io.jenkins.plugins.view.calendar.util.RequestUtil;
-import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -414,8 +413,7 @@ public class CalendarView extends ListView {
     }
 
     public boolean isGreenBallsEnabled() {
-        final Plugin greenballs = Jenkins.getInstance().getPlugin("greenballs");
-        return (greenballs == null) ? false : true;
+        return PluginUtil.hasGreenballsPluginInstalled();
     }
 
     @Extension
