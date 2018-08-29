@@ -13,6 +13,8 @@
     <packaging>hpi</packaging>
     <properties>
         <jenkins.version>2.7.3</jenkins.version>
+        <!-- Uncomment to test Pipeline jobs -->
+        <!-- <jenkins.version>2.60.3</jenkins.version> -->
         <java.level>7</java.level>
     </properties>
     <name>Calendar View Plugin</name>
@@ -66,6 +68,12 @@
             <artifactId>matrix-project</artifactId>
             <version>1.9</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-job</artifactId>
+            <version>2.0</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <build>

@@ -32,6 +32,8 @@ import hudson.scheduler.CronTabList;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import io.jenkins.plugins.view.calendar.time.Moment;
+import io.jenkins.plugins.view.calendar.util.PluginUtil;
+import jenkins.model.Jenkins;
 import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -61,7 +63,8 @@ public class CronJobServiceTest {
     public static void beforeClass() {
         CronJobServiceTest.defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
-    }
+        PluginUtil.setJenkins(mock(Jenkins.class));
+   }
 
     @AfterClass
     public static void afterClass() {

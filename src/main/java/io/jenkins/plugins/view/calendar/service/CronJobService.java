@@ -31,8 +31,10 @@ import hudson.scheduler.CronTabList;
 import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
 import io.jenkins.plugins.view.calendar.time.Moment;
+import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -87,17 +89,22 @@ public class CronJobService {
     }
 
     public List<Trigger> getCronTriggers(final Job job) {
-        final List<Trigger> triggers = new ArrayList<Trigger>();
-        if (!(job instanceof AbstractProject)) {
-            return triggers;
+        Collection<Trigger<?>> jobTriggers;
+        if (job instanceof AbstractProject) {
+            jobTriggers = ((AbstractProject)job).getTriggers().values();
+        } else if (PluginUtil.hasWorkflowJobPluginInstalled() && job instanceof WorkflowJob) {
+            jobTriggers = ((WorkflowJob)job).getTriggers().values();
+        } else {
+            return Collections.emptyList();
         }
-        final Collection<Trigger<?>> itemTriggers = ((AbstractProject) job).getTriggers().values();
-        for (final Trigger<?> trigger: itemTriggers) {
-            if (StringUtils.isNotBlank(trigger.getSpec())) {
-                triggers.add(trigger);
+
+        final List<Trigger> cronTriggers = new ArrayList<>();
+        for (final Trigger<?> jobTrigger: jobTriggers) {
+            if (StringUtils.isNotBlank(jobTrigger.getSpec())) {
+                cronTriggers.add(jobTrigger);
             }
         }
-        return triggers;
+        return cronTriggers;
     }
 
     public List<CronTab> getCronTabs(final Job job) {

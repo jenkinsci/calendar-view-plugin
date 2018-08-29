@@ -30,6 +30,8 @@ import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.service.CronJobService;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
+import io.jenkins.plugins.view.calendar.util.PluginUtil;
+import jenkins.model.Jenkins;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -59,6 +61,8 @@ public class CalendarEventFactoryTest {
 
         CalendarEventFactoryTest.defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMAN);
+
+        PluginUtil.setJenkins(mock(Jenkins.class));
     }
 
     @AfterClass

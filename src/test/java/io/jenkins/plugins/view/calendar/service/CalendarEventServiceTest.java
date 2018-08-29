@@ -29,6 +29,8 @@ import hudson.model.*;
 import hudson.util.RunList;
 import io.jenkins.plugins.view.calendar.event.*;
 import io.jenkins.plugins.view.calendar.time.Moment;
+import io.jenkins.plugins.view.calendar.util.PluginUtil;
+import jenkins.model.Jenkins;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -58,6 +60,7 @@ public class CalendarEventServiceTest {
     public static void beforeClass() {
         CalendarEventServiceTest.defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+        PluginUtil.setJenkins(mock(Jenkins.class));
     }
 
     @AfterClass
