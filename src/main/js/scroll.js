@@ -17,9 +17,9 @@ export function toSelected() {
   var element = events.getSelectedElement();
   if (element) {
     if (element.scrollIntoViewIfNeeded) {
-      element.scrollIntoViewIfNeeded({block: 'center', inline: 'center'});
+      element.scrollIntoViewIfNeeded({ block: 'center', inline: 'center' });
     } else if (!isInViewport(element)) {
-      element.scrollIntoView({block: 'center', inline: 'center'});
+      element.scrollIntoView({ block: 'center', inline: 'center' });
     }
   }
 }

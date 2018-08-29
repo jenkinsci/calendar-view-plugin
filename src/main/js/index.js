@@ -92,7 +92,7 @@ $(function() {
     buttonText: CalendarViewOptions.buttonText,
     navLinks: true,
     viewRender: function(view, element) {
-      window.location = hashParams.serialize({date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type});
+      window.location = hashParams.serialize({ date: view.calendar.currentDate.format('YYYY-MM-DD'), view: view.type });
     },
     eventAfterAllRender: function(view) {
       events.select();
@@ -100,7 +100,7 @@ $(function() {
     },
     eventMouseover: function(event, jsEvent, view) {
       timeout = setTimeout(function() {
-        events.select({eventId: event.id, view: view});
+        events.select({ eventId: event.id, view: view });
         timeout = null;
       }, events.selectTimeout());
     },

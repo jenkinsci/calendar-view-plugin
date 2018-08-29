@@ -120,10 +120,10 @@ function dateLink(build, view) {
   var $dateLink = $('<a class="time" href="#"></a>');
   $dateLink.click(function() {
     if (view.intervalStart.isSameOrBefore(date) && view.intervalEnd.isAfter(date)) {
-      events.select({eventId: build.id, view: view});
+      events.select({ eventId: build.id, view: view });
       scroll.toSelected();
     } else {
-      events.preselect({eventId: build.id, view: view});
+      events.preselect({ eventId: build.id, view: view });
       view.calendar.gotoDate(date);
     }
     events.selectTimeout(700);
