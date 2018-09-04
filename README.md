@@ -91,6 +91,9 @@ $ ./npmw run dev
 
 ## Changelog
 
+### v0.3.1 (released 2018-09-04)
+* Fix: [[JENKINS-53312]](https://issues.jenkins-ci.org/browse/JENKINS-53312) Future scheduled builds for pipeline jobs were missing
+
 ### v0.3.0 (released 2018-08-24)
 * Feature: add option to show week numbers
 * Feature: navigate to day and week views via day and week numbers
