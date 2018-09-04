@@ -13,8 +13,6 @@
     <packaging>hpi</packaging>
     <properties>
         <jenkins.version>2.7.3</jenkins.version>
-        <!-- Uncomment to test Pipeline jobs -->
-        <!-- <jenkins.version>2.60.3</jenkins.version> -->
         <java.level>7</java.level>
     </properties>
     <name>Calendar View Plugin</name>
@@ -76,6 +74,16 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <!-- Profile to run jenkins and use pipeline jobs -->
+            <!-- mvn -Pjenkins-2.60.3 hpi:run -->
+            <id>jenkins-2.60.3</id>
+            <properties>
+                <jenkins.version>2.60.3</jenkins.version>
+            </properties>
+        </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
