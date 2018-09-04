@@ -23,6 +23,7 @@
  */
 package io.jenkins.plugins.view.calendar.service;
 
+import hudson.Plugin;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.model.Job;
@@ -34,6 +35,7 @@ import hudson.triggers.TriggerDescriptor;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -64,14 +66,21 @@ public class CronJobServiceTest {
         CronJobServiceTest.defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
         PluginUtil.setJenkins(mock(Jenkins.class));
-   }
+    }
 
     @AfterClass
     public static void afterClass() {
         TimeZone.setDefault(CronJobServiceTest.defaultTimeZone);
     }
 
-    public static class GetCronTabsTests {
+    public abstract static class MockPluginAvailabilityTests {
+        @Before
+        public void clearPlugins() {
+            PluginUtil.setJenkins(mock(Jenkins.class));
+        }
+    }
+
+    public static class GetCronTabsTests extends MockPluginAvailabilityTests {
 
         @Test
         public void testThatHourlyJobsWork() throws ParseException {
@@ -171,7 +180,8 @@ public class CronJobServiceTest {
         }
     }
 
-    public static class GetCronTriggersTests {
+    public static class GetCronTriggersTests extends MockPluginAvailabilityTests {
+
         @Test
         public void testItemIsNotAbstractProject() {
             Job item = mock(Job.class);
@@ -209,9 +219,41 @@ public class CronJobServiceTest {
             assertThat(triggers, hasItem(iterator.next()));
             assertThat(triggers, hasItem(iterator.next()));
         }
+
+        @Test
+        public void testWithWorkflowJobPluginInstalled() {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("workflow-job")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers = mockTriggers("0 * * * *", "0 12 * * *");
+
+            WorkflowJob item = mock(WorkflowJob.class);
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(2));
+            assertThat(triggers, hasItem(iterator.next()));
+            assertThat(triggers, hasItem(iterator.next()));
+        }
+
+        @Test
+        public void testWithWorkflowJobPluginNotInstalled() {
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers = mockTriggers("0 * * * *", "0 12 * * *");
+
+            WorkflowJob item = mock(WorkflowJob.class);
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(0));
+        }
     }
 
-    public static class GetNextStartTests {
+    public static class GetNextStartTests extends MockPluginAvailabilityTests {
         @Test
         public void testNoTriggers() {
             Calendar next = new CronJobService().getNextStart(mockFreeStyleProject());
