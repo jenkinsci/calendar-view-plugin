@@ -114,6 +114,9 @@
                             <goal>webpack</goal>
                         </goals>
                         <phase>generate-resources</phase>
+                        <configuration>
+                            <arguments>--mode production</arguments>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>npm test</id>
