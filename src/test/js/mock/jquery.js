@@ -1,4 +1,4 @@
-require('babel-register')({ presets: [ 'env' ] })
+require('@babel/register')()
 
 var JSDOM = require('jsdom').JSDOM;
 var mockery = require('mockery');

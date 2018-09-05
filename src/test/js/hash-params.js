@@ -2,7 +2,7 @@
 
 /* global describe:false, it:false */
 
-require('babel-register')({ presets: [ 'env' ] });
+require('@babel/register')();
 
 var chai = require('chai');
 var expect = chai.expect;
