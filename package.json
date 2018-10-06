@@ -14,7 +14,7 @@
   "dependencies": {
     "fullcalendar": "^3.9.0",
     "smoothscroll-polyfill": "^0.4.3",
-    "tippy.js": "^2.5.3"
+    "tippy.js": "2.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
