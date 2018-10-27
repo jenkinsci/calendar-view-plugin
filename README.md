@@ -1,5 +1,7 @@
 [![Jenkins Plugins](https://img.shields.io/jenkins/plugin/v/calendar-view.svg)](https://plugins.jenkins.io/calendar-view)
+[![Jenkins Plugins](https://img.shields.io/jenkins/plugin/i/calendar-view.svg)](https://plugins.jenkins.io/calendar-view)
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
+
 [![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins/calendar-view-plugin/master)](https://ci.jenkins.io/blue/organizations/jenkins/Plugins%2Fcalendar-view-plugin/branches)
 [![codecov](https://codecov.io/gh/jenkinsci/calendar-view-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/jenkinsci/calendar-view-plugin)
 [![Dependency Status](https://david-dm.org/jenkinsci/calendar-view-plugin.svg)](https://david-dm.org/jenkinsci/calendar-view-plugin)
