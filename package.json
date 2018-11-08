@@ -38,7 +38,7 @@
     "mockery": "^2.1.0",
     "nyc": "^13.0.1",
     "optimize-css-assets-webpack-plugin": "^5.0.0",
-    "require-uncached": "^1.0.3",
+    "require-uncached": "^2.0.0",
     "uglifyjs-webpack-plugin": "^2.0.0",
     "webpack": "^4.14.0",
     "webpack-cli": "^3.0.8"
