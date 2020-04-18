@@ -32,8 +32,10 @@ import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -57,24 +59,34 @@ public class CronJobService {
         return getCronTabs(trigger, null);
     }
 
+    public List<CronTab> getCronTabs(final ParameterizedTimerTrigger trigger, final Hash hash) {
+        final List<CronTab> cronTabs = new ArrayList<>();
+        int lineNumber = 0;
+        String timezone = null;
+
+        for (final String line : trigger.getParameterizedSpecification().split("\\r?\\n")) {
+            timezone = transformSpecLine(line.split("%")[0].trim(), ++lineNumber, timezone, hash, cronTabs);
+        }
+
+        return cronTabs;
+    }
+
     public List<CronTab> getCronTabs(final Trigger trigger, final Hash hash) {
         final List<CronTab> cronTabs = new ArrayList<>();
         int lineNumber = 0;
         String timezone = null;
 
-        for (String line : trigger.getSpec().split("\\r?\\n")) {
-            lineNumber++;
-            line = line.trim();
+        for (final String line : trigger.getSpec().split("\\r?\\n")) {
+            timezone = transformSpecLine(line.trim(), ++lineNumber, timezone, hash, cronTabs);
+        }
 
-            if (lineNumber == 1 && line.startsWith("TZ=")) {
-                timezone = CronTabList.getValidTimezone(line.replace("TZ=",""));
-                continue;
-            }
+        return cronTabs;
+    }
 
-            if (line.length() == 0 || line.charAt(0) == '#') {
-                continue;
-            }
-
+    private String transformSpecLine(final String line, final int lineNumber, final String timezone, final Hash hash, final List<CronTab> cronTabs) {
+        if (lineNumber == 1 && line.startsWith("TZ=")) {
+            return CronTabList.getValidTimezone(line.replace("TZ=",""));
+        } else if (line.length() != 0 && line.charAt(0) != '#') {
             try {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CronTab cronTab = new CronTab(line, lineNumber, hash, timezone);
@@ -84,8 +96,7 @@ public class CronJobService {
                 Logger.getLogger(this.getClass()).error(msg, e);
             }
         }
-
-        return cronTabs;
+        return timezone;
     }
 
     public List<Trigger> getCronTriggers(final Job job) {
@@ -101,6 +112,10 @@ public class CronJobService {
         final List<Trigger> cronTriggers = new ArrayList<>();
         for (final Trigger<?> jobTrigger: jobTriggers) {
             if (StringUtils.isNotBlank(jobTrigger.getSpec())) {
+                cronTriggers.add(jobTrigger);
+            } else if (PluginUtil.hasParameterizedSchedulerPluginInstalled()
+                    && jobTrigger instanceof ParameterizedTimerTrigger
+                    && StringUtils.isNotBlank(((ParameterizedTimerTrigger) jobTrigger).getParameterizedSpecification())) {
                 cronTriggers.add(jobTrigger);
             }
         }
