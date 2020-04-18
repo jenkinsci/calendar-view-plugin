@@ -35,6 +35,8 @@ import hudson.triggers.TriggerDescriptor;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import jenkins.model.Jenkins;
+
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
@@ -46,6 +48,7 @@ import java.util.*;
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.str;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockFreeStyleProject;
+import static io.jenkins.plugins.view.calendar.test.TestUtil.mockParameterizedTriggers;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockTriggers;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
@@ -178,6 +181,46 @@ public class CronJobServiceTest {
             assertThat(cronTabsListUTC.check(cal("2018-01-01 06:00:00 UTC")), is(true));
             assertThat(cronTabsListUTC.check(cal("2018-01-01 06:00:00 CET")), is(false));
         }
+
+        @Test
+        public void testThatParameterizedJobsWork() throws ParseException {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
+            when(trigger.getParameterizedSpecification()).thenReturn("0 12 * * * % PARAM1=value;PARAM2=false");
+
+            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            assertThat(cronTabs, hasSize(1));
+
+            CronTab cronTab = cronTabs.get(0);
+            assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 12:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 13:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+        }
+
+        @Test
+        public void testThatParameterizedJobsWithoutParametersWork() throws ParseException {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
+            when(trigger.getParameterizedSpecification()).thenReturn("0 12 * * *");
+
+            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            assertThat(cronTabs, hasSize(1));
+
+            CronTab cronTab = cronTabs.get(0);
+            assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 12:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 13:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+        }
     }
 
     public static class GetCronTriggersTests extends MockPluginAvailabilityTests {
@@ -242,6 +285,111 @@ public class CronJobServiceTest {
         @Test
         public void testWithWorkflowJobPluginNotInstalled() {
             Map<TriggerDescriptor, Trigger<?>> mockedTriggers = mockTriggers("0 * * * *", "0 12 * * *");
+
+            WorkflowJob item = mock(WorkflowJob.class);
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(0));
+        }
+
+        @Test
+        public void testWithParameterizedSchedulerPluginInstalled() {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
+                    mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(2));
+            assertThat(triggers, hasItem(iterator.next()));
+            assertThat(triggers, hasItem(iterator.next()));
+        }
+
+        @Test
+        public void testWithParameterizedSchedulerPluginNotInstalled() {
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
+                    mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
+
+            AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(0));
+        }
+
+        @Test
+        public void testWithParameterizedSchedulerPluginInstalledAndWorkflowJobPluginInstalled() {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
+            when(jenkins.getPlugin("workflow-job")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
+                    mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
+
+            WorkflowJob item = mock(WorkflowJob.class);
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(2));
+            assertThat(triggers, hasItem(iterator.next()));
+            assertThat(triggers, hasItem(iterator.next()));
+        }
+
+        @Test
+        public void testWithParameterizedSchedulerPluginInstalledAndWorkflowJobPluginNotInstalled() {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
+                    mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
+
+            WorkflowJob item = mock(WorkflowJob.class);
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(0));
+        }
+
+        @Test
+        public void testWithParameterizedSchedulerPluginNotInstalledAndWorkflowJobPluginInstalled() {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("workflow-job")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
+                    mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
+
+            WorkflowJob item = mock(WorkflowJob.class);
+            when(item.getTriggers()).thenReturn(mockedTriggers);
+
+            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
+
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            assertThat(triggers, hasSize(0));
+        }
+
+        @Test
+        public void testWithParameterizedSchedulerPluginNotInstalledAndWorkflowJobPluginNotInstalled() {
+            Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
+                    mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
 
             WorkflowJob item = mock(WorkflowJob.class);
             when(item.getTriggers()).thenReturn(mockedTriggers);

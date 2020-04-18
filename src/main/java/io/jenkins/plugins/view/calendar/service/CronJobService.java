@@ -32,8 +32,10 @@ import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -57,13 +59,22 @@ public class CronJobService {
         return getCronTabs(trigger, null);
     }
 
+    @SuppressWarnings("PMD.CyclomaticComplexity")
     public List<CronTab> getCronTabs(final Trigger trigger, final Hash hash) {
         final List<CronTab> cronTabs = new ArrayList<>();
+        final boolean isParameterizedTrigger = PluginUtil.hasParameterizedSchedulerPluginInstalled()
+                && trigger instanceof ParameterizedTimerTrigger;
         int lineNumber = 0;
         String timezone = null;
 
-        for (String line : trigger.getSpec().split("\\r?\\n")) {
+        final String specification = isParameterizedTrigger ?
+                ((ParameterizedTimerTrigger) trigger).getParameterizedSpecification() : trigger.getSpec();
+
+        for (String line : specification.split("\\r?\\n")) {
             lineNumber++;
+            if (isParameterizedTrigger) {
+                line = line.split("%")[0];
+            }
             line = line.trim();
 
             if (lineNumber == 1 && line.startsWith("TZ=")) {
@@ -101,6 +112,10 @@ public class CronJobService {
         final List<Trigger> cronTriggers = new ArrayList<>();
         for (final Trigger<?> jobTrigger: jobTriggers) {
             if (StringUtils.isNotBlank(jobTrigger.getSpec())) {
+                cronTriggers.add(jobTrigger);
+            } else if (PluginUtil.hasParameterizedSchedulerPluginInstalled()
+                    && jobTrigger instanceof ParameterizedTimerTrigger
+                    && StringUtils.isNotBlank(((ParameterizedTimerTrigger) jobTrigger).getParameterizedSpecification())) {
                 cronTriggers.add(jobTrigger);
             }
         }

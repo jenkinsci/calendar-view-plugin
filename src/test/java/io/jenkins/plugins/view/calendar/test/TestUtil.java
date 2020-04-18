@@ -28,6 +28,8 @@ import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
+
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -92,6 +94,16 @@ public class TestUtil {
         for (String spec : specs) {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn(spec);
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+        }
+        return triggers;
+    }
+
+    public static Map<TriggerDescriptor, Trigger<?>> mockParameterizedTriggers(String... specs)  {
+        Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
+        for (String spec : specs) {
+            ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
+            when(trigger.getParameterizedSpecification()).thenReturn(spec);
             triggers.put(mock(TriggerDescriptor.class), trigger);
         }
         return triggers;
