@@ -31,6 +31,10 @@ public final class PluginUtil {
         return hasPluginInstalled("greenballs");
     }
 
+    public static boolean hasParameterizedSchedulerPluginInstalled() {
+        return hasPluginInstalled("parameterized-scheduler");
+    }
+
     public static boolean hasWorkflowJobPluginInstalled() {
         return hasPluginInstalled("workflow-job");
     }
