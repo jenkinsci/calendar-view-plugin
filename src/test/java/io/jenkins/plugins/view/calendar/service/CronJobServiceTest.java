@@ -181,6 +181,46 @@ public class CronJobServiceTest {
             assertThat(cronTabsListUTC.check(cal("2018-01-01 06:00:00 UTC")), is(true));
             assertThat(cronTabsListUTC.check(cal("2018-01-01 06:00:00 CET")), is(false));
         }
+
+        @Test
+        public void testThatParameterizedJobsWork() throws ParseException {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
+            when(trigger.getParameterizedSpecification()).thenReturn("0 12 * * * % PARAM1=value;PARAM2=false");
+
+            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            assertThat(cronTabs, hasSize(1));
+
+            CronTab cronTab = cronTabs.get(0);
+            assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 12:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 13:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+        }
+
+        @Test
+        public void testThatParameterizedJobsWithoutParametersWork() throws ParseException {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
+            when(trigger.getParameterizedSpecification()).thenReturn("0 12 * * *");
+
+            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            assertThat(cronTabs, hasSize(1));
+
+            CronTab cronTab = cronTabs.get(0);
+            assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 12:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 13:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+        }
     }
 
     public static class GetCronTriggersTests extends MockPluginAvailabilityTests {
