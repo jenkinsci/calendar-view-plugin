@@ -31,6 +31,12 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
     <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
 
     <f:section title="${%Calendar Options}" name="calendarOptions">
+        <f:entry title="${%Shown events}" field="calendarViewEventsType">
+            <f:radio name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='ALL'}"/>${%All events}
+            <f:radio name="calendarViewEventsType" value="BUILDS" checked="${it.calendarViewEventsType=='BUILDS'}"/>${%Builds}
+            <f:radio name="calendarViewEventsType" value="POLLINGS" checked="${it.calendarViewEventsType=='POLLINGS'}"/>${%Planned polling}
+        </f:entry>
+
         <f:entry title="${%Default View}" field="calendarViewType">
             <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}"/>${%Month}
             <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}"/>${%Week}

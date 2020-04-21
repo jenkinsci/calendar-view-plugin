@@ -32,9 +32,11 @@ import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import jenkins.model.Jenkins;
+
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.*;
 import org.junit.experimental.runners.Enclosed;
@@ -185,13 +187,13 @@ public class CronJobServiceTest {
         @Test
         public void testItemIsNotAbstractProject() {
             Job item = mock(Job.class);
-            assertThat(new CronJobService().getCronTriggers(item), hasSize(0));
+            assertThat(new CronJobService().getCronTriggers(item, CalendarViewEventsType.ALL), hasSize(0));
         }
 
         @Test
         public void testEmptyTriggerMap() {
             FreeStyleProject project = mockFreeStyleProject();
-            assertThat(new CronJobService().getCronTriggers(project), hasSize(0));
+            assertThat(new CronJobService().getCronTriggers(project, CalendarViewEventsType.ALL), hasSize(0));
         }
 
         @Test
@@ -202,7 +204,7 @@ public class CronJobServiceTest {
             FreeStyleProject project = mockFreeStyleProject();
             when(project.getTriggers()).thenReturn(triggers);
 
-            assertThat(new CronJobService().getCronTriggers(project), hasSize(0));
+            assertThat(new CronJobService().getCronTriggers(project, CalendarViewEventsType.ALL), hasSize(0));
         }
 
         @Test
@@ -214,7 +216,7 @@ public class CronJobServiceTest {
 
             Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
 
-            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item, CalendarViewEventsType.ALL);
             assertThat(triggers, hasSize(2));
             assertThat(triggers, hasItem(iterator.next()));
             assertThat(triggers, hasItem(iterator.next()));
@@ -233,7 +235,7 @@ public class CronJobServiceTest {
 
             Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
 
-            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item, CalendarViewEventsType.ALL);
             assertThat(triggers, hasSize(2));
             assertThat(triggers, hasItem(iterator.next()));
             assertThat(triggers, hasItem(iterator.next()));
@@ -248,7 +250,7 @@ public class CronJobServiceTest {
 
             Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
 
-            List<Trigger> triggers = new CronJobService().getCronTriggers(item);
+            List<Trigger> triggers = new CronJobService().getCronTriggers(item, CalendarViewEventsType.ALL);
             assertThat(triggers, hasSize(0));
         }
     }
@@ -256,7 +258,7 @@ public class CronJobServiceTest {
     public static class GetNextStartTests extends MockPluginAvailabilityTests {
         @Test
         public void testNoTriggers() {
-            Calendar next = new CronJobService().getNextStart(mockFreeStyleProject());
+            Calendar next = new CronJobService().getNextStart(mockFreeStyleProject(), CalendarViewEventsType.ALL);
             assertThat(next, is(nullValue()));
         }
 
@@ -268,7 +270,7 @@ public class CronJobServiceTest {
             when(project.getFullName()).thenReturn("project");
             when(project.getTriggers()).thenReturn(triggers);
 
-            Calendar next = new CronJobService().getNextStart(project);
+            Calendar next = new CronJobService().getNextStart(project, CalendarViewEventsType.ALL);
             assertThat(next, is(nullValue()));
         }
 
@@ -280,7 +282,7 @@ public class CronJobServiceTest {
             when(project.getFullName()).thenReturn("project");
             when(project.getTriggers()).thenReturn(triggers);
 
-            Calendar next = new CronJobService(new Moment(cal("2018-01-01 06:00:00 UTC"))).getNextStart(project);
+            Calendar next = new CronJobService(new Moment(cal("2018-01-01 06:00:00 UTC"))).getNextStart(project, CalendarViewEventsType.ALL);
             assertThat(str(next), is("2018-01-01 07:05:00 CET"));
         }
 
@@ -292,12 +294,12 @@ public class CronJobServiceTest {
             when(project.getFullName()).thenReturn("HashThisName");
             when(project.getTriggers()).thenReturn(triggers);
 
-            Calendar next = new CronJobService(new Moment(cal("2018-01-01 00:00:00 CET"))).getNextStart(project);
+            Calendar next = new CronJobService(new Moment(cal("2018-01-01 00:00:00 CET"))).getNextStart(project, CalendarViewEventsType.ALL);
             assertThat(str(next), is("2018-01-01 00:48:00 CET"));
 
             when(project.getFullName()).thenReturn("HashThisDifferentName");
 
-            next = new CronJobService(new Moment(cal("2018-01-01 00:00:00 CET"))).getNextStart(project);
+            next = new CronJobService(new Moment(cal("2018-01-01 00:00:00 CET"))).getNextStart(project, CalendarViewEventsType.ALL);
             assertThat(str(next), is("2018-01-01 00:23:00 CET"));
         }
 
@@ -309,7 +311,7 @@ public class CronJobServiceTest {
             when(project.getFullName()).thenReturn("Project Name");
             when(project.getTriggers()).thenReturn(triggers);
 
-            Calendar next = new CronJobService(new Moment(cal("2018-01-01 00:00:23 CET"))).getNextStart(project);
+            Calendar next = new CronJobService(new Moment(cal("2018-01-01 00:00:23 CET"))).getNextStart(project, CalendarViewEventsType.ALL);
             assertThat(next.get(Calendar.SECOND), is(0));
             assertThat(next.get(Calendar.MILLISECOND), is(0));
         }
