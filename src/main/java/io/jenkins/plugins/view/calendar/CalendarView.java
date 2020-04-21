@@ -60,10 +60,15 @@ import static io.jenkins.plugins.view.calendar.util.ValidationUtil.*;
 @Restricted(NoExternalUse.class)
 public class CalendarView extends ListView {
 
+    public static enum CalendarViewEventsType {
+       ALL, BUILDS, POLLINGS;
+    }
+
     public static enum CalendarViewType {
        MONTH, WEEK, DAY;
     }
 
+    private CalendarViewEventsType calendarViewEventsType;
     private CalendarViewType calendarViewType;
 
     private Boolean useCustomFormats;
@@ -102,6 +107,14 @@ public class CalendarView extends ListView {
     @DataBoundConstructor
     public CalendarView(final String name) {
         super(name);
+    }
+
+    public CalendarViewEventsType getCalendarViewEventsType() {
+        return defaultIfNull(calendarViewEventsType, CalendarViewEventsType.ALL);
+    }
+
+    public void setCalendarViewEventsType(final CalendarViewEventsType calendarViewEventsType) {
+        this.calendarViewEventsType = calendarViewEventsType;
     }
 
     public CalendarViewType getCalendarViewType() {
@@ -338,6 +351,7 @@ public class CalendarView extends ListView {
         ));
         final Pattern validDateTimePattern = Pattern.compile("(0[0-9]|1[0-9]|2[0-4]):00:00");
 
+        validateEnum(req, "calendarViewEventsType", CalendarViewEventsType.class);
         validateEnum(req, "calendarViewType", CalendarViewType.class);
         validateRange(req, "weekSettingsFirstDay", 0, 7);
 
@@ -351,6 +365,7 @@ public class CalendarView extends ListView {
     }
 
     private void updateFields(final StaplerRequest req) {
+        setCalendarViewEventsType(CalendarViewEventsType.valueOf(req.getParameter("calendarViewEventsType")));
         setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
 
         setUseCustomFormats(req.getParameter("useCustomFormats") != null);
@@ -405,7 +420,7 @@ public class CalendarView extends ListView {
         final Calendar end = RequestUtil.getParamAsCalendar(req, "end");
 
         final Moment now = new Moment();
-        return new CalendarEventService(now, new CronJobService(now)).getCalendarEvents(getJobs(), range(start, end));
+        return new CalendarEventService(now, new CronJobService(now)).getCalendarEvents(getJobs(), range(start, end), getCalendarViewEventsType());
     }
 
     public String jsonEscape(final String text) {

@@ -71,6 +71,7 @@ public class CalendarViewTest {
     }
 
     private void assertDefaults(CalendarView calendarView) {
+        assertThat(calendarView.getCalendarViewEventsType(), equalTo(CalendarView.CalendarViewEventsType.ALL));
         assertThat(calendarView.getCalendarViewType(), equalTo(CalendarView.CalendarViewType.WEEK));
 
         assertThat(calendarView.isUseCustomWeekSettings(), equalTo(false));
@@ -120,6 +121,7 @@ public class CalendarViewTest {
 
         j.configRoundtrip(calendarView);
 
+        assertThat(calendarView.getCalendarViewEventsType(), equalTo(CalendarView.CalendarViewEventsType.ALL));
         assertThat(calendarView.getCalendarViewType(), equalTo(CalendarView.CalendarViewType.WEEK));
 
         assertThat(calendarView.isUseCustomWeekSettings(), equalTo(true));
@@ -182,6 +184,7 @@ public class CalendarViewTest {
 
         j.configRoundtrip(calendarView);
 
+        assertThat(calendarView.getCalendarViewEventsType(), equalTo(CalendarView.CalendarViewEventsType.ALL));
         assertThat(calendarView.getCalendarViewType(), equalTo(CalendarView.CalendarViewType.WEEK));
 
         assertThat(calendarView.isUseCustomWeekSettings(), equalTo(false));
@@ -234,6 +237,7 @@ public class CalendarViewTest {
 
         j.configRoundtrip(calendarView);
 
+        assertThat(calendarView.getCalendarViewEventsType(), equalTo(CalendarView.CalendarViewEventsType.ALL));
         assertThat(calendarView.getCalendarViewType(), equalTo(CalendarView.CalendarViewType.WEEK));
 
         assertThat(calendarView.isUseCustomWeekSettings(), equalTo(false));
@@ -291,6 +295,12 @@ public class CalendarViewTest {
         CalendarView calendarView = createCalendarView("cal");
 
         HtmlPage configurePage;
+
+        configurePage = getConfigurePage(calendarView);
+        HtmlRadioButtonInput viewEventsTypeRadioButton = configurePage.querySelector("input[name='calendarViewEventsType'][value='BUILDS']");
+        viewEventsTypeRadioButton.setValueAttribute("INVALID_VALUE");
+        viewEventsTypeRadioButton.setChecked(true);
+        testValidation(configurePage);
 
         configurePage = getConfigurePage(calendarView);
         HtmlRadioButtonInput viewTypeRadioButton = configurePage.querySelector("input[name='calendarViewType'][value='MONTH']");
