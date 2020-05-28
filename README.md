@@ -1,7 +1,8 @@
+# Jenkins Calendar View Plugin
+
 [![Jenkins Plugins](https://img.shields.io/jenkins/plugin/v/calendar-view.svg)](https://plugins.jenkins.io/calendar-view)
 [![Jenkins Plugins](https://img.shields.io/jenkins/plugin/i/calendar-view.svg)](https://plugins.jenkins.io/calendar-view)
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
-
 [![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins/calendar-view-plugin/master)](https://ci.jenkins.io/blue/organizations/jenkins/Plugins%2Fcalendar-view-plugin/branches)
 [![codecov](https://codecov.io/gh/jenkinsci/calendar-view-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/jenkinsci/calendar-view-plugin)
 [![Dependency Status](https://david-dm.org/jenkinsci/calendar-view-plugin.svg)](https://david-dm.org/jenkinsci/calendar-view-plugin)
@@ -10,9 +11,11 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a04ec3c3de0444699ecb2d123a9b7697)](https://www.codacy.com/app/svenschoenung/calendar-view-plugin) [![Greenkeeper badge](https://badges.greenkeeper.io/jenkinsci/calendar-view-plugin.svg)](https://greenkeeper.io/)
 [![javadoc](https://img.shields.io/badge/javadoc-available-brightgreen.svg)](https://javadoc.jenkins.io/plugin/calendar-view/)
 
-# Jenkins Calendar View Plugin
+## About
 
 Shows past and future builds in a calendar view.
+
+## Screenshots
 
 | ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/month-view.png) | ![](https://raw.githubusercontent.com/jenkinsci/calendar-view-plugin/master/docs/images/week-view.png) |
 |---------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
@@ -126,10 +129,6 @@ $ ./npmw run dev
 
 ### v0.1.0 (released 2018-07-11)
 * Initial release
-
-## License
-
-MIT License
 
 ## Links
 
