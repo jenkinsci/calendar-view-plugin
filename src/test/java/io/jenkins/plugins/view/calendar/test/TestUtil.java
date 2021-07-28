@@ -58,6 +58,7 @@ public class TestUtil {
         when(project.getEstimatedDuration()).thenReturn(estimatedDuration);
         when(project.getBuilds()).thenReturn(new RunList());
         when(project.isBuilding()).thenReturn(false);
+        when(project.isBuildable()).thenReturn(true);
         return project;
     }
 
