@@ -23,22 +23,30 @@
  */
 package io.jenkins.plugins.view.calendar.service;
 
-import hudson.model.*;
-import hudson.scheduler.CronTab;
-import hudson.util.RunList;
-import io.jenkins.plugins.view.calendar.event.*;
-import io.jenkins.plugins.view.calendar.time.Moment;
-import io.jenkins.plugins.view.calendar.time.MomentRange;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
+import static io.jenkins.plugins.view.calendar.time.MomentRange.isValidRange;
+import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import static io.jenkins.plugins.view.calendar.time.MomentRange.isValidRange;
-import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
+import hudson.model.Job;
+import hudson.model.Result;
+import hudson.model.Run;
+import hudson.scheduler.CronTab;
+import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.event.CalendarEvent;
+import io.jenkins.plugins.view.calendar.event.CalendarEventComparator;
+import io.jenkins.plugins.view.calendar.event.CalendarEventFactory;
+import io.jenkins.plugins.view.calendar.event.CalendarEventState;
+import io.jenkins.plugins.view.calendar.event.ScheduledCalendarEvent;
+import io.jenkins.plugins.view.calendar.event.StartedCalendarEvent;
+import io.jenkins.plugins.view.calendar.time.Moment;
+import io.jenkins.plugins.view.calendar.time.MomentRange;
 
 @Restricted(NoExternalUse.class)
 public class CalendarEventService {
@@ -99,10 +107,12 @@ public class CalendarEventService {
 
     public List<ScheduledCalendarEvent> getScheduledEvents(final List<? extends Job> jobs, final ScheduledEventCollector collector) {
         for (final Job job: jobs) {
-            final long estimatedDuration = job.getEstimatedDuration();
-            final List<CronTab> cronTabs = cronJobService.getCronTabs(job);
-            for (final CronTab cronTab: cronTabs) {
-                collector.collectEvents(job, cronTab, estimatedDuration);
+            if (job.isBuildable()) {
+                final long estimatedDuration = job.getEstimatedDuration();
+                final List<CronTab> cronTabs = cronJobService.getCronTabs(job);
+                for (final CronTab cronTab: cronTabs) {
+                    collector.collectEvents(job, cronTab, estimatedDuration);
+                }
             }
         }
         return collector.getEvents();
