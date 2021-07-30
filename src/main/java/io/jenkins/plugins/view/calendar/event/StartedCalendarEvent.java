@@ -23,7 +23,9 @@
  */
 package io.jenkins.plugins.view.calendar.event;
 
+import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import hudson.model.Run;
+
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -35,5 +37,5 @@ public interface StartedCalendarEvent extends CalendarEvent {
 
     StartedCalendarEvent getNextStartedEvent();
 
-    ScheduledCalendarEvent getNextScheduledEvent();
+    ScheduledCalendarEvent getNextScheduledEvent(final CalendarViewEventsType eventsType);
 }

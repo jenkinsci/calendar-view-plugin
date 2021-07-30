@@ -30,6 +30,8 @@ import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
+import hudson.triggers.SCMTrigger;
+import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 
@@ -99,7 +101,8 @@ public class CronJobService {
         return cronTabs;
     }
 
-    public List<Trigger> getCronTriggers(final Job job) {
+    @SuppressWarnings("PMD.CyclomaticComplexity")
+    public List<Trigger> getCronTriggers(final Job job, final CalendarViewEventsType eventsType) {
         Collection<Trigger<?>> jobTriggers;
         if (job instanceof AbstractProject) {
             jobTriggers = ((AbstractProject)job).getTriggers().values();
@@ -111,28 +114,31 @@ public class CronJobService {
 
         final List<Trigger> cronTriggers = new ArrayList<>();
         for (final Trigger<?> jobTrigger: jobTriggers) {
-            if (StringUtils.isNotBlank(jobTrigger.getSpec())) {
-                cronTriggers.add(jobTrigger);
-            } else if (PluginUtil.hasParameterizedSchedulerPluginInstalled()
-                    && jobTrigger instanceof ParameterizedTimerTrigger
-                    && StringUtils.isNotBlank(((ParameterizedTimerTrigger) jobTrigger).getParameterizedSpecification())) {
-                cronTriggers.add(jobTrigger);
+            if (eventsType == CalendarViewEventsType.ALL ||
+                    (eventsType == CalendarViewEventsType.BUILDS ^ jobTrigger instanceof SCMTrigger)) {
+                if (StringUtils.isNotBlank(jobTrigger.getSpec())) {
+                    cronTriggers.add(jobTrigger);
+                } else if (PluginUtil.hasParameterizedSchedulerPluginInstalled()
+                        && jobTrigger instanceof ParameterizedTimerTrigger
+                        && StringUtils.isNotBlank(((ParameterizedTimerTrigger) jobTrigger).getParameterizedSpecification())) {
+                    cronTriggers.add(jobTrigger);
+                }
             }
         }
         return cronTriggers;
     }
 
-    public List<CronTab> getCronTabs(final Job job) {
+    public List<CronTab> getCronTabs(final Job job, final CalendarViewEventsType eventsType) {
         final List<CronTab> cronTabs = new ArrayList<CronTab>();
-        for (final Trigger trigger: getCronTriggers(job)) {
+        for (final Trigger trigger: getCronTriggers(job, eventsType)) {
             cronTabs.addAll(getCronTabs(trigger, Hash.from(job.getFullName())));
         }
         return cronTabs;
     }
 
-    public Calendar getNextStart(final Job job) {
+    public Calendar getNextStart(final Job job, final CalendarViewEventsType eventsType) {
         Calendar next = null;
-        final List<CronTab> cronTabs = getCronTabs(job);
+        final List<CronTab> cronTabs = getCronTabs(job, eventsType);
         for (final CronTab cronTab: cronTabs) {
             final Calendar ceil = cronTab.ceil(now.nextMinute().getTimeInMillis());
             if (next == null || ceil.before(next)) {
