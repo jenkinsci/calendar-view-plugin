@@ -26,10 +26,12 @@ package io.jenkins.plugins.view.calendar.event;
 import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
+import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -233,9 +235,9 @@ public class CalendarEventFactory {
         }
 
         @Override
-        public ScheduledCalendarEvent getNextScheduledEvent() {
+        public ScheduledCalendarEvent getNextScheduledEvent(final CalendarViewEventsType eventsType) {
             if (nextScheduledEvent == null && build != null) {
-                nextScheduledEvent = calendarEventService.getNextScheduledEvent(this);
+                nextScheduledEvent = calendarEventService.getNextScheduledEvent(this, eventsType);
             }
             return nextScheduledEvent;
         }

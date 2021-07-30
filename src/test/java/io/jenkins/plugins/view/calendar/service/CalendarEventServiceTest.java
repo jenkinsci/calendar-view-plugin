@@ -27,10 +27,12 @@ import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixProject;
 import hudson.model.*;
 import hudson.util.RunList;
+import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.event.*;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import jenkins.model.Jenkins;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -120,7 +122,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("#14", "5 0 3 1 *", minutes(12))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(7));
             assertThat(titlesOf(events), containsInAnyOrder("#4", "#6", "#9a", "#9b", "#10", "#11", "#12"));
@@ -154,7 +156,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("#9", "5 0 3 1 *", minutes(12))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(titlesOf(events), containsInAnyOrder("#4", "#5", "#6", "#7"));
@@ -192,7 +194,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("#12", "5 0 3 1 *", minutes(12))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects , range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects , range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(8));
             assertThat(titlesOf(events), containsInAnyOrder("#3", "#4", "#5", "#6", "#7", "#8", "#9", "#10"));
@@ -227,7 +229,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("#9", "1 0 3 1 *", minutes(8))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(5));
             assertThat(titlesOf(events), containsInAnyOrder("#3", "#4", "#5", "#6", "#7"));
@@ -269,7 +271,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("#13", "10 0 3 1 *", minutes(8))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(6));
             assertThat(titlesOf(events), containsInAnyOrder("#3", "#4", "#5", "#6", "#9", "#10"));
@@ -285,7 +287,7 @@ public class CalendarEventServiceTest {
 
             FreeStyleProject project = mockScheduledFreeStyleProject("project", "44 23 * * *", minutes(10));
 
-            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(asList(project), range(start, end));
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(asList(project), range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(calendarEvents, hasSize(3));
             assertThat(calendarEvents.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
@@ -304,7 +306,7 @@ public class CalendarEventServiceTest {
 
             FreeStyleProject project = mockScheduledFreeStyleProject("project", "44 23 * * *", minutes(10));
 
-            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(asList(project), range(start, end));
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(asList(project), range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(calendarEvents, hasSize(3));
             assertThat(calendarEvents.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
@@ -326,7 +328,7 @@ public class CalendarEventServiceTest {
                     mockScheduledFreeStyleProject("project", "44 23 * * *", minutes(10))
             );
 
-            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> calendarEvents = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(calendarEvents, hasSize(3));
             assertThat(calendarEvents.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
@@ -348,7 +350,7 @@ public class CalendarEventServiceTest {
                     mockScheduledFreeStyleProject("project", "44 23 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(3));
             assertThat(events.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
@@ -370,7 +372,7 @@ public class CalendarEventServiceTest {
                     mockScheduledFreeStyleProject("project", "44 23 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events.get(0).getStart(), is(mom("2018-01-04 23:44:00 CET")));
             assertThat(events.get(0).getState(), is(CalendarEventState.RUNNING));
@@ -395,7 +397,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project","1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
@@ -421,7 +423,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project","1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
@@ -448,7 +450,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project","1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
@@ -475,7 +477,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project","1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
@@ -503,7 +505,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project","1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2017-12-31 23:59:00 CET")));
@@ -531,7 +533,7 @@ public class CalendarEventServiceTest {
                     mockScheduledFreeStyleProject("project", "1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
@@ -551,7 +553,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project", "1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
@@ -572,7 +574,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project", "1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
@@ -593,7 +595,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project", "1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
@@ -615,7 +617,7 @@ public class CalendarEventServiceTest {
                 mockScheduledFreeStyleProject("project", "1 0 * * *", minutes(10))
             );
 
-            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end));
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(1));
             assertThat(events.get(0).getStart(), is(mom("2018-01-01 23:59:00 CET")));
@@ -627,7 +629,7 @@ public class CalendarEventServiceTest {
         @Test
         public void testNoJobs() throws ParseException {
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsForward(
-                new ArrayList<Job>(),null, null);
+                new ArrayList<Job>(),null, null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(0));
         }
 
@@ -636,7 +638,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockFreeStyleProject();
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsForward(
-                Arrays.asList(project), null, null);
+                Arrays.asList(project), null, null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(0));
         }
 
@@ -645,7 +647,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockScheduledFreeStyleProject("project", "", minutes(0));
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsForward(
-                Arrays.asList(project), null, null);
+                Arrays.asList(project), null, null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(0));
         }
 
@@ -657,7 +659,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockScheduledFreeStyleProject("project", "0 21 * * *", minutes(10));
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsForward(
-                asList(project), range(start, end), range(start, end));
+                asList(project), range(start, end), range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2018-01-01 21:00:00 CET")));
@@ -674,7 +676,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockScheduledFreeStyleProject("HashThisName", "H 21 * * *", minutes(10));
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsForward(
-                asList(project), range(start, end), range(start, end));
+                asList(project), range(start, end), range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2018-01-01 21:48:00 CET")));
@@ -688,7 +690,7 @@ public class CalendarEventServiceTest {
         @Test
         public void testNoJobs() throws ParseException {
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsBackward(
-                new ArrayList<Job>(),null, null);
+                new ArrayList<Job>(),null, null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(0));
         }
 
@@ -697,7 +699,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockFreeStyleProject();
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsBackward(
-                Arrays.asList(project), null, null);
+                Arrays.asList(project), null, null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(0));
         }
 
@@ -706,7 +708,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockScheduledFreeStyleProject("project", "", minutes(0));
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsBackward(
-                Arrays.asList(project), null, null);
+                Arrays.asList(project), null, null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(0));
         }
 
@@ -718,7 +720,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockScheduledFreeStyleProject("project", "0 21 * * *", minutes(10));
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsBackward(
-                asList(project), range(start, end), range(start, end));
+                asList(project), range(start, end), range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2018-01-04 21:00:00 CET")));
@@ -735,7 +737,7 @@ public class CalendarEventServiceTest {
             FreeStyleProject project = mockScheduledFreeStyleProject("HashThisName", "H 21 * * *", minutes(10));
 
             List<ScheduledCalendarEvent> events = getCalendarEventService().getScheduledEventsBackward(
-                    asList(project), range(start, end), range(start, end));
+                    asList(project), range(start, end), range(start, end), CalendarViewEventsType.ALL);
 
             assertThat(events, hasSize(4));
             assertThat(events.get(0).getStart(), is(mom("2018-01-04 21:48:00 CET")));
@@ -751,7 +753,7 @@ public class CalendarEventServiceTest {
             Calendar start = cal("2018-01-01 00:00:00 UTC");
             Calendar end = cal("2018-01-05 00:00:00 UTC");
 
-            List<StartedCalendarEvent> events = getCalendarEventService().getStartedEvents(new ArrayList<Job>(), range(start, end), null);
+            List<StartedCalendarEvent> events = getCalendarEventService().getStartedEvents(new ArrayList<Job>(), range(start, end), null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(0));
         }
 
@@ -770,7 +772,7 @@ public class CalendarEventServiceTest {
                 mockFinishedFreeStyleProject("build7", "2018-01-05 00:00:00 UTC", minutes(10))
             );
 
-            List<StartedCalendarEvent> events = getCalendarEventService().getStartedEvents(projects, range(start, end), null);
+            List<StartedCalendarEvent> events = getCalendarEventService().getStartedEvents(projects, range(start, end), null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(4));
             assertThat(titlesOf(events), containsInAnyOrder("build3", "build4", "build5", "build6"));
         }
@@ -789,7 +791,7 @@ public class CalendarEventServiceTest {
                 mockRunningFreeStyleProject("build7", "2018-01-05 00:00:00 UTC", minutes(10))
             );
 
-            List<StartedCalendarEvent> events = getCalendarEventService(now).getStartedEvents(projects, range(start, end), null);
+            List<StartedCalendarEvent> events = getCalendarEventService(now).getStartedEvents(projects, range(start, end), null, CalendarViewEventsType.ALL);
             assertThat(events, hasSize(4));
             assertThat(titlesOf(events), containsInAnyOrder("build3", "build4", "build5", "build6"));
         }
@@ -811,18 +813,18 @@ public class CalendarEventServiceTest {
 
             List<StartedCalendarEvent> events;
 
-            events = getCalendarEventService(now).getFinishedEvents(projects, range(start, end));
+            events = getCalendarEventService(now).getFinishedEvents(projects, range(start, end), CalendarViewEventsType.ALL);
             assertThat(events, hasSize(2));
             assertThat(titlesOf(events), containsInAnyOrder("build4", "build6"));
 
-            events = getCalendarEventService(now).getRunningEvents(projects, range(start, end));
+            events = getCalendarEventService(now).getRunningEvents(projects, range(start, end), CalendarViewEventsType.ALL);
             assertThat(events, hasSize(2));
             assertThat(titlesOf(events), containsInAnyOrder("build3", "build5"));
         }
 
         @Test(expected = IllegalArgumentException.class)
         public void testStateNotScheduled() throws ParseException {
-            getCalendarEventService().getStartedEvents(new ArrayList<Job>(), null, CalendarEventState.SCHEDULED);
+            getCalendarEventService().getStartedEvents(new ArrayList<Job>(), null, CalendarEventState.SCHEDULED, CalendarViewEventsType.ALL);
         }
 
         @Test
@@ -845,8 +847,8 @@ public class CalendarEventServiceTest {
             when(finishedProjectWithRunningBuild.getBuilds()).thenReturn(runningBuild);
             when(finishedProjectWithRunningBuild.isBuilding()).thenReturn(false);
 
-            assertThat(getCalendarEventService().getRunningEvents(asList(runningProjectWithFinishedBuild), range(start, end)), hasSize(0));
-            assertThat(getCalendarEventService().getRunningEvents(asList(finishedProjectWithRunningBuild), range(start, end)), hasSize(0));
+            assertThat(getCalendarEventService().getRunningEvents(asList(runningProjectWithFinishedBuild), range(start, end), CalendarViewEventsType.ALL), hasSize(0));
+            assertThat(getCalendarEventService().getRunningEvents(asList(finishedProjectWithRunningBuild), range(start, end), CalendarViewEventsType.ALL), hasSize(0));
         }
     }
 
@@ -1014,7 +1016,7 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getJob()).thenReturn(project);
 
-            CalendarEvent nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(event);
+            CalendarEvent nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(event, CalendarViewEventsType.ALL);
             assertThat(nextScheduledEvent, is(nullValue()));
         }
 
@@ -1025,8 +1027,65 @@ public class CalendarEventServiceTest {
             CalendarEvent event = mock(CalendarEvent.class);
             when(event.getJob()).thenReturn(project);
 
-            ScheduledCalendarEvent nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(event);
+            ScheduledCalendarEvent nextScheduledEvent = getCalendarEventService().getNextScheduledEvent(event, CalendarViewEventsType.ALL);
             assertThat(nextScheduledEvent, is(notNullValue()));
+        }
+    }
+
+    public static class GetDifferentEventTypeEventsTest {
+
+        @Test
+        public void testAllEvents() throws ParseException {
+            Calendar now = cal("2018-01-01 05:00:00 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-02 00:00:00 CET");
+
+            List<FreeStyleProject> projects = asList(
+                mockFinishedFreeStyleProjectWithBuildAndPollingTrigger("#1", "2018-01-01 01:00:00 CET", minutes(30), "0 1-19/6 * * *", "0 4-22/6 * * *")
+            );
+
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
+
+            assertThat(events, hasSize(7));
+            assertThat(toStringOf(events), containsInAnyOrder("2018-01-01T01:00:00 - 2018-01-01T01:30:00: #1",
+                "2018-01-01T07:00:00 - 2018-01-01T07:30:00: #1", "2018-01-01T10:00:00 - 2018-01-01T10:30:00: #1",
+                "2018-01-01T13:00:00 - 2018-01-01T13:30:00: #1", "2018-01-01T16:00:00 - 2018-01-01T16:30:00: #1", 
+                "2018-01-01T19:00:00 - 2018-01-01T19:30:00: #1", "2018-01-01T22:00:00 - 2018-01-01T22:30:00: #1"));
+        }
+
+        @Test
+        public void testBuildEvents() throws ParseException {
+            Calendar now = cal("2018-01-01 05:00:00 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-02 00:00:00 CET");
+
+            List<FreeStyleProject> projects = asList(
+                mockFinishedFreeStyleProjectWithBuildAndPollingTrigger("#1", "2018-01-01 01:00:00 CET", minutes(30), "0 1-19/6 * * *", "0 4-22/6 * * *")
+            );
+
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.BUILDS);
+
+            assertThat(events, hasSize(4));
+            assertThat(toStringOf(events), containsInAnyOrder("2018-01-01T01:00:00 - 2018-01-01T01:30:00: #1",
+                "2018-01-01T07:00:00 - 2018-01-01T07:30:00: #1", "2018-01-01T13:00:00 - 2018-01-01T13:30:00: #1", 
+                "2018-01-01T19:00:00 - 2018-01-01T19:30:00: #1"));
+        }
+
+        @Test
+        public void testPollingEvents() throws ParseException {
+            Calendar now = cal("2018-01-01 05:00:00 CET");
+            Calendar start = cal("2018-01-01 00:00:00 CET");
+            Calendar end = cal("2018-01-02 00:00:00 CET");
+
+            List<FreeStyleProject> projects = asList(
+                mockFinishedFreeStyleProjectWithBuildAndPollingTrigger("#1", "2018-01-01 01:00:00 CET", minutes(30), "0 1-19/6 * * *", "0 4-22/6 * * *")
+            );
+
+            List<CalendarEvent> events = getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.POLLINGS);
+
+            assertThat(events, hasSize(3));
+            assertThat(toStringOf(events), containsInAnyOrder("2018-01-01T10:00:00 - 2018-01-01T10:30:00: #1",
+                "2018-01-01T16:00:00 - 2018-01-01T16:30:00: #1", "2018-01-01T22:00:00 - 2018-01-01T22:30:00: #1"));
         }
     }
 }

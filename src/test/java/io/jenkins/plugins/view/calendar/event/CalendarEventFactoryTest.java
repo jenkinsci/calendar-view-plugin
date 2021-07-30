@@ -26,12 +26,14 @@ package io.jenkins.plugins.view.calendar.event;
 import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.service.CronJobService;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import jenkins.model.Jenkins;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -163,8 +165,8 @@ public class CalendarEventFactoryTest {
         assertThat(event.getBuild(), is(build));
         assertThat(event.getState(), is(expectedState));
         assertThat(event.getIconClassName(), is(expectedIconClass));
-        assertThat(event.getNextScheduledEvent(), is(notNullValue()));
-        assertThat(event.getNextScheduledEvent().getState(), is(CalendarEventState.SCHEDULED));
+        assertThat(event.getNextScheduledEvent(CalendarViewEventsType.ALL), is(notNullValue()));
+        assertThat(event.getNextScheduledEvent(CalendarViewEventsType.ALL).getState(), is(CalendarEventState.SCHEDULED));
         assertThat(event.getPreviousStartedEvent(), is(notNullValue()));
         assertThat(event.getNextStartedEvent().getState(), is(not(CalendarEventState.SCHEDULED)));
         assertThat(event.getNextStartedEvent(), is(notNullValue()));

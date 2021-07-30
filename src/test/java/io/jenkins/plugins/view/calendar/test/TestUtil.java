@@ -26,6 +26,8 @@ package io.jenkins.plugins.view.calendar.test;
 import hudson.model.*;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import hudson.triggers.SCMTrigger;
+import hudson.triggers.TimerTrigger;
 import hudson.util.RunList;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 
@@ -90,6 +92,24 @@ public class TestUtil {
         return project;
     }
 
+    public static FreeStyleProject mockFinishedFreeStyleProjectWithBuildAndPollingTrigger(String name, String start, long duration,
+            String buildTriggerSpec, String pollingTriggerSpec) throws ParseException {
+        Map<TriggerDescriptor, Trigger<?>> triggers = mockBuildAndPollingTriggers(buildTriggerSpec, pollingTriggerSpec);
+        RunList<FreeStyleBuild> builds = mockBuilds(
+          mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS)
+        );
+
+        FreeStyleProject project = mock(FreeStyleProject.class);
+        when(project.getFullName()).thenReturn(name);
+        when(project.getFullDisplayName()).thenReturn(name);
+        when(project.getTriggers()).thenReturn(triggers);
+        when(project.getEstimatedDuration()).thenReturn(duration);
+        when(project.getBuilds()).thenReturn(builds);
+        when(project.isBuilding()).thenReturn(false);
+        when(project.isBuildable()).thenReturn(true);
+        return project;
+    }
+
     public static Map<TriggerDescriptor, Trigger<?>> mockTriggers(String... specs)  {
         Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
         for (String spec : specs) {
@@ -107,6 +127,20 @@ public class TestUtil {
             when(trigger.getParameterizedSpecification()).thenReturn(spec);
             triggers.put(mock(TriggerDescriptor.class), trigger);
         }
+        return triggers;
+    }
+
+    public static Map<TriggerDescriptor, Trigger<?>> mockBuildAndPollingTriggers(String buildSpec, String pollingSpec)  {
+        Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
+
+        Trigger trigger = mock(TimerTrigger.class);
+        when(trigger.getSpec()).thenReturn(buildSpec);
+        triggers.put(mock(TriggerDescriptor.class), trigger);
+
+        trigger = mock(SCMTrigger.class);
+        when(trigger.getSpec()).thenReturn(pollingSpec);
+        triggers.put(mock(TriggerDescriptor.class), trigger);
+
         return triggers;
     }
 
@@ -156,5 +190,13 @@ public class TestUtil {
             titles.add(event.getTitle());
         }
         return titles;
+    }
+
+    public static Set<String> toStringOf(List<? extends CalendarEvent> events) {
+        Set<String> toStrings = new HashSet<>();
+        for (CalendarEvent event: events) {
+            toStrings.add(event.toString());
+        }
+        return toStrings;
     }
 }
