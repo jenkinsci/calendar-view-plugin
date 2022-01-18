@@ -23,6 +23,10 @@
           <email>sven.schoenung@gmail.com</email>
           <url>https://sven.schoenung.org</url>
        </developer>
+       <developer>
+          <name>Roland Asmann</name>
+          <email>roland.asmann@gmail.com</email>
+       </developer>
     </developers>
     <licenses>
         <license>
