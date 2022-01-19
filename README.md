@@ -99,6 +99,12 @@ $ ./npmw run dev
 
 ## Changelog
 
+### v0.3.2 (released 2022-01-19)
+* Feature: [[JENKINS-60868]](https://issues.jenkins-ci.org/browse/JENKINS-60868) Support for [Parameterized Scheduler Plugin](https://plugins.jenkins.io/parameterized-scheduler/) added
+* Feature: [[JENKINS-61867]](https://issues.jenkins-ci.org/browse/JENKINS-61867) Calendar can show actual builds, planned polling or both
+* Fix: README.md updated to convention
+* Fix: All Node dependencies classified 'critical' have been updated
+
 ### v0.3.1 (released 2018-09-04)
 * Fix: [[JENKINS-53312]](https://issues.jenkins-ci.org/browse/JENKINS-53312) Future scheduled builds for pipeline jobs were missing
 
