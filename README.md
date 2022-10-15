@@ -97,6 +97,53 @@ To watch JavaScript and CSS files using webpack:
 $ ./npmw run dev
 ```
 
+## Use Calendar View with Job DSL
+
+Calendar View integrates also with Job DSL.
+
+Simple example with nestedView:
+
+```
+nestedView('Job Schedule') {
+    description('Description')
+    views {
+        calendarView {
+            name('CalendarName')
+            description('Description')
+            includeRegex('.*')
+            jobFilters {
+                statusFilter {
+                    statusFilter(true)
+                }
+            }
+            jobNames([].toSet())
+            recurse(true)
+        }
+    }
+}
+```
+
+Simple example with folder:
+
+```
+folder('MyProject') {
+    views {
+        calendarView {
+            name('CalendarName')
+            description('Description')
+            includeRegex('.*')
+            jobFilters {
+                statusFilter {
+                    statusFilter(true)
+                }
+            }
+            jobNames([].toSet())
+            recurse(true)
+        }
+    }
+}
+```
+
 ## Changelog
 
 ### v0.3.2 (released 2022-01-19)
