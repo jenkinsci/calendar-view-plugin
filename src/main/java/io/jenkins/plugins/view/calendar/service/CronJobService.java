@@ -129,7 +129,7 @@ public class CronJobService {
     }
 
     public List<CronTab> getCronTabs(final Job job, final CalendarViewEventsType eventsType) {
-        final List<CronTab> cronTabs = new ArrayList<CronTab>();
+        final List<CronTab> cronTabs = new ArrayList<>();
         for (final Trigger trigger: getCronTriggers(job, eventsType)) {
             cronTabs.addAll(getCronTabs(trigger, Hash.from(job.getFullName())));
         }

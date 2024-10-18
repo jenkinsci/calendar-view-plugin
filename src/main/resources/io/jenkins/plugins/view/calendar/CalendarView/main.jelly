@@ -37,6 +37,7 @@ THE SOFTWARE.
     </div>
 
     <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
+    <st:adjunct includes="io.jenkins.plugins.jquery3"/>
     <j:if test="${it.greenBallsEnabled}">
       <style>
         .fc-event.event-result-success {

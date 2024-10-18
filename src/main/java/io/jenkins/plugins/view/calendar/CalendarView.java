@@ -404,7 +404,7 @@ public class CalendarView extends ListView {
 
     public List<Job> getJobs() {
         final List<TopLevelItem> items = getItems();
-        final List<Job> jobs = new ArrayList<Job>(items.size());
+        final List<Job> jobs = new ArrayList<>(items.size());
         for (final TopLevelItem item: items) {
             if (item instanceof Job) {
                 jobs.add((Job)item);

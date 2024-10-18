@@ -4,9 +4,12 @@
   "description": "",
   "main": "src/main/js/index.js",
   "scripts": {
+    "mvnbuild": "npm run build",
+    "mvntest": "npm run test",
     "test": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js'",
     "coverage": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js' && nyc report --reporter=html",
     "codecov": "nyc --exclude 'src/test/js/**/*.js' report --reporter=text-lcov > coverage.lcov && codecov",
+    "build": "webpack --mode production",
     "dev": "webpack --watch --mode development"
   },
   "author": "Sven Schoenung <sven.schoenung@gmail.com>",
