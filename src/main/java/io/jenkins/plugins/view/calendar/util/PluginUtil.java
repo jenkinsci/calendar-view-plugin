@@ -24,7 +24,7 @@ public final class PluginUtil {
 
     public static boolean hasPluginInstalled(final String pluginName) {
         final Plugin plugin = getJenkins().getPlugin(pluginName);
-        return (plugin == null) ? false : true;
+        return plugin != null;
     }
 
     public static boolean hasGreenballsPluginInstalled() {

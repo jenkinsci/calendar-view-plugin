@@ -80,7 +80,7 @@ Clicking on a future build will lead to the job's detail page.
 Clone the repository then execute the following in the project's root directory:
 
 ```
-$ ./mvnw install
+$ mvn install
 ```
 
 This will install Java dependencies as well as a local node installation and npm dependencies.
@@ -88,13 +88,13 @@ This will install Java dependencies as well as a local node installation and npm
 You can now run the plugin in a Jenkins instance by executing the following:
 
 ```
-$ ./mvnw hpi:run
+$ mvn hpi:run
 ```
 
 To watch JavaScript and CSS files using webpack:
 
 ```
-$ ./npmw run dev
+$ npm run dev
 ```
 
 ## Use Calendar View with Job DSL

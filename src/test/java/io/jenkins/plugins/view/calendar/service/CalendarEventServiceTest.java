@@ -880,6 +880,12 @@ public class CalendarEventServiceTest {
                 public FreeStyleBuild getLastBuild() { return build4; }
 
                 @Override
+                public List<FreeStyleBuild> getLastBuildsOverThreshold(int numberOfBuilds, Result threshold) {
+                    List<FreeStyleBuild> builds = List.of(build4, build3, build2, build1);
+                    return builds.subList(0, Math.min(numberOfBuilds, builds.size()));
+                }
+
+                @Override
                 public String getShortUrl() { return ""; }
             };
 
@@ -919,6 +925,12 @@ public class CalendarEventServiceTest {
             MatrixProject project = new MatrixProject(mock(ItemGroup.class), "project") {
                 @Override
                 public MatrixBuild getLastBuild() { return build4; }
+
+                @Override
+                public List<MatrixBuild> getLastBuildsOverThreshold(int numberOfBuilds, Result threshold) {
+                    List<MatrixBuild> builds = List.of(build4, build3, build2, build1);
+                    return builds.subList(0, Math.min(numberOfBuilds, builds.size()));
+                }
 
                 @Override
                 public String getShortUrl() { return ""; }

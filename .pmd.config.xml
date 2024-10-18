@@ -11,6 +11,8 @@
 
     <rule ref="category/java/bestpractices.xml">
         <exclude name="AccessorMethodGeneration" />
+        <exclude name="AvoidReassigningLoopVariables" />
+        <exclude name="WhileLoopWithLiteralBoolean" />
     </rule>
     <rule ref="category/java/codestyle.xml">
         <!-- Operator precedence is hard and parentheses enhance readability -->
@@ -29,27 +31,21 @@
         <exclude name="AvoidFinalLocalVariable" />
     </rule>
     <rule ref="category/java/design.xml">
+        <exclude name="CognitiveComplexity" />
         <!-- "Tell, don't ask" is a good design principle, 
              but this rule is way too strict about it -->
         <exclude name="LawOfDemeter" />
-    </rule>
-    <rule ref="category/java/design.xml/NcssCount">
-        <!-- Default values too low in PMD 6.4.0, fixed in PMD 6.5.0 -->
-        <properties>
-            <property name="methodReportLevel" value="60"/>
-            <property name="classReportLevel" value="1000"/>
-        </properties>
+        <exclude name="LoosePackageCoupling" />
     </rule>
     <rule ref="category/java/errorprone.xml">
         <!-- Produces lots of false positives and the Java
              compiler catches most of these anyway -->
         <exclude name="DataflowAnomalyAnalysis"/>
-        <!-- Produces lots of false positives because it
-             doesn't check if Serializable is implemented -->
-        <exclude name="BeanMembersShouldSerialize" />
     </rule>
     <rule ref="category/java/multithreading.xml"/>
-    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidCalendarDateCreation" />
+    </rule>
     <rule ref="category/java/security.xml"/>
 
 </ruleset>

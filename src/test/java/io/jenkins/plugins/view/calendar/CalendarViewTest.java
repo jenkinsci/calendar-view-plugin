@@ -23,8 +23,8 @@
  */
 package io.jenkins.plugins.view.calendar;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.html.*;
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.html.*;
 import org.junit.Ignore;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class CalendarViewTest {
         HtmlRadioButtonInput calendarViewRadioButton = newView.querySelector("input[value='io.jenkins.plugins.view.calendar.CalendarView']");
         calendarViewRadioButton.setChecked(true);
 
-        HtmlButton okButton = newView.querySelector("#ok-button");
+        HtmlButton okButton = newView.querySelector("#ok");
         okButton.click();
 
         return (CalendarView) j.getInstance().getView(name);
@@ -275,7 +275,7 @@ public class CalendarViewTest {
     }
 
     private void testValidation(HtmlPage configurePage) {
-        HtmlButton submitButton = configurePage.querySelector(".submit-button button");
+        HtmlButton submitButton = configurePage.querySelector(".jenkins-button--primary");
         try {
             submitButton.click();
         } catch (Exception e) {
