@@ -103,7 +103,7 @@ public class CronJobService {
 
     @SuppressWarnings("PMD.CyclomaticComplexity")
     public List<Trigger> getCronTriggers(final Job job, final CalendarViewEventsType eventsType) {
-        Collection<Trigger<?>> jobTriggers;
+        final Collection<Trigger<?>> jobTriggers;
         if (job instanceof AbstractProject) {
             jobTriggers = ((AbstractProject)job).getTriggers().values();
         } else if (PluginUtil.hasWorkflowJobPluginInstalled() && job instanceof WorkflowJob) {

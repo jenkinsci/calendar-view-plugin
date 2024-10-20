@@ -69,13 +69,13 @@ public class CalendarEventFactory {
         protected long duration;
         private transient List<StartedCalendarEvent> lastEvents;
 
-        protected String initId(final String url, final long startTimeInMillis) {
+        /* default */ final String initId(final String url, final long startTimeInMillis) {
             return StringUtils.defaultString(url, "")
               .replace("/", "-")
               .toLowerCase(Locale.ENGLISH) + startTimeInMillis;
         }
 
-        protected Moment initEnd(final long timeInMillis, final long duration) {
+        /* default */ final Moment initEnd(final long timeInMillis, final long duration) {
             // duration needs to be at least 1sec otherwise
             // fullcalendar will not properly display the event
             final long dur = (duration < 1000) ? 1000 : duration;

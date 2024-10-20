@@ -75,10 +75,7 @@ public class Moment implements Comparable<Object> {
 
     @Override
     public boolean equals(final Object o) {
-        if (!(o instanceof Moment)) {
-            return false;
-        }
-        return calendar.equals(((Moment)o).calendar);
+        return (o instanceof Moment) && calendar.equals(((Moment)o).calendar);
     }
 
     @Override
