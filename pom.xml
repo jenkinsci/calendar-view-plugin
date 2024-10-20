@@ -18,8 +18,8 @@
         <jenkins.baseline>2.440</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
         <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
-        <node.version>14.21.3</node.version>
-        <npm.version>6.14.18</npm.version>
+        <node.version>16.20.2</node.version>
+        <npm.version>8.19.4</npm.version>
     </properties>
     <name>Calendar View Plugin</name>
     <developers>
