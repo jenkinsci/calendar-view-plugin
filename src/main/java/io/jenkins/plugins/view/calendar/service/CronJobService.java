@@ -23,7 +23,6 @@
  */
 package io.jenkins.plugins.view.calendar.service;
 
-import antlr.ANTLRException;
 import hudson.model.AbstractProject;
 import hudson.model.Job;
 import hudson.scheduler.CronTab;
@@ -92,7 +91,7 @@ public class CronJobService {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CronTab cronTab = new CronTab(line, lineNumber, hash, timezone);
                 cronTabs.add(cronTab);
-            } catch (ANTLRException e) {
+            } catch (IllegalArgumentException e) {
                 final String msg = "Unable to parse cron trigger spec: '" + line + "'";
                 Logger.getLogger(this.getClass()).error(msg, e);
             }
