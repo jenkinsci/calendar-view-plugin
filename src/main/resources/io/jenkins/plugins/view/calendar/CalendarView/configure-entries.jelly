@@ -312,17 +312,6 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 
     </f:section>
 
-    <script>
-        (function() {
-        Behaviour.specify("#recurse", 'ListView', 0, function(e) {
-        var nestedElements = document.querySelectorAll('SPAN.nested')
-        e.onclick = function() {
-        nestedElements.forEach(function(el) {
-        el.style.display = e.checked ? '' : 'none';
-        });
-        }
-        });
-        }());
-    </script>
+    <st:adjunct includes="hudson.model.ListView.configure-entries-resources"/>
 
 </j:jelly>
