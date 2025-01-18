@@ -23,7 +23,6 @@
  */
 package io.jenkins.plugins.view.calendar.service;
 
-import antlr.ANTLRException;
 import hudson.model.AbstractProject;
 import hudson.model.Job;
 import hudson.scheduler.CronTab;
@@ -92,7 +91,7 @@ public class CronJobService {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CronTab cronTab = new CronTab(line, lineNumber, hash, timezone);
                 cronTabs.add(cronTab);
-            } catch (ANTLRException e) {
+            } catch (IllegalArgumentException e) {
                 final String msg = "Unable to parse cron trigger spec: '" + line + "'";
                 Logger.getLogger(this.getClass()).error(msg, e);
             }
@@ -103,7 +102,7 @@ public class CronJobService {
 
     @SuppressWarnings("PMD.CyclomaticComplexity")
     public List<Trigger> getCronTriggers(final Job job, final CalendarViewEventsType eventsType) {
-        Collection<Trigger<?>> jobTriggers;
+        final Collection<Trigger<?>> jobTriggers;
         if (job instanceof AbstractProject) {
             jobTriggers = ((AbstractProject)job).getTriggers().values();
         } else if (PluginUtil.hasWorkflowJobPluginInstalled() && job instanceof WorkflowJob) {
@@ -129,7 +128,7 @@ public class CronJobService {
     }
 
     public List<CronTab> getCronTabs(final Job job, final CalendarViewEventsType eventsType) {
-        final List<CronTab> cronTabs = new ArrayList<CronTab>();
+        final List<CronTab> cronTabs = new ArrayList<>();
         for (final Trigger trigger: getCronTriggers(job, eventsType)) {
             cronTabs.addAll(getCronTabs(trigger, Hash.from(job.getFullName())));
         }

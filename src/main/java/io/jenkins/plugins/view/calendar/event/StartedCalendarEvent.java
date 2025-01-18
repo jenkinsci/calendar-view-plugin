@@ -37,5 +37,5 @@ public interface StartedCalendarEvent extends CalendarEvent {
 
     StartedCalendarEvent getNextStartedEvent();
 
-    ScheduledCalendarEvent getNextScheduledEvent(final CalendarViewEventsType eventsType);
+    ScheduledCalendarEvent getNextScheduledEvent(CalendarViewEventsType eventsType);
 }

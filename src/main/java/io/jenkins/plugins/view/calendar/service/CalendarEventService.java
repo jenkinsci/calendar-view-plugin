@@ -38,7 +38,6 @@ import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.scheduler.CronTab;
-import hudson.util.RunList;
 import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 import io.jenkins.plugins.view.calendar.event.CalendarEventComparator;
@@ -222,7 +221,7 @@ public class CalendarEventService {
                 if (state == CalendarEventState.RUNNING && !job.isBuilding()) {
                     continue;
                 }
-                final RunList<Run> builds = job.getBuilds();
+                final List<Run> builds = job.getBuilds();
                 for (final Run build : builds) {
                     if (state == CalendarEventState.RUNNING && !build.isBuilding()) {
                         continue;
