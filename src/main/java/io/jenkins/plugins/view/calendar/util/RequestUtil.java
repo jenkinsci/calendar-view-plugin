@@ -25,7 +25,7 @@ package io.jenkins.plugins.view.calendar.util;
 
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -35,7 +35,7 @@ public final class RequestUtil {
 
     private RequestUtil() {}
 
-    public static Calendar getParamAsCalendar(final StaplerRequest req, final String param) throws ParseException {
+    public static Calendar getParamAsCalendar(final StaplerRequest2 req, final String param) throws ParseException {
         final String dateString = req.getParameter(param);
 
         final Calendar cal = Calendar.getInstance();
