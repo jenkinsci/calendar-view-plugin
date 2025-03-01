@@ -40,9 +40,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
@@ -339,13 +339,13 @@ public class CalendarView extends ListView {
     }
 
     @Override
-    protected void submit(final StaplerRequest req) throws ServletException, Descriptor.FormException, IOException {
+    protected void submit(final StaplerRequest2 req) throws ServletException, Descriptor.FormException, IOException {
         this.validate(req);
         super.submit(req);
         this.updateFields(req);
     }
 
-    private void validate(final StaplerRequest req) throws Descriptor.FormException {
+    private void validate(final StaplerRequest2 req) throws Descriptor.FormException {
         final List<String> validSlotDurations = Collections.unmodifiableList(Arrays.asList(
             "00:05:00", "00:10:00", "00:15:00", "00:20:00", "00:30:00", "01:00:00"
         ));
@@ -364,7 +364,7 @@ public class CalendarView extends ListView {
         validatePattern(req, "dayMaxTime", validDateTimePattern);
     }
 
-    private void updateFields(final StaplerRequest req) {
+    private void updateFields(final StaplerRequest2 req) {
         setCalendarViewEventsType(CalendarViewEventsType.valueOf(req.getParameter("calendarViewEventsType")));
         setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
 
@@ -414,7 +414,7 @@ public class CalendarView extends ListView {
     }
 
     public List<CalendarEvent> getEvents() throws ParseException {
-        final StaplerRequest req = Stapler.getCurrentRequest();
+        final StaplerRequest2 req = Stapler.getCurrentRequest2();
 
         final Calendar start = RequestUtil.getParamAsCalendar(req, "start");
         final Calendar end = RequestUtil.getParamAsCalendar(req, "end");

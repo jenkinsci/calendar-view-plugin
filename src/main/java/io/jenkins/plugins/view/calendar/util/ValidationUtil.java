@@ -26,7 +26,7 @@ package io.jenkins.plugins.view.calendar.util;
 import hudson.model.Descriptor;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +37,7 @@ public final class ValidationUtil {
 
     private ValidationUtil() { }
 
-    public static void validateEnum(final StaplerRequest req, final String formField, final Class<? extends Enum> enumClass) throws Descriptor.FormException {
+    public static void validateEnum(final StaplerRequest2 req, final String formField, final Class<? extends Enum> enumClass) throws Descriptor.FormException {
         final Enum[] enumConstants = enumClass.getEnumConstants();
         for (final Enum enumConstant: enumConstants) {
             if (enumConstant.name().equals(req.getParameter(formField))) {
@@ -47,20 +47,20 @@ public final class ValidationUtil {
         throw new Descriptor.FormException(formField + " must be one of " + Arrays.asList(enumConstants), formField);
     }
 
-    public static void validateInList(final StaplerRequest req, final String formField, final List<String> possibleValues) throws Descriptor.FormException {
+    public static void validateInList(final StaplerRequest2 req, final String formField, final List<String> possibleValues) throws Descriptor.FormException {
         if (!possibleValues.contains(req.getParameter(formField))) {
             throw new Descriptor.FormException(formField + " must be one of " + possibleValues, formField);
         }
     }
 
-    public static void validatePattern(final StaplerRequest req, final String formField, final Pattern pattern) throws Descriptor.FormException {
+    public static void validatePattern(final StaplerRequest2 req, final String formField, final Pattern pattern) throws Descriptor.FormException {
         final String value = req.getParameter(formField);
         if (value == null || !pattern.matcher(value).matches()) {
             throw new Descriptor.FormException(formField + " must match " + pattern, formField);
         }
     }
 
-    public static void validateRange(final StaplerRequest req, final String formField, final int min, final int max) throws Descriptor.FormException {
+    public static void validateRange(final StaplerRequest2 req, final String formField, final int min, final int max) throws Descriptor.FormException {
         final int value = Integer.parseInt(req.getParameter("weekSettingsFirstDay"));
         if (value < min || value > max) {
             throw new Descriptor.FormException(formField + " must be: " + min + " <= " + formField + " <= " + max, formField);
