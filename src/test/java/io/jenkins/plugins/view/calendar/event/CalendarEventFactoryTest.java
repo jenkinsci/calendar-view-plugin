@@ -23,7 +23,14 @@
  */
 package io.jenkins.plugins.view.calendar.event;
 
-import hudson.model.*;
+import hudson.model.AbstractProject;
+import hudson.model.BallColor;
+import hudson.model.FreeStyleProject;
+import hudson.model.HealthReport;
+import hudson.model.Job;
+import hudson.model.Result;
+import hudson.model.Run;
+import hudson.model.TopLevelItem;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
@@ -33,31 +40,39 @@ import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import jenkins.model.Jenkins;
-
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
-import static io.jenkins.plugins.view.calendar.test.CalendarUtil.*;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.hours;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.minutes;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.mom;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockScheduledFreeStyleProject;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockTriggers;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-public class CalendarEventFactoryTest {
+class CalendarEventFactoryTest {
 
     private static TimeZone defaultTimeZone;
     private static Locale defaultLocale;
 
-    @BeforeClass
-    public static void beforeClass() {
+    @BeforeAll
+    static void beforeClass() {
         CalendarEventFactoryTest.defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
 
@@ -67,23 +82,17 @@ public class CalendarEventFactoryTest {
         PluginUtil.setJenkins(mock(Jenkins.class));
     }
 
-    @AfterClass
-    public static void afterClass() {
+    @AfterAll
+    static void afterClass() {
         TimeZone.setDefault(CalendarEventFactoryTest.defaultTimeZone);
         Locale.setDefault(CalendarEventFactoryTest.defaultLocale);
     }
 
-    public CalendarEventFactory getCalendarEventFactory(Moment now) {
-        final CronJobService cronJobService = new CronJobService(now);
-        final CalendarEventService calendarEventService = new CalendarEventService(now, cronJobService);
-        return new CalendarEventFactory(now, calendarEventService);
-    }
-
     @Test
-    public void testScheduledEvent() throws ParseException {
+    void testScheduledEvent() throws ParseException {
         Calendar start = cal("2018-01-01 00:00:00 UTC");
         Calendar end = cal("2018-01-01 00:01:00 UTC");
-        long duration =  60 * 1000;
+        long duration = 60 * 1000;
 
         HealthReport health = mock(HealthReport.class);
         when(health.getIconClassName()).thenReturn("health-icon-class-name");
@@ -94,7 +103,7 @@ public class CalendarEventFactoryTest {
 
         Moment now = new Moment();
         ScheduledCalendarEvent event = getCalendarEventFactory(now).createScheduledEvent(project, start, duration);
-        assertThat(event.getJob(), is((Job)project));
+        assertThat(event.getJob(), is(project));
         assertThat(event.getTitle(), is("Example Project"));
         assertThat(event.getStart(), is(mom(start)));
         assertThat(event.getEnd(), is(mom(end)));
@@ -110,16 +119,16 @@ public class CalendarEventFactoryTest {
     }
 
     @Test
-    public void testFinishedEvent() throws ParseException {
-        testStartedEvent(Result.SUCCESS, BallColor.BLUE, false,"icon-blue", CalendarEventState.FINISHED);
-        testStartedEvent(Result.FAILURE, BallColor.RED, false, "icon-red",  CalendarEventState.FINISHED);
+    void testFinishedEvent() throws ParseException {
+        testStartedEvent(Result.SUCCESS, BallColor.BLUE, false, "icon-blue", CalendarEventState.FINISHED);
+        testStartedEvent(Result.FAILURE, BallColor.RED, false, "icon-red", CalendarEventState.FINISHED);
         testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, false, "icon-yellow", CalendarEventState.FINISHED);
         testStartedEvent(Result.NOT_BUILT, BallColor.GREY, false, "icon-grey", CalendarEventState.FINISHED);
         testStartedEvent(Result.ABORTED, BallColor.GREY, false, "icon-grey", CalendarEventState.FINISHED);
     }
 
-        @Test
-    public void testRunningEvent() throws ParseException {
+    @Test
+    void testRunningEvent() throws ParseException {
         testStartedEvent(Result.SUCCESS, BallColor.BLUE, true, "icon-blue", CalendarEventState.RUNNING);
         testStartedEvent(Result.FAILURE, BallColor.RED, true, "icon-red", CalendarEventState.RUNNING);
         testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, true, "icon-yellow", CalendarEventState.RUNNING);
@@ -127,55 +136,8 @@ public class CalendarEventFactoryTest {
         testStartedEvent(Result.ABORTED, BallColor.GREY, true, "icon-grey", CalendarEventState.RUNNING);
     }
 
-    public void testStartedEvent(Result result, BallColor ballColor, boolean running, String expectedIconClass, CalendarEventState expectedState) throws ParseException {
-        Calendar start = cal("2018-01-01 00:00:00 UTC");
-        Calendar end = cal("2018-01-01 00:01:00 UTC");
-        long duration =  60 * 1000;
-
-        Run build = mock(Run.class);
-        when(build.getStartTimeInMillis()).thenReturn(start.getTimeInMillis());
-        when(build.getDuration()).thenReturn(duration);
-        when(build.getUrl()).thenReturn("example/build/url/");
-        when(build.getResult()).thenReturn(result);
-        when(build.getFullDisplayName()).thenReturn("Example Build #1");
-        when(build.getIconColor()).thenReturn(ballColor);
-        when(build.getPreviousBuild()).thenReturn(mock(Run.class));
-        when(build.getNextBuild()).thenReturn(mock(Run.class));
-        when(build.isBuilding()).thenReturn(running);
-
-        Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("0 20 * * *");
-
-        AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-        when(project.getFullName()).thenReturn("Project Name");
-        when(project.getFullDisplayName()).thenReturn("Example Project");
-        when(project.getUrl()).thenReturn("example/item/url/");
-        when(project.getTriggers()).thenReturn(triggers);
-        when(project.isBuilding()).thenReturn(running);
-
-        Moment now = new Moment(end);
-        StartedCalendarEvent event = getCalendarEventFactory(now).createStartedEvent(project, build);
-        assertThat(event.getJob(), is((Job)project));
-        assertThat(event.getTitle(), is("Example Build #1"));
-        assertThat(event.getStart(), is(mom(start)));
-        assertThat(event.getEnd(), is(mom(end)));
-        assertThat(event.getDuration(), is(duration));
-        assertThat(event.getDurationString(), containsString("1 Minute"));
-        assertThat(event.getUrl(), is("example/build/url/"));
-        assertThat(event.getId(), is("example-item-url-1514764800000"));
-        assertThat(event.getBuild(), is(build));
-        assertThat(event.getState(), is(expectedState));
-        assertThat(event.getIconClassName(), is(expectedIconClass));
-        assertThat(event.getNextScheduledEvent(CalendarViewEventsType.ALL), is(notNullValue()));
-        assertThat(event.getNextScheduledEvent(CalendarViewEventsType.ALL).getState(), is(CalendarEventState.SCHEDULED));
-        assertThat(event.getPreviousStartedEvent(), is(notNullValue()));
-        assertThat(event.getNextStartedEvent().getState(), is(not(CalendarEventState.SCHEDULED)));
-        assertThat(event.getNextStartedEvent(), is(notNullValue()));
-        assertThat(event.getNextStartedEvent().getState(), is(not(CalendarEventState.SCHEDULED)));
-        assertThat(event.toString(), is("2018-01-01T01:00:00 - 2018-01-01T01:01:00: Example Build #1"));
-    }
-
     @Test
-    public void testInRange() throws ParseException {
+    void testInRange() throws ParseException {
 
         MomentRange range = MomentRange.range(cal("2018-01-01 00:00:00 UTC"), cal("2018-01-02 00:00:00 UTC"));
 
@@ -248,7 +210,7 @@ public class CalendarEventFactoryTest {
     }
 
     @Test
-    public void testEventIsAtLeastOneSecondLong() throws ParseException {
+    void testEventIsAtLeastOneSecondLong() throws ParseException {
         Calendar start = cal("2018-01-01 00:00:00 UTC");
         Calendar end = cal("2018-01-01 00:00:01 UTC");
 
@@ -262,5 +224,58 @@ public class CalendarEventFactoryTest {
         StartedCalendarEvent event = getCalendarEventFactory(now).createStartedEvent(project, build);
         assertThat(event.getStart(), is(mom(start)));
         assertThat(event.getEnd(), is(mom(end)));
+    }
+
+    private static void testStartedEvent(Result result, BallColor ballColor, boolean running, String expectedIconClass, CalendarEventState expectedState) throws ParseException {
+        Calendar start = cal("2018-01-01 00:00:00 UTC");
+        Calendar end = cal("2018-01-01 00:01:00 UTC");
+        long duration = 60 * 1000;
+
+        Run build = mock(Run.class);
+        when(build.getStartTimeInMillis()).thenReturn(start.getTimeInMillis());
+        when(build.getDuration()).thenReturn(duration);
+        when(build.getUrl()).thenReturn("example/build/url/");
+        when(build.getResult()).thenReturn(result);
+        when(build.getFullDisplayName()).thenReturn("Example Build #1");
+        when(build.getIconColor()).thenReturn(ballColor);
+        when(build.getPreviousBuild()).thenReturn(mock(Run.class));
+        when(build.getNextBuild()).thenReturn(mock(Run.class));
+        when(build.isBuilding()).thenReturn(running);
+
+        Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("0 20 * * *");
+
+        AbstractProject project = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
+        when(project.getFullName()).thenReturn("Project Name");
+        when(project.getFullDisplayName()).thenReturn("Example Project");
+        when(project.getUrl()).thenReturn("example/item/url/");
+        when(project.getTriggers()).thenReturn(triggers);
+        when(project.isBuilding()).thenReturn(running);
+
+        Moment now = new Moment(end);
+        StartedCalendarEvent event = getCalendarEventFactory(now).createStartedEvent(project, build);
+        assertThat(event.getJob(), is(project));
+        assertThat(event.getTitle(), is("Example Build #1"));
+        assertThat(event.getStart(), is(mom(start)));
+        assertThat(event.getEnd(), is(mom(end)));
+        assertThat(event.getDuration(), is(duration));
+        assertThat(event.getDurationString(), containsString("1 Minute"));
+        assertThat(event.getUrl(), is("example/build/url/"));
+        assertThat(event.getId(), is("example-item-url-1514764800000"));
+        assertThat(event.getBuild(), is(build));
+        assertThat(event.getState(), is(expectedState));
+        assertThat(event.getIconClassName(), is(expectedIconClass));
+        assertThat(event.getNextScheduledEvent(CalendarViewEventsType.ALL), is(notNullValue()));
+        assertThat(event.getNextScheduledEvent(CalendarViewEventsType.ALL).getState(), is(CalendarEventState.SCHEDULED));
+        assertThat(event.getPreviousStartedEvent(), is(notNullValue()));
+        assertThat(event.getNextStartedEvent().getState(), is(not(CalendarEventState.SCHEDULED)));
+        assertThat(event.getNextStartedEvent(), is(notNullValue()));
+        assertThat(event.getNextStartedEvent().getState(), is(not(CalendarEventState.SCHEDULED)));
+        assertThat(event.toString(), is("2018-01-01T01:00:00 - 2018-01-01T01:01:00: Example Build #1"));
+    }
+
+    private static CalendarEventFactory getCalendarEventFactory(Moment now) {
+        final CronJobService cronJobService = new CronJobService(now);
+        final CalendarEventService calendarEventService = new CalendarEventService(now, cronJobService);
+        return new CalendarEventFactory(now, calendarEventService);
     }
 }
