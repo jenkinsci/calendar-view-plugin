@@ -36,58 +36,63 @@ import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import jenkins.model.Jenkins;
-
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
-import org.junit.*;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.str;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockFreeStyleProject;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockParameterizedTriggers;
 import static io.jenkins.plugins.view.calendar.test.TestUtil.mockTriggers;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsIterableContaining.hasItem;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-@RunWith(Enclosed.class)
-public class CronJobServiceTest {
+class CronJobServiceTest {
 
     private static TimeZone defaultTimeZone;
 
-    @BeforeClass
-    public static void beforeClass() {
+    @BeforeAll
+    static void beforeClass() {
         CronJobServiceTest.defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
         PluginUtil.setJenkins(mock(Jenkins.class));
     }
 
-    @AfterClass
-    public static void afterClass() {
+    @AfterAll
+    static void afterClass() {
         TimeZone.setDefault(CronJobServiceTest.defaultTimeZone);
     }
 
-    public abstract static class MockPluginAvailabilityTests {
-        @Before
+    abstract static class MockPluginAvailabilityTests {
+        @BeforeEach
         public void clearPlugins() {
             PluginUtil.setJenkins(mock(Jenkins.class));
         }
     }
 
-    public static class GetCronTabsTests extends MockPluginAvailabilityTests {
+    @Nested
+    class GetCronTabsTests extends MockPluginAvailabilityTests {
 
         @Test
-        public void testThatHourlyJobsWork() throws ParseException {
+        void testThatHourlyJobsWork() throws ParseException {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("10 * * * *");
 
@@ -96,14 +101,13 @@ public class CronJobServiceTest {
 
             CronTab cronTab = cronTabs.get(0);
 
-            assertThat(next(cronTab,"2018-01-01 00:00:00 UTC"), is("2018-01-01 01:10:00 CET"));
-            assertThat(next(cronTab,"2018-01-01 00:10:00 UTC"), is("2018-01-01 01:10:00 CET"));
-            assertThat(next(cronTab,"2018-01-01 00:20:00 UTC"), is("2018-01-01 02:10:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 01:10:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 00:10:00 UTC"), is("2018-01-01 01:10:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 00:20:00 UTC"), is("2018-01-01 02:10:00 CET"));
         }
-   
 
         @Test
-        public void testThatDailyJobsWork() throws ParseException {
+        void testThatDailyJobsWork() throws ParseException {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("0 12 * * *");
 
@@ -119,7 +123,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testThatYearlyJobsWork() throws ParseException {
+        void testThatYearlyJobsWork() throws ParseException {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("0 10 23 2 *");
 
@@ -134,7 +138,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testThatCommentsAreIgnored() throws ParseException {
+        void testThatCommentsAreIgnored() {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("# This is ignored");
 
@@ -143,7 +147,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testThatEmptyLinesAreIgnored() throws ParseException {
+        void testThatEmptyLinesAreIgnored() {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("  \n \n  ");
 
@@ -152,7 +156,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testThatInvalidCronExpressionIsIgnored() throws ParseException {
+        void testThatInvalidCronExpressionIsIgnored() {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("This is not valid");
 
@@ -161,7 +165,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testThatTimeZoneIsRespected() throws ParseException {
+        void testThatTimeZoneIsRespected() throws ParseException {
             Trigger triggerCET = mock(Trigger.class);
             when(triggerCET.getSpec()).thenReturn("0 6 * * *");
 
@@ -184,7 +188,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testThatParameterizedJobsWork() throws ParseException {
+        void testThatParameterizedJobsWork() throws ParseException {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
             PluginUtil.setJenkins(jenkins);
@@ -204,7 +208,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testThatParameterizedJobsWithoutParametersWork() throws ParseException {
+        void testThatParameterizedJobsWithoutParametersWork() throws ParseException {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
             PluginUtil.setJenkins(jenkins);
@@ -224,22 +228,23 @@ public class CronJobServiceTest {
         }
     }
 
-    public static class GetCronTriggersTests extends MockPluginAvailabilityTests {
+    @Nested
+    class GetCronTriggersTests extends MockPluginAvailabilityTests {
 
         @Test
-        public void testItemIsNotAbstractProject() {
+        void testItemIsNotAbstractProject() {
             Job item = mock(Job.class);
             assertThat(new CronJobService().getCronTriggers(item, CalendarViewEventsType.ALL), hasSize(0));
         }
 
         @Test
-        public void testEmptyTriggerMap() {
+        void testEmptyTriggerMap() {
             FreeStyleProject project = mockFreeStyleProject();
             assertThat(new CronJobService().getCronTriggers(project, CalendarViewEventsType.ALL), hasSize(0));
         }
 
         @Test
-        public void testTriggersWithoutSpecs() {
+        void testTriggersWithoutSpecs() {
 
             Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("", "");
 
@@ -250,7 +255,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testTriggersWithSpecs() {
+        void testTriggersWithSpecs() {
             Map<TriggerDescriptor, Trigger<?>> mockedTriggers = mockTriggers("0 * * * *", "0 12 * * *");
 
             AbstractProject item = mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
@@ -265,7 +270,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithWorkflowJobPluginInstalled() {
+        void testWithWorkflowJobPluginInstalled() {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("workflow-job")).thenReturn(mock(Plugin.class));
             PluginUtil.setJenkins(jenkins);
@@ -284,7 +289,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithWorkflowJobPluginNotInstalled() {
+        void testWithWorkflowJobPluginNotInstalled() {
             Map<TriggerDescriptor, Trigger<?>> mockedTriggers = mockTriggers("0 * * * *", "0 12 * * *");
 
             WorkflowJob item = mock(WorkflowJob.class);
@@ -297,7 +302,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithParameterizedSchedulerPluginInstalled() {
+        void testWithParameterizedSchedulerPluginInstalled() {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
             PluginUtil.setJenkins(jenkins);
@@ -317,7 +322,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithParameterizedSchedulerPluginNotInstalled() {
+        void testWithParameterizedSchedulerPluginNotInstalled() {
             Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
                     mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
 
@@ -331,7 +336,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithParameterizedSchedulerPluginInstalledAndWorkflowJobPluginInstalled() {
+        void testWithParameterizedSchedulerPluginInstalledAndWorkflowJobPluginInstalled() {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
             when(jenkins.getPlugin("workflow-job")).thenReturn(mock(Plugin.class));
@@ -352,7 +357,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithParameterizedSchedulerPluginInstalledAndWorkflowJobPluginNotInstalled() {
+        void testWithParameterizedSchedulerPluginInstalledAndWorkflowJobPluginNotInstalled() {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
             PluginUtil.setJenkins(jenkins);
@@ -370,7 +375,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithParameterizedSchedulerPluginNotInstalledAndWorkflowJobPluginInstalled() {
+        void testWithParameterizedSchedulerPluginNotInstalledAndWorkflowJobPluginInstalled() {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("workflow-job")).thenReturn(mock(Plugin.class));
             PluginUtil.setJenkins(jenkins);
@@ -388,7 +393,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithParameterizedSchedulerPluginNotInstalledAndWorkflowJobPluginNotInstalled() {
+        void testWithParameterizedSchedulerPluginNotInstalledAndWorkflowJobPluginNotInstalled() {
             Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
                     mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
 
@@ -402,15 +407,16 @@ public class CronJobServiceTest {
         }
     }
 
-    public static class GetNextStartTests extends MockPluginAvailabilityTests {
+    @Nested
+    class GetNextStartTests extends MockPluginAvailabilityTests {
         @Test
-        public void testNoTriggers() {
+        void testNoTriggers() {
             Calendar next = new CronJobService().getNextStart(mockFreeStyleProject(), CalendarViewEventsType.ALL);
             assertThat(next, is(nullValue()));
         }
 
         @Test
-        public void testNoCronTabs() {
+        void testNoCronTabs() {
             Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("#Test", "#Test");
 
             FreeStyleProject project = mockFreeStyleProject();
@@ -422,7 +428,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testWithCronTabs() throws ParseException {
+        void testWithCronTabs() throws ParseException {
             Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("10 * * * * \n 5 * * * *", "* 10 * * * \n * 5 * * *");
 
             FreeStyleProject project = mockFreeStyleProject();
@@ -434,7 +440,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testHash() throws ParseException {
+        void testHash() throws ParseException {
             Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("H * * * *");
 
             FreeStyleProject project = mockFreeStyleProject();
@@ -451,7 +457,7 @@ public class CronJobServiceTest {
         }
 
         @Test
-        public void testSecondsAreZero() throws ParseException {
+        void testSecondsAreZero() throws ParseException {
             Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers("15 * * * *");
 
             FreeStyleProject project = mockFreeStyleProject();
@@ -463,7 +469,6 @@ public class CronJobServiceTest {
             assertThat(next.get(Calendar.MILLISECOND), is(0));
         }
     }
-
 
     private static String next(CronTab cronTab, String from) throws ParseException {
         return str(cronTab.ceil(cal(from)));

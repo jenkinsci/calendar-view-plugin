@@ -23,19 +23,22 @@
  */
 package io.jenkins.plugins.view.calendar.event;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 
-import static io.jenkins.plugins.view.calendar.test.CalendarUtil.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.mom;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CalendarEventComparatorTest {
+class CalendarEventComparatorTest {
+
     @Test
-    public void testCalendarEarlierStart() throws ParseException {
+    void testCalendarEarlierStart() throws ParseException {
         CalendarEvent c1 = mock(CalendarEvent.class);
         when(c1.getStart()).thenReturn(mom("2018-01-01 10:00:00 UTC"));
         when(c1.getEnd()).thenReturn(mom("2018-01-01 10:30:00 UTC"));
@@ -47,7 +50,7 @@ public class CalendarEventComparatorTest {
     }
 
     @Test
-    public void testCalendarEarlierStartLaterEnd() throws ParseException {
+    void testCalendarEarlierStartLaterEnd() throws ParseException {
         CalendarEvent c1 = mock(CalendarEvent.class);
         when(c1.getStart()).thenReturn(mom("2018-01-01 10:00:00 UTC"));
         when(c1.getEnd()).thenReturn(mom("2018-01-01 13:30:00 UTC"));
@@ -59,7 +62,7 @@ public class CalendarEventComparatorTest {
     }
 
     @Test
-    public void testCalendarLaterStart() throws ParseException {
+    void testCalendarLaterStart() throws ParseException {
         CalendarEvent c1 = mock(CalendarEvent.class);
         when(c1.getStart()).thenReturn(mom("2018-01-01 12:00:00 UTC"));
         when(c1.getEnd()).thenReturn(mom("2018-01-01 12:30:00 UTC"));
@@ -71,7 +74,7 @@ public class CalendarEventComparatorTest {
     }
 
     @Test
-    public void testCalendarLaterStartEarlierEnd() throws ParseException {
+    void testCalendarLaterStartEarlierEnd() throws ParseException {
         CalendarEvent c1 = mock(CalendarEvent.class);
         when(c1.getStart()).thenReturn(mom("2018-01-01 12:00:00 UTC"));
         when(c1.getEnd()).thenReturn(mom("2018-01-01 12:30:00 UTC"));
@@ -83,7 +86,7 @@ public class CalendarEventComparatorTest {
     }
 
     @Test
-    public void testCalendarSameStartEarlierEnd() throws ParseException {
+    void testCalendarSameStartEarlierEnd() throws ParseException {
         CalendarEvent c1 = mock(CalendarEvent.class);
         when(c1.getStart()).thenReturn(mom("2018-01-01 12:00:00 UTC"));
         when(c1.getEnd()).thenReturn(mom("2018-01-01 12:30:00 UTC"));
@@ -95,7 +98,7 @@ public class CalendarEventComparatorTest {
     }
 
     @Test
-    public void testCalendarSameStartLaterEnd() throws ParseException {
+    void testCalendarSameStartLaterEnd() throws ParseException {
         CalendarEvent c1 = mock(CalendarEvent.class);
         when(c1.getStart()).thenReturn(mom("2018-01-01 12:00:00 UTC"));
         when(c1.getEnd()).thenReturn(mom("2018-01-01 13:00:00 UTC"));
@@ -107,7 +110,7 @@ public class CalendarEventComparatorTest {
     }
 
     @Test
-    public void testCalendarSameStartSameEnd() throws ParseException {
+    void testCalendarSameStartSameEnd() throws ParseException {
         CalendarEvent c1 = mock(CalendarEvent.class);
         when(c1.getStart()).thenReturn(mom("2018-01-01 12:00:00 UTC"));
         when(c1.getEnd()).thenReturn(mom("2018-01-01 13:00:00 UTC"));

@@ -24,44 +24,28 @@
 package io.jenkins.plugins.view.calendar;
 
 import org.htmlunit.FailingHttpStatusCodeException;
-import org.htmlunit.html.*;
-import org.junit.Ignore;
+import org.htmlunit.html.HtmlButton;
+import org.htmlunit.html.HtmlOption;
+import org.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlRadioButtonInput;
+import org.htmlunit.html.HtmlTextInput;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.junit.Test;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CalendarViewTest {
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    private CalendarView createCalendarView(String name) throws Exception {
-        HtmlPage newView = j.createWebClient().goTo("newView");
-
-        HtmlTextInput nameTextInput = newView.querySelector("input[name='name']");
-        nameTextInput.setText(name);
-
-        HtmlRadioButtonInput calendarViewRadioButton = newView.querySelector("input[value='io.jenkins.plugins.view.calendar.CalendarView']");
-        calendarViewRadioButton.setChecked(true);
-
-        HtmlButton okButton = newView.querySelector("#ok");
-        okButton.click();
-
-        return (CalendarView) j.getInstance().getView(name);
-    }
+@WithJenkins
+class CalendarViewTest {
 
     @Test
-    public void testConfigRoundtripDefaults() throws Exception {
-        CalendarView calendarView = createCalendarView("cal_defaults");
+    void testConfigRoundtripDefaults(JenkinsRule j) throws Exception {
+        CalendarView calendarView = createCalendarView(j, "cal_defaults");
 
         assertDefaults(calendarView);
 
@@ -70,47 +54,9 @@ public class CalendarViewTest {
         assertDefaults(calendarView);
     }
 
-    private void assertDefaults(CalendarView calendarView) {
-        assertThat(calendarView.getCalendarViewEventsType(), equalTo(CalendarView.CalendarViewEventsType.ALL));
-        assertThat(calendarView.getCalendarViewType(), equalTo(CalendarView.CalendarViewType.WEEK));
-
-        assertThat(calendarView.isUseCustomWeekSettings(), equalTo(false));
-        assertThat(calendarView.isUseCustomFormats(), equalTo(false));
-        assertThat(calendarView.isUseCustomSlotSettings(), equalTo(false));
-
-        assertThat(calendarView.isWeekSettingsShowWeekends(), equalTo(true));
-        assertThat(calendarView.isWeekSettingsShowWeekNumbers(), equalTo(true));
-        assertThat(calendarView.getWeekSettingsFirstDay(), equalTo(1));
-
-        assertThat(calendarView.getMonthTitleFormat(), equalTo(""));
-        assertThat(calendarView.getMonthColumnHeaderFormat(), equalTo(""));
-        assertThat(calendarView.getMonthTimeFormat(), equalTo(""));
-        assertThat(calendarView.getMonthPopupBuildTimeFormat(), equalTo(""));
-
-        assertThat(calendarView.getWeekTitleFormat(), equalTo(""));
-        assertThat(calendarView.getWeekColumnHeaderFormat(), equalTo(""));
-        assertThat(calendarView.getWeekTimeFormat(), equalTo(""));
-        assertThat(calendarView.getWeekSlotTimeFormat(), equalTo(""));
-        assertThat(calendarView.getWeekPopupBuildTimeFormat(), equalTo(""));
-
-        assertThat(calendarView.getDayTitleFormat(), equalTo(""));
-        assertThat(calendarView.getDayColumnHeaderFormat(), equalTo(""));
-        assertThat(calendarView.getDayTimeFormat(), equalTo(""));
-        assertThat(calendarView.getDaySlotTimeFormat(), equalTo(""));
-        assertThat(calendarView.getDayPopupBuildTimeFormat(), equalTo(""));
-
-        assertThat(calendarView.getWeekSlotDuration(), equalTo("00:30:00"));
-        assertThat(calendarView.getWeekMinTime(), equalTo("00:00:00"));
-        assertThat(calendarView.getWeekMaxTime(), equalTo("24:00:00"));
-
-        assertThat(calendarView.getDaySlotDuration(), equalTo("00:30:00"));
-        assertThat(calendarView.getDayMinTime(), equalTo("00:00:00"));
-        assertThat(calendarView.getDayMaxTime(), equalTo("24:00:00"));
-    }
-
     @Test
-    public void testConfigRoundtripForCustomWeekSettings() throws Exception {
-        CalendarView calendarView = createCalendarView("cal_customWeekSettings");
+    void testConfigRoundtripForCustomWeekSettings(JenkinsRule j) throws Exception {
+        CalendarView calendarView = createCalendarView(j, "cal_customWeekSettings");
 
         calendarView.setCalendarViewType(CalendarView.CalendarViewType.WEEK);
 
@@ -158,10 +104,9 @@ public class CalendarViewTest {
         assertThat(calendarView.getDayMaxTime(), equalTo("24:00:00"));
     }
 
-
     @Test
-    public void testConfigRoundtripForCustomFormats() throws Exception {
-        CalendarView calendarView = createCalendarView("cal_customFormats");
+    void testConfigRoundtripForCustomFormats(JenkinsRule j) throws Exception {
+        CalendarView calendarView = createCalendarView(j, "cal_customFormats");
 
         calendarView.setUseCustomFormats(true);
 
@@ -222,8 +167,8 @@ public class CalendarViewTest {
     }
 
     @Test
-    public void testConfigRoundtripForCustomSlotSettings() throws Exception {
-        CalendarView calendarView = createCalendarView("cal_customSlotSettings");
+    void testConfigRoundtripForCustomSlotSettings(JenkinsRule j) throws Exception {
+        CalendarView calendarView = createCalendarView(j, "cal_customSlotSettings");
 
         calendarView.setUseCustomSlotSettings(true);
 
@@ -274,80 +219,127 @@ public class CalendarViewTest {
         assertThat(calendarView.getDayMaxTime(), equalTo("18:00:00"));
     }
 
-    private void testValidation(HtmlPage configurePage) {
-        HtmlButton submitButton = configurePage.querySelector(".jenkins-button--primary");
-        try {
-            submitButton.click();
-        } catch (Exception e) {
-            assertThat(e, instanceOf(FailingHttpStatusCodeException.class));
-            assertThat(((FailingHttpStatusCodeException)e).getStatusCode(), equalTo(400));
-            return;
-        }
-        fail("No Exception thrown");
-    }
-
-    private HtmlPage getConfigurePage(CalendarView calendarView) throws IOException, SAXException {
-        return j.createWebClient().getPage(calendarView, "configure");
-    }
-
     @Test
-    public void testConfigValidation() throws Exception {
-        CalendarView calendarView = createCalendarView("cal");
+    void testConfigValidation(JenkinsRule j) throws Exception {
+        CalendarView calendarView = createCalendarView(j, "cal");
 
         HtmlPage configurePage;
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlRadioButtonInput viewEventsTypeRadioButton = configurePage.querySelector("input[name='calendarViewEventsType'][value='BUILDS']");
         viewEventsTypeRadioButton.setValueAttribute("INVALID_VALUE");
         viewEventsTypeRadioButton.setChecked(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlRadioButtonInput viewTypeRadioButton = configurePage.querySelector("input[name='calendarViewType'][value='MONTH']");
         viewTypeRadioButton.setValueAttribute("INVALID_VALUE");
         viewTypeRadioButton.setChecked(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlOption firstDayOption = configurePage.querySelector("select[name='weekSettingsFirstDay'] option[value='0']");
         firstDayOption.setValueAttribute("8");
         firstDayOption.setSelected(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlOption weekSlotDurationOption = configurePage.querySelector("select[name='weekSlotDuration'] option[value='00:05:00']");
         weekSlotDurationOption.setValueAttribute("00:25:00");
         weekSlotDurationOption.setSelected(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlOption weekMinTimeOption = configurePage.querySelector("select[name='weekMinTime'] option[value='00:00:00']");
         weekMinTimeOption.setValueAttribute("10:30:00");
         weekMinTimeOption.setSelected(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlOption weekMaxTimeOption = configurePage.querySelector("select[name='weekMaxTime'] option[value='00:00:00']");
         weekMaxTimeOption.setValueAttribute("25:00:00");
         weekMaxTimeOption.setSelected(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlOption daySlotDurationOption = configurePage.querySelector("select[name='weekSlotDuration'] option[value='00:05:00']");
         daySlotDurationOption.setValueAttribute("00:45:00");
         daySlotDurationOption.setSelected(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlOption dayMinTimeOption = configurePage.querySelector("select[name='dayMinTime'] option[value='00:00:00']");
         dayMinTimeOption.setValueAttribute("00:00");
         dayMinTimeOption.setSelected(true);
         testValidation(configurePage);
 
-        configurePage = getConfigurePage(calendarView);
+        configurePage = getConfigurePage(j, calendarView);
         HtmlOption dayMaxTimeOption = configurePage.querySelector("select[name='dayMaxTime'] option[value='00:00:00']");
         dayMaxTimeOption.setValueAttribute("24:30:00");
         dayMaxTimeOption.setSelected(true);
         testValidation(configurePage);
+    }
+
+    private static void testValidation(HtmlPage configurePage) {
+        HtmlButton submitButton = configurePage.querySelector(".jenkins-button--primary");
+        FailingHttpStatusCodeException ex = assertThrows(FailingHttpStatusCodeException.class, submitButton::click);
+        assertThat(ex.getStatusCode(), equalTo(400));
+    }
+
+    private static HtmlPage getConfigurePage(JenkinsRule j, CalendarView calendarView) throws IOException, SAXException {
+        return j.createWebClient().getPage(calendarView, "configure");
+    }
+
+    private static CalendarView createCalendarView(JenkinsRule j, String name) throws Exception {
+        HtmlPage newView = j.createWebClient().goTo("newView");
+
+        HtmlTextInput nameTextInput = newView.querySelector("input[name='name']");
+        nameTextInput.setText(name);
+
+        HtmlRadioButtonInput calendarViewRadioButton = newView.querySelector("input[value='io.jenkins.plugins.view.calendar.CalendarView']");
+        calendarViewRadioButton.setChecked(true);
+
+        HtmlButton okButton = newView.querySelector("#ok");
+        okButton.click();
+
+        return (CalendarView) j.getInstance().getView(name);
+    }
+
+    private static void assertDefaults(CalendarView calendarView) {
+        assertThat(calendarView.getCalendarViewEventsType(), equalTo(CalendarView.CalendarViewEventsType.ALL));
+        assertThat(calendarView.getCalendarViewType(), equalTo(CalendarView.CalendarViewType.WEEK));
+
+        assertThat(calendarView.isUseCustomWeekSettings(), equalTo(false));
+        assertThat(calendarView.isUseCustomFormats(), equalTo(false));
+        assertThat(calendarView.isUseCustomSlotSettings(), equalTo(false));
+
+        assertThat(calendarView.isWeekSettingsShowWeekends(), equalTo(true));
+        assertThat(calendarView.isWeekSettingsShowWeekNumbers(), equalTo(true));
+        assertThat(calendarView.getWeekSettingsFirstDay(), equalTo(1));
+
+        assertThat(calendarView.getMonthTitleFormat(), equalTo(""));
+        assertThat(calendarView.getMonthColumnHeaderFormat(), equalTo(""));
+        assertThat(calendarView.getMonthTimeFormat(), equalTo(""));
+        assertThat(calendarView.getMonthPopupBuildTimeFormat(), equalTo(""));
+
+        assertThat(calendarView.getWeekTitleFormat(), equalTo(""));
+        assertThat(calendarView.getWeekColumnHeaderFormat(), equalTo(""));
+        assertThat(calendarView.getWeekTimeFormat(), equalTo(""));
+        assertThat(calendarView.getWeekSlotTimeFormat(), equalTo(""));
+        assertThat(calendarView.getWeekPopupBuildTimeFormat(), equalTo(""));
+
+        assertThat(calendarView.getDayTitleFormat(), equalTo(""));
+        assertThat(calendarView.getDayColumnHeaderFormat(), equalTo(""));
+        assertThat(calendarView.getDayTimeFormat(), equalTo(""));
+        assertThat(calendarView.getDaySlotTimeFormat(), equalTo(""));
+        assertThat(calendarView.getDayPopupBuildTimeFormat(), equalTo(""));
+
+        assertThat(calendarView.getWeekSlotDuration(), equalTo("00:30:00"));
+        assertThat(calendarView.getWeekMinTime(), equalTo("00:00:00"));
+        assertThat(calendarView.getWeekMaxTime(), equalTo("24:00:00"));
+
+        assertThat(calendarView.getDaySlotDuration(), equalTo("00:30:00"));
+        assertThat(calendarView.getDayMinTime(), equalTo("00:00:00"));
+        assertThat(calendarView.getDayMaxTime(), equalTo("24:00:00"));
     }
 }
