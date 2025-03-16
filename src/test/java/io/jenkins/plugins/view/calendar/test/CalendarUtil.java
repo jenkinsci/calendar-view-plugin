@@ -37,7 +37,7 @@ public class CalendarUtil {
         return cal;
     }
 
-    public static String str(Calendar cal) throws ParseException {
+    public static String str(Calendar cal) {
         if (cal == null) {
             return null;
         }
@@ -45,14 +45,14 @@ public class CalendarUtil {
     }
 
     public static long minutes(int minutes) {
-        return minutes * 60 * 1000;
+        return (long) minutes * 60 * 1000;
     }
 
     public static Moment mom(String date) throws ParseException {
         return new Moment(cal(date));
     }
 
-    public static Moment mom(Calendar cal) throws ParseException {
+    public static Moment mom(Calendar cal) {
         return new Moment(cal);
     }
 

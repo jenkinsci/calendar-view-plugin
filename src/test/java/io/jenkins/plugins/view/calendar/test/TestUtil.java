@@ -23,28 +23,34 @@
  */
 package io.jenkins.plugins.view.calendar.test;
 
-import hudson.model.*;
-import hudson.triggers.Trigger;
-import hudson.triggers.TriggerDescriptor;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.Result;
+import hudson.model.Run;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
+import hudson.triggers.Trigger;
+import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
-
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestUtil {
-    public static AbstractProject mockProject() {
-        return mock(AbstractProject.class, withSettings().extraInterfaces(TopLevelItem.class));
-    }
 
     public static FreeStyleProject mockFreeStyleProject() {
         return mock(FreeStyleProject.class);
@@ -66,7 +72,7 @@ public class TestUtil {
 
     public static FreeStyleProject mockRunningFreeStyleProject(String name, String start, long estimatedDuration) throws ParseException {
         RunList<FreeStyleBuild> builds = mockBuilds(
-          mockRunningFreeStyleBuild(name, start, estimatedDuration)
+                mockRunningFreeStyleBuild(name, start, estimatedDuration)
         );
 
         FreeStyleProject project = mock(FreeStyleProject.class);
@@ -80,7 +86,7 @@ public class TestUtil {
 
     public static FreeStyleProject mockFinishedFreeStyleProject(String name, String start, long duration) throws ParseException {
         RunList<FreeStyleBuild> builds = mockBuilds(
-          mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS)
+                mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS)
         );
 
         FreeStyleProject project = mock(FreeStyleProject.class);
@@ -93,10 +99,10 @@ public class TestUtil {
     }
 
     public static FreeStyleProject mockFinishedFreeStyleProjectWithBuildAndPollingTrigger(String name, String start, long duration,
-            String buildTriggerSpec, String pollingTriggerSpec) throws ParseException {
+                                                                                          String buildTriggerSpec, String pollingTriggerSpec) throws ParseException {
         Map<TriggerDescriptor, Trigger<?>> triggers = mockBuildAndPollingTriggers(buildTriggerSpec, pollingTriggerSpec);
         RunList<FreeStyleBuild> builds = mockBuilds(
-          mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS)
+                mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS)
         );
 
         FreeStyleProject project = mock(FreeStyleProject.class);
@@ -110,7 +116,7 @@ public class TestUtil {
         return project;
     }
 
-    public static Map<TriggerDescriptor, Trigger<?>> mockTriggers(String... specs)  {
+    public static Map<TriggerDescriptor, Trigger<?>> mockTriggers(String... specs) {
         Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
         for (String spec : specs) {
             Trigger trigger = mock(Trigger.class);
@@ -120,7 +126,7 @@ public class TestUtil {
         return triggers;
     }
 
-    public static Map<TriggerDescriptor, Trigger<?>> mockParameterizedTriggers(String... specs)  {
+    public static Map<TriggerDescriptor, Trigger<?>> mockParameterizedTriggers(String... specs) {
         Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
         for (String spec : specs) {
             ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
@@ -130,7 +136,7 @@ public class TestUtil {
         return triggers;
     }
 
-    public static Map<TriggerDescriptor, Trigger<?>> mockBuildAndPollingTriggers(String buildSpec, String pollingSpec)  {
+    public static Map<TriggerDescriptor, Trigger<?>> mockBuildAndPollingTriggers(String buildSpec, String pollingSpec) {
         Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
 
         Trigger trigger = mock(TimerTrigger.class);
@@ -144,14 +150,10 @@ public class TestUtil {
         return triggers;
     }
 
+    @SafeVarargs
     public static <T extends Run> RunList<T> mockBuilds(final T... builds) {
         RunList runList = mock(RunList.class);
-        when(runList.iterator()).thenAnswer(new Answer<Iterator<T>>() {
-            @Override
-            public Iterator<T> answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return Arrays.asList(builds).iterator();
-            }
-        });
+        when(runList.iterator()).thenAnswer((Answer<Iterator<T>>) invocationOnMock -> Arrays.asList(builds).iterator());
         return runList;
     }
 
@@ -186,7 +188,7 @@ public class TestUtil {
 
     public static Set<String> titlesOf(List<? extends CalendarEvent> events) {
         Set<String> titles = new HashSet<>();
-        for (CalendarEvent event: events) {
+        for (CalendarEvent event : events) {
             titles.add(event.getTitle());
         }
         return titles;
@@ -194,7 +196,7 @@ public class TestUtil {
 
     public static Set<String> toStringOf(List<? extends CalendarEvent> events) {
         Set<String> toStrings = new HashSet<>();
-        for (CalendarEvent event: events) {
+        for (CalendarEvent event : events) {
             toStrings.add(event.toString());
         }
         return toStrings;
