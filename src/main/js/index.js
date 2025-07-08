@@ -43,7 +43,7 @@ $(function() {
     defaultView: hashParamOptions['view'] || CalendarViewOptions.defaultView,
     defaultDate: hashParamOptions['date'] || moment(),
     header: {
-      left: 'month-view,week-view,day-view',
+      left: 'month-view,week-view,day-view,hourly-view,qrtrhour-view',
       center: 'title',
       right: 'today prev,next'
     },
@@ -68,6 +68,39 @@ $(function() {
         maxTime: CalendarViewOptions.slotSettings['week-view'].maxTime
       },
       'day-view': {
+        type: 'agenda',
+        allDaySlot: false,
+        agendaEventMinHeight: 16,
+        duration: { days: 1 },
+        nowIndicator: true,
+        titleFormat: CalendarViewOptions.formats['day-view'].titleFormat,
+        columnHeaderFormat: CalendarViewOptions.formats['day-view'].columnHeaderFormat,
+        timeFormat: CalendarViewOptions.formats['day-view'].timeFormat,
+        slotLabelFormat: CalendarViewOptions.formats['day-view'].slotLabelFormat,
+        slotDuration: CalendarViewOptions.slotSettings['day-view'].slotDuration,
+        minTime: CalendarViewOptions.slotSettings['day-view'].minTime,
+        maxTime: CalendarViewOptions.slotSettings['day-view'].maxTime
+      },
+      'hourly-view': {
+        type: 'timeGrid',
+        allDaySlot: false,
+        agendaEventMinHeight: 16,
+        duration: { hours: 1 },
+        nowIndicator: true,
+        titleFormat: {
+          hour: 'numeric',
+          minute: '2-digit',
+          meridiem: 'short'
+        },
+        slotLabelInterval: '00:15:00',
+        slotDuration: '00:15:00',
+        slotLabelFormat: {
+          hour: 'numeric',
+          minute: '2-digit',
+          meridiem: 'short'
+        }
+      },
+      'qrtrhour-view': {
         type: 'agenda',
         allDaySlot: false,
         agendaEventMinHeight: 16,

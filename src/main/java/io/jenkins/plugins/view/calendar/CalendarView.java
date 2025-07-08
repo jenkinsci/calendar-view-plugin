@@ -65,7 +65,7 @@ public class CalendarView extends ListView {
     }
 
     public static enum CalendarViewType {
-       MONTH, WEEK, DAY;
+       MONTH, WEEK, DAY, HOURLY, QRTRHOUR;
     }
 
     private CalendarViewEventsType calendarViewEventsType;

@@ -55,7 +55,9 @@ THE SOFTWARE.
            "today": "${%ButtonText.Today}",
            "month-view": "${%ButtonText.Month}",
            "week-view": "${%ButtonText.Week}",
-           "day-view": "${%ButtonText.Day}"
+           "day-view": "${%ButtonText.Day}",
+           "hourly-view": "${%ButtonText.Hour}",
+           "qrtrhour-view": "${%ButtonText.QrtrHour}"
          },
          "popupText": {
            "build": "${%This build}:",
@@ -137,6 +139,12 @@ THE SOFTWARE.
              "timeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : '%Day.TimeFormat'}"/>",
              "slotLabelFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : '%Day.SlotLabelFormat'}"/>",
              "popupBuildTimeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayPopupBuildTimeFormat) : '%Day.PopupBuildTimeFormat'}"/>"
+           },
+           "hourly-view": {
+
+           },
+           "qrtrhour-view": {
+             
            }
          },
          "slotSettings": {

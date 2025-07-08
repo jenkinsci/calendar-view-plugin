@@ -33,15 +33,18 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 
     <f:section title="${%Calendar Options}" name="calendarOptions">
         <f:entry title="${%Shown events}" field="calendarViewEventsType">
-            <f:radio name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='ALL'}"/>${%All events}
-            <f:radio name="calendarViewEventsType" value="BUILDS" checked="${it.calendarViewEventsType=='BUILDS'}"/>${%Builds}
-            <f:radio name="calendarViewEventsType" value="POLLINGS" checked="${it.calendarViewEventsType=='POLLINGS'}"/>${%Planned polling}
+
+            <f:radioBlock title="${%All events}" name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='ALL'}"></f:radioBlock>
+            <f:radioBlock title="${%Builds}" name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='BUILDS'}"></f:radioBlock>
+            <f:radioBlock title="${%Planned polling}" name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='POLLINGS'}"></f:radioBlock>
         </f:entry>
 
         <f:entry title="${%Default View}" field="calendarViewType">
-            <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}"/>${%Month}
-            <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}"/>${%Week}
-            <f:radio name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}"/>${%Day}
+            <f:radioBlock title="${%Month}" name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}"></f:radioBlock>
+            <f:radioBlock title="${%Week}" name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}"></f:radioBlock>
+            <f:radioBlock title="${%Day}" name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}"></f:radioBlock>
+            <f:radioBlock title="${%Hourly}" name="calendarViewType" value="HOURLY" checked="${it.calendarViewType=='HOURLY'}"></f:radioBlock>
+            <f:radioBlock title="${%15 Minutes}" name="calendarViewType" value="QRTRHOUR" checked="${it.calendarViewType=='QRTRHOUR'}"></f:radioBlock>
         </f:entry>
 
         <f:optionalBlock name="useCustomWeekSettings" title="${%Use custom week day settings}"
