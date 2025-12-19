@@ -427,10 +427,6 @@ public class CalendarView extends ListView {
         return StringEscapeUtils.escapeJavaScript(text);
     }
 
-    public boolean isGreenBallsEnabled() {
-        return PluginUtil.hasGreenballsPluginInstalled();
-    }
-
     @Extension
     public static final class DescriptorImpl extends ListView.DescriptorImpl {
         @Override

@@ -40,18 +40,21 @@ function head(event, options) {
 function body(event, view) {
   if (event.state === 'scheduled') {
     return $('<div class="tooltip-body"></div>')
-      .append(buildInfo(event, view))
-      .append(buildHistory(event, view));
+      .append($('<div class="tooltip-middle"></div>')
+        .append(buildInfo(event, view))
+        .append(buildHistory(event, view)));
   }
   if (event.state === 'running') {
     return $('<div class="tooltip-body"></div>')
-      .append(buildInfo(event, view))
-      .append(buildHistory(event, view));
+      .append($('<div class="tooltip-middle"></div>')
+        .append(buildInfo(event, view))
+        .append(buildHistory(event, view)));
   }
   if (event.state === 'finished') {
     return $('<div class="tooltip-body"></div>')
-      .append(buildInfo(event, view))
-      .append(nextScheduledBuild(event, view))
+      .append($('<div class="tooltip-middle"></div>')
+        .append(buildInfo(event, view))
+        .append(nextScheduledBuild(event, view)))
       .append(prevAndNextBuild(event, view));
   }
 }

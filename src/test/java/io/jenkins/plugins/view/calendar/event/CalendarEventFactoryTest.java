@@ -112,7 +112,7 @@ class CalendarEventFactoryTest {
         assertThat(event.getDurationString(), containsString("1 Minute"));
         assertThat(event.getUrl(), is("example/item/url/"));
         assertThat(event.getId(), is("example-item-url-1514764800000"));
-        assertThat(event.getIconClassName(), is("health-icon-class-name"));
+        assertThat(event.getIconClassName(), is("symbol-weather-health-icon-class-name"));
         assertThat(event.getLastEvents(), is(notNullValue()));
         assertThat(event.getLastEvents(), hasSize(0));
         assertThat(event.toString(), is("2018-01-01T01:00:00 - 2018-01-01T01:01:00: Example Project"));
@@ -120,20 +120,20 @@ class CalendarEventFactoryTest {
 
     @Test
     void testFinishedEvent() throws ParseException {
-        testStartedEvent(Result.SUCCESS, BallColor.BLUE, false, "icon-blue", CalendarEventState.FINISHED);
-        testStartedEvent(Result.FAILURE, BallColor.RED, false, "icon-red", CalendarEventState.FINISHED);
-        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, false, "icon-yellow", CalendarEventState.FINISHED);
-        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, false, "icon-grey", CalendarEventState.FINISHED);
-        testStartedEvent(Result.ABORTED, BallColor.GREY, false, "icon-grey", CalendarEventState.FINISHED);
+        testStartedEvent(Result.SUCCESS, BallColor.BLUE, false, "symbol-status-blue", CalendarEventState.FINISHED);
+        testStartedEvent(Result.FAILURE, BallColor.RED, false, "symbol-status-red", CalendarEventState.FINISHED);
+        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, false, "symbol-status-yellow", CalendarEventState.FINISHED);
+        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, false, "symbol-status-grey", CalendarEventState.FINISHED);
+        testStartedEvent(Result.ABORTED, BallColor.GREY, false, "symbol-status-grey", CalendarEventState.FINISHED);
     }
 
     @Test
     void testRunningEvent() throws ParseException {
-        testStartedEvent(Result.SUCCESS, BallColor.BLUE, true, "icon-blue", CalendarEventState.RUNNING);
-        testStartedEvent(Result.FAILURE, BallColor.RED, true, "icon-red", CalendarEventState.RUNNING);
-        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, true, "icon-yellow", CalendarEventState.RUNNING);
-        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, true, "icon-grey", CalendarEventState.RUNNING);
-        testStartedEvent(Result.ABORTED, BallColor.GREY, true, "icon-grey", CalendarEventState.RUNNING);
+        testStartedEvent(Result.SUCCESS, BallColor.BLUE, true, "symbol-status-blue", CalendarEventState.RUNNING);
+        testStartedEvent(Result.FAILURE, BallColor.RED, true, "symbol-status-red", CalendarEventState.RUNNING);
+        testStartedEvent(Result.UNSTABLE, BallColor.YELLOW, true, "symbol-status-yellow", CalendarEventState.RUNNING);
+        testStartedEvent(Result.NOT_BUILT, BallColor.GREY, true, "symbol-status-grey", CalendarEventState.RUNNING);
+        testStartedEvent(Result.ABORTED, BallColor.GREY, true, "symbol-status-grey", CalendarEventState.RUNNING);
     }
 
     @Test

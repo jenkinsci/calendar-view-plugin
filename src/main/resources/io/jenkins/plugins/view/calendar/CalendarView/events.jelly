@@ -27,7 +27,7 @@ THE SOFTWARE.
 <l:ajax contentType="application/json">
 [
   <j:forEach var="event" items="${it.events}" varStatus="loop">
-  <j:set var="icon"><l:icon class="${event.iconClassName} icon-md"/></j:set>
+  <j:set var="icon"><l:icon src="${event.iconClassName}" class="icon-md"/></j:set>
   {
     "id": "<j:out value="${it.jsonEscape(event.id)}"/>",
     "title": "<j:out value="${it.jsonEscape(event.title)}"/>",
@@ -53,7 +53,7 @@ THE SOFTWARE.
       </j:if>
       "builds": [
       <j:forEach var="lastEvent" items="${event.lastEvents}" varStatus="lastEventLoop">
-          <j:set var="lastEventIcon"><l:icon class="${lastEvent.iconClassName} icon-sm"/></j:set>
+          <j:set var="lastEventIcon"><l:icon src="${lastEvent.iconClassName}" class="icon-sm"/></j:set>
           {
           "id": "<j:out value="${it.jsonEscape(lastEvent.id)}"/>",
           "title": "<j:out value="${it.jsonEscape(lastEvent.build.displayName)}"/>",
@@ -68,7 +68,7 @@ THE SOFTWARE.
     <j:if test="${event.state == 'FINISHED'}">
        "timestampString": "${%startedAgo(event.timestampString)}",
        "durationString": "${%duration}: ${event.durationString}",
-       <j:set var="jobIcon"><l:icon class="${event.job.buildHealth.iconClassName} icon-sm"/></j:set>
+       <j:set var="jobIcon"><l:icon src="symbol-weather-${event.job.buildHealth.iconClassName}" class="icon-sm"/></j:set>
        "job": {
          "title": "<j:out value="${it.jsonEscape(event.job.fullDisplayName)}"/>",
          "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.job.url)}"/>",
@@ -82,7 +82,7 @@ THE SOFTWARE.
        },
        </j:if>
        <j:if test="${not empty event.previousStartedEvent}">
-       <j:set var="previousStartedEventIcon"><l:icon class="${event.previousStartedEvent.iconClassName} icon-sm"/></j:set>
+       <j:set var="previousStartedEventIcon"><l:icon src="${event.previousStartedEvent.iconClassName}" class="icon-sm"/></j:set>
        "previousStartedBuild": {
          "id": "<j:out value="${it.jsonEscape(event.previousStartedEvent.id)}"/>",
          "title": "<j:out value="${it.jsonEscape(event.previousStartedEvent.build.displayName)}"/>",
@@ -93,7 +93,7 @@ THE SOFTWARE.
        },
        </j:if>
        <j:if test="${not empty event.nextStartedEvent}">
-       <j:set var="nextStartedEventIcon"><l:icon class="${event.nextStartedEvent.iconClassName} icon-sm"/></j:set>
+       <j:set var="nextStartedEventIcon"><l:icon src="${event.nextStartedEvent.iconClassName}" class="icon-sm"/></j:set>
        "nextStartedBuild": {
          "id": "<j:out value="${it.jsonEscape(event.nextStartedEvent.id)}"/>",
          "title": "<j:out value="${it.jsonEscape(event.nextStartedEvent.build.displayName)}"/>",
