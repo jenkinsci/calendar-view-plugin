@@ -33,6 +33,7 @@ import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedCronTabList;
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.mockito.stubbing.Answer;
 

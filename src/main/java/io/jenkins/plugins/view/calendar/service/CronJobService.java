@@ -23,21 +23,21 @@
  */
 package io.jenkins.plugins.view.calendar.service;
 
-import hudson.model.AbstractProject;
 import hudson.model.Job;
 import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.scheduler.Hash;
 import hudson.triggers.Trigger;
 import hudson.triggers.SCMTrigger;
+import io.jenkins.plugins.extended_timer_trigger.ExtendedTimerTrigger;
 import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 
+import jenkins.triggers.TriggeredItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -56,17 +56,23 @@ public class CronJobService {
         this.now = now;
     }
 
-    public List<CronTab> getCronTabs(final Trigger trigger) {
+    public List<CronWrapper<?>> getCronTabs(final Trigger trigger) {
         return getCronTabs(trigger, null);
     }
 
     @SuppressWarnings("PMD.CyclomaticComplexity")
-    public List<CronTab> getCronTabs(final Trigger trigger, final Hash hash) {
-        final List<CronTab> cronTabs = new ArrayList<>();
+    public List<CronWrapper<?>> getCronTabs(final Trigger trigger, final Hash hash) {
+        final List<CronWrapper<?>> cronTabs = new ArrayList<>();
         final boolean isParameterizedTrigger = PluginUtil.hasParameterizedSchedulerPluginInstalled()
                 && trigger instanceof ParameterizedTimerTrigger;
         int lineNumber = 0;
         String timezone = null;
+
+        if (PluginUtil.hasExtendedTimerTriggerPluginInstalled()
+                && trigger instanceof ExtendedTimerTrigger ett) {
+            ett.getExtendedCronTabList().getCronTabWrapperList().forEach(ct -> cronTabs.add(new CronWrapper.ExtendedCronTab(ct)));
+            return cronTabs;
+        }
 
         final String specification = isParameterizedTrigger ?
                 ((ParameterizedTimerTrigger) trigger).getParameterizedSpecification() : trigger.getSpec();
@@ -90,7 +96,11 @@ public class CronJobService {
             try {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CronTab cronTab = new CronTab(line, lineNumber, hash, timezone);
-                cronTabs.add(cronTab);
+                if (isParameterizedTrigger) {
+                    cronTabs.add(new CronWrapper.ParameterizedCronWrapper(cronTab));
+                } else {
+                    cronTabs.add(new CronWrapper.ClassicCronTab(cronTab));
+                }
             } catch (IllegalArgumentException e) {
                 final String msg = "Unable to parse cron trigger spec: '" + line + "'";
                 Logger.getLogger(this.getClass()).error(msg, e);
@@ -103,10 +113,8 @@ public class CronJobService {
     @SuppressWarnings("PMD.CyclomaticComplexity")
     public List<Trigger> getCronTriggers(final Job job, final CalendarViewEventsType eventsType) {
         final Collection<Trigger<?>> jobTriggers;
-        if (job instanceof AbstractProject) {
-            jobTriggers = ((AbstractProject)job).getTriggers().values();
-        } else if (PluginUtil.hasWorkflowJobPluginInstalled() && job instanceof WorkflowJob) {
-            jobTriggers = ((WorkflowJob)job).getTriggers().values();
+        if (job instanceof TriggeredItem ti) {
+            jobTriggers = ti.getTriggers().values();
         } else {
             return Collections.emptyList();
         }
@@ -121,14 +129,18 @@ public class CronJobService {
                         && jobTrigger instanceof ParameterizedTimerTrigger
                         && StringUtils.isNotBlank(((ParameterizedTimerTrigger) jobTrigger).getParameterizedSpecification())) {
                     cronTriggers.add(jobTrigger);
+                } else if (PluginUtil.hasExtendedTimerTriggerPluginInstalled() &&
+                        jobTrigger instanceof ExtendedTimerTrigger
+                        && StringUtils.isNotBlank(((ExtendedTimerTrigger) jobTrigger).getCronSpec())) {
+                    cronTriggers.add(jobTrigger);
                 }
             }
         }
         return cronTriggers;
     }
 
-    public List<CronTab> getCronTabs(final Job job, final CalendarViewEventsType eventsType) {
-        final List<CronTab> cronTabs = new ArrayList<>();
+    public List<CronWrapper<?>> getCronTabs(final Job job, final CalendarViewEventsType eventsType) {
+        final List<CronWrapper<?>> cronTabs = new ArrayList<>();
         for (final Trigger trigger: getCronTriggers(job, eventsType)) {
             cronTabs.addAll(getCronTabs(trigger, Hash.from(job.getFullName())));
         }
@@ -137,8 +149,8 @@ public class CronJobService {
 
     public Calendar getNextStart(final Job job, final CalendarViewEventsType eventsType) {
         Calendar next = null;
-        final List<CronTab> cronTabs = getCronTabs(job, eventsType);
-        for (final CronTab cronTab: cronTabs) {
+        final List<CronWrapper<?>> cronTabs = getCronTabs(job, eventsType);
+        for (final CronWrapper<?> cronTab: cronTabs) {
             final Calendar ceil = cronTab.ceil(now.nextMinute().getTimeInMillis());
             if (next == null || ceil.before(next)) {
                 next = ceil;

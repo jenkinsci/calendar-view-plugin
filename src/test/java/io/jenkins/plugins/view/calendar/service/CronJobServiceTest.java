@@ -28,14 +28,15 @@ import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.model.Job;
 import hudson.model.TopLevelItem;
-import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
+import java.util.Locale;
 import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedCronTabList;
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.jupiter.api.AfterAll;
@@ -68,10 +69,13 @@ import static org.mockito.Mockito.withSettings;
 class CronJobServiceTest {
 
     private static TimeZone defaultTimeZone;
+    private static Locale defaultLocale;
 
     @BeforeAll
     static void beforeClass() {
         CronJobServiceTest.defaultTimeZone = TimeZone.getDefault();
+        CronJobServiceTest.defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
         TimeZone.setDefault(TimeZone.getTimeZone("CET"));
         PluginUtil.setJenkins(mock(Jenkins.class));
     }
@@ -79,6 +83,7 @@ class CronJobServiceTest {
     @AfterAll
     static void afterClass() {
         TimeZone.setDefault(CronJobServiceTest.defaultTimeZone);
+        Locale.setDefault(CronJobServiceTest.defaultLocale);
     }
 
     abstract static class MockPluginAvailabilityTests {
@@ -96,10 +101,10 @@ class CronJobServiceTest {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("10 * * * *");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(1));
 
-            CronTab cronTab = cronTabs.get(0);
+            CronWrapper<?> cronTab = cronTabs.get(0);
 
             assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 01:10:00 CET"));
             assertThat(next(cronTab, "2018-01-01 00:10:00 UTC"), is("2018-01-01 01:10:00 CET"));
@@ -111,10 +116,10 @@ class CronJobServiceTest {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("0 12 * * *");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(1));
 
-            CronTab cronTab = cronTabs.get(0);
+            CronWrapper<?> cronTab = cronTabs.get(0);
             assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
             assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
             assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
@@ -127,10 +132,10 @@ class CronJobServiceTest {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("0 10 23 2 *");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(1));
 
-            CronTab cronTab = cronTabs.get(0);
+            CronWrapper<?> cronTab = cronTabs.get(0);
             assertThat(next(cronTab, "2018-02-23 00:00:00 UTC"), is("2018-02-23 10:00:00 CET"));
             assertThat(next(cronTab, "2018-02-23 09:00:00 UTC"), is("2018-02-23 10:00:00 CET"));
             assertThat(next(cronTab, "2018-02-23 10:00:00 UTC"), is("2019-02-23 10:00:00 CET"));
@@ -142,7 +147,7 @@ class CronJobServiceTest {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("# This is ignored");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(0));
         }
 
@@ -151,7 +156,7 @@ class CronJobServiceTest {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("  \n \n  ");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(0));
         }
 
@@ -160,7 +165,7 @@ class CronJobServiceTest {
             Trigger trigger = mock(Trigger.class);
             when(trigger.getSpec()).thenReturn("This is not valid");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(0));
         }
 
@@ -172,17 +177,21 @@ class CronJobServiceTest {
             Trigger triggerUTC = mock(Trigger.class);
             when(triggerUTC.getSpec()).thenReturn("TZ=UTC\n0 6 * * *");
 
-            List<CronTab> cronTabsCET = new CronJobService().getCronTabs(triggerCET);
+            List<CronWrapper<?>> cronTabsCET = new CronJobService().getCronTabs(triggerCET);
             assertThat(cronTabsCET, hasSize(1));
 
-            List<CronTab> cronTabsUTC = new CronJobService().getCronTabs(triggerUTC);
+            List<CronWrapper<?>> cronTabsUTC = new CronJobService().getCronTabs(triggerUTC);
             assertThat(cronTabsUTC, hasSize(1));
 
-            CronTabList cronTabsListCET = new CronTabList(cronTabsCET);
+            CronTabList cronTabsListCET = new CronTabList(cronTabsCET.stream().filter(it ->
+                    it instanceof CronWrapper.ClassicCronTab).map(it ->
+                    ((CronWrapper.ClassicCronTab) it).getCronTab()).toList());
             assertThat(cronTabsListCET.check(cal("2018-01-01 06:00:00 UTC")), is(false));
             assertThat(cronTabsListCET.check(cal("2018-01-01 06:00:00 CET")), is(true));
 
-            CronTabList cronTabsListUTC = new CronTabList(cronTabsUTC);
+            CronTabList cronTabsListUTC = new CronTabList(cronTabsUTC.stream().filter(it ->
+                    it instanceof CronWrapper.ClassicCronTab).map(it ->
+                    ((CronWrapper.ClassicCronTab) it).getCronTab()).toList());
             assertThat(cronTabsListUTC.check(cal("2018-01-01 06:00:00 UTC")), is(true));
             assertThat(cronTabsListUTC.check(cal("2018-01-01 06:00:00 CET")), is(false));
         }
@@ -196,10 +205,10 @@ class CronJobServiceTest {
             ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
             when(trigger.getParameterizedSpecification()).thenReturn("0 12 * * * % PARAM1=value;PARAM2=false");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(1));
 
-            CronTab cronTab = cronTabs.get(0);
+            CronWrapper<?> cronTab = cronTabs.get(0);
             assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
             assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
             assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
@@ -216,10 +225,10 @@ class CronJobServiceTest {
             ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
             when(trigger.getParameterizedSpecification()).thenReturn("0 12 * * *");
 
-            List<CronTab> cronTabs = new CronJobService().getCronTabs(trigger);
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(1));
 
-            CronTab cronTab = cronTabs.get(0);
+            CronWrapper<?> cronTab = cronTabs.get(0);
             assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
             assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
             assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
@@ -289,19 +298,6 @@ class CronJobServiceTest {
         }
 
         @Test
-        void testWithWorkflowJobPluginNotInstalled() {
-            Map<TriggerDescriptor, Trigger<?>> mockedTriggers = mockTriggers("0 * * * *", "0 12 * * *");
-
-            WorkflowJob item = mock(WorkflowJob.class);
-            when(item.getTriggers()).thenReturn(mockedTriggers);
-
-            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
-
-            List<Trigger> triggers = new CronJobService().getCronTriggers(item, CalendarViewEventsType.ALL);
-            assertThat(triggers, hasSize(0));
-        }
-
-        @Test
         void testWithParameterizedSchedulerPluginInstalled() {
             Jenkins jenkins = mock(Jenkins.class);
             when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
@@ -354,24 +350,6 @@ class CronJobServiceTest {
             assertThat(triggers, hasSize(2));
             assertThat(triggers, hasItem(iterator.next()));
             assertThat(triggers, hasItem(iterator.next()));
-        }
-
-        @Test
-        void testWithParameterizedSchedulerPluginInstalledAndWorkflowJobPluginNotInstalled() {
-            Jenkins jenkins = mock(Jenkins.class);
-            when(jenkins.getPlugin("parameterized-scheduler")).thenReturn(mock(Plugin.class));
-            PluginUtil.setJenkins(jenkins);
-
-            Map<TriggerDescriptor, Trigger<?>> mockedTriggers =
-                    mockParameterizedTriggers("0 * * * * % PARAM1=value; PARAM2=true", "0 12 * * * % PARAM1=\"another value\";PARAM2=false");
-
-            WorkflowJob item = mock(WorkflowJob.class);
-            when(item.getTriggers()).thenReturn(mockedTriggers);
-
-            Iterator<Trigger<?>> iterator = mockedTriggers.values().iterator();
-
-            List<Trigger> triggers = new CronJobService().getCronTriggers(item, CalendarViewEventsType.ALL);
-            assertThat(triggers, hasSize(0));
         }
 
         @Test
@@ -470,7 +448,7 @@ class CronJobServiceTest {
         }
     }
 
-    private static String next(CronTab cronTab, String from) throws ParseException {
-        return str(cronTab.ceil(cal(from)));
+    private static String next(CronWrapper<?> cronTab, String from) throws ParseException {
+        return str(cronTab.ceil(cal(from).getTimeInMillis()));
     }
 }
