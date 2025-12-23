@@ -31,7 +31,6 @@ import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.service.CronJobService;
 import io.jenkins.plugins.view.calendar.time.Moment;
-import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import io.jenkins.plugins.view.calendar.util.RequestUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.kohsuke.accmod.Restricted;
