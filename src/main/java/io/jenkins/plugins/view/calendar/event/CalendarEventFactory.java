@@ -173,7 +173,7 @@ public class CalendarEventFactory {
 
         @Override
         public String getIconClassName() {
-            return job.getBuildHealth().getIconClassName();
+            return "symbol-weather-" + job.getBuildHealth().getIconClassName();
         }
     }
 
@@ -215,7 +215,7 @@ public class CalendarEventFactory {
 
         @Override
         public String getIconClassName() {
-            return build.getIconColor().getIconClassName();
+            return "symbol-status-" + build.getIconColor().getIconName();
         }
 
         @Override

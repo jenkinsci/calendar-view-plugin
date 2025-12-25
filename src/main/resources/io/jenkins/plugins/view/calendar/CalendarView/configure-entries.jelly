@@ -33,28 +33,32 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 
     <f:section title="${%Calendar Options}" name="calendarOptions">
         <f:entry title="${%Shown events}" field="calendarViewEventsType">
-            <f:radio name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='ALL'}"/>${%All events}
-            <f:radio name="calendarViewEventsType" value="BUILDS" checked="${it.calendarViewEventsType=='BUILDS'}"/>${%Builds}
-            <f:radio name="calendarViewEventsType" value="POLLINGS" checked="${it.calendarViewEventsType=='POLLINGS'}"/>${%Planned polling}
+          <div class="calendar-view-config-container">
+            <f:radio name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='ALL'}" title="${%All events}"/>
+            <f:radio name="calendarViewEventsType" value="BUILDS" checked="${it.calendarViewEventsType=='BUILDS'}" title="${%Builds}"/>
+            <f:radio name="calendarViewEventsType" value="POLLINGS" checked="${it.calendarViewEventsType=='POLLINGS'}" title="${%Planned polling}"/>
+          </div>
         </f:entry>
 
         <f:entry title="${%Default View}" field="calendarViewType">
-            <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}"/>${%Month}
-            <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}"/>${%Week}
-            <f:radio name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}"/>${%Day}
+          <div class="calendar-view-config-container">
+            <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}" title="${%Month}"/>
+            <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}" title="${%Week}"/>
+            <f:radio name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}" title="${%Day}"/>
+          </div>
         </f:entry>
 
         <f:optionalBlock name="useCustomWeekSettings" title="${%Use custom week day settings}"
                          checked="${it.useCustomWeekSettings}">
             <f:entry title="${%Weeks}">
-                <div>
-                    <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends"/> ${%Show weekends}
-                    <f:checkbox name="weekSettingsShowWeekNumbers" field="weekSettingsShowWeekNumbers"/> ${%Show week numbers}
-                </div>
+              <div class="calendar-view-config-container">
+                    <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends" title="${%Show weekends}"/>
+                    <f:checkbox name="weekSettingsShowWeekNumbers" field="weekSettingsShowWeekNumbers" title="${%Show week numbers}"/>
+              </div>
             </f:entry>
             <f:entry title="${%First day of week}">
-                <div>
-                    <select name="weekSettingsFirstDay" class="setting-input">
+                <div class="jenkins-select">
+                    <select name="weekSettingsFirstDay" class="jenkins-select__input">
                         <f:option value="0" selected="${it.weekSettingsFirstDay==0}">${%Sunday}</f:option>
                         <f:option value="1" selected="${it.weekSettingsFirstDay==1}">${%Monday}</f:option>
                         <f:option value="2" selected="${it.weekSettingsFirstDay==2}">${%Tuesday}</f:option>
@@ -66,9 +70,7 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
                 </div>
             </f:entry>
             <f:entry title="${%Week numbers}">
-                <div>
-                    <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends"/> ${%Show week}
-                </div>
+                <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends" title="${%Show week}"/>
             </f:entry>
         </f:optionalBlock>
 
@@ -184,11 +186,12 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
         <f:optionalBlock name="useCustomSlotSettings" title="${%Use custom time slot settings}"
                          checked="${it.useCustomSlotSettings}">
             <f:entry title="${%Time slot duration}">
-                <table>
+                <table style="width:350px;">
                     <tr>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
+                        <td style="vertical-align:middle; width:45px;">${%Week}:</td>
                         <td style="vertical-align:middle;">
-                            <select name="weekSlotDuration" class="setting-input">
+                          <div class="jenkins-select">
+                            <select name="weekSlotDuration" class="jenkins-select__input">
                                 <f:option value="00:05:00" selected="${it.weekSlotDuration=='00:05:00'}">${%5 minutes}</f:option>
                                 <f:option value="00:10:00" selected="${it.weekSlotDuration=='00:10:00'}">${%10 minutes}</f:option>
                                 <f:option value="00:15:00" selected="${it.weekSlotDuration=='00:15:00'}">${%15 minutes}</f:option>
@@ -196,10 +199,12 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
                                 <f:option value="00:30:00" selected="${it.weekSlotDuration=='00:30:00'}">${%30 minutes}</f:option>
                                 <f:option value="01:00:00" selected="${it.weekSlotDuration=='01:00:00'}">${%1 hour}</f:option>
                             </select>
+                          </div>
                         </td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
+                        <td style="vertical-align:middle; padding-left: 10px; width:40px;">${%Day}:</td>
                         <td style="vertical-align:middle;">
-                            <select name="daySlotDuration" class="setting-input">
+                          <div class="jenkins-select">
+                            <select name="daySlotDuration" class="jenkins-select__input">
                                 <f:option value="00:05:00" selected="${it.daySlotDuration=='00:05:00'}">${%5 minutes}</f:option>
                                 <f:option value="00:10:00" selected="${it.daySlotDuration=='00:10:00'}">${%10 minutes}</f:option>
                                 <f:option value="00:15:00" selected="${it.daySlotDuration=='00:15:00'}">${%15 minutes}</f:option>
@@ -207,58 +212,67 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
                                 <f:option value="00:30:00" selected="${it.daySlotDuration=='00:30:00'}">${%30 minutes}</f:option>
                                 <f:option value="01:00:00" selected="${it.daySlotDuration=='01:00:00'}">${%1 hour}</f:option>
                             </select>
+                          </div>
                         </td>
                     </tr>
                 </table>
             </f:entry>
             <f:entry title="${%Time slot start}">
-                <table>
+                <table style="width:270px;">
                     <tr>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
-                        <td style="vertical-align:middle;">
-                            <select name="weekMinTime" class="setting-input">
+                        <td style="vertical-align:middle; width: 45px;">${%Week}:</td>
+                        <td>
+                          <div class="jenkins-select">
+                            <select name="weekMinTime" class="jenkins-select__input">
                                 <j:forEach var="hour" begin="0" end="24">
                                     <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
                                     <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
                                     <f:option value="${timeSecs}" selected="${it.weekMinTime==timeSecs}">${timeMins}</f:option>
                                 </j:forEach>
                             </select>
+                          </div>
                         </td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
-                        <td style="vertical-align:middle;">
-                            <select name="dayMinTime" class="setting-input">
+                        <td style="vertical-align:middle; padding-left:10px; width:40px">${%Day}:</td>
+                        <td>
+                          <div class="jenkins-select">
+                            <select name="dayMinTime" class="jenkins-select__input">
                                 <j:forEach var="hour" begin="0" end="24">
                                     <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
                                     <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
                                     <f:option value="${timeSecs}" selected="${it.dayMinTime==timeSecs}">${timeMins}</f:option>
                                 </j:forEach>
                             </select>
+                          </div>
                         </td>
                     </tr>
                 </table>
             </f:entry>
             <f:entry title="${%Time slot end}">
-                <table>
+                <table style="width:270px;">
                     <tr>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Week}:</td>
-                        <td style="vertical-align:middle;">
-                            <select name="weekMaxTime" class="setting-input">
+                        <td style="vertical-align:middle; width:45px;">${%Week}:</td>
+                        <td>
+                          <div class="jenkins-select">
+                            <select name="weekMaxTime" class="jenkins-select__input">
                                 <j:forEach var="hour" begin="0" end="24">
                                     <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
                                     <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
                                     <f:option value="${timeSecs}" selected="${it.weekMaxTime==timeSecs}">${timeMins}</f:option>
                                 </j:forEach>
                             </select>
+                          </div>
                         </td>
-                        <td style="vertical-align:middle; padding:0px 10px;">${%Day}:</td>
-                        <td style="vertical-align:middle;">
-                            <select name="dayMaxTime" class="setting-input">
+                        <td style="vertical-align:middle; padding-left:10px; width: 40px">${%Day}:</td>
+                        <td>
+                          <div class="jenkins-select">
+                            <select name="dayMaxTime" class="jenkins-select__input">
                                 <j:forEach var="hour" begin="0" end="24">
                                     <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
                                     <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
                                     <f:option value="${timeSecs}" selected="${it.dayMaxTime==timeSecs}">${timeMins}</f:option>
                                 </j:forEach>
                             </select>
+                          </div>
                         </td>
                     </tr>
                 </table>
@@ -269,11 +283,13 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
     <f:section title="${%Job Filters}">
 
         <f:entry title="${%Status Filter}" help="/help/view-config/statusFilter.html">
-            <select name="statusFilter" class="setting-input">
+          <div class="jenkins-select">
+            <select name="statusFilter" class="jenkins-select__input">
                 <f:option value="" selected="${it.statusFilter==null}">${%All selected jobs}</f:option>
                 <f:option value="1" selected="${it.statusFilter==true}">${%Enabled jobs only}</f:option>
                 <f:option value="2" selected="${it.statusFilter==false}">${%Disabled jobs only}</f:option>
             </select>
+          </div>
         </f:entry>
 
         <f:entry title="${%Recurse in subfolders}" field="recurse">

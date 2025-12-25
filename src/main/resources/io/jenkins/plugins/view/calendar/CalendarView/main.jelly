@@ -31,24 +31,11 @@ THE SOFTWARE.
     <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}" />
     <j:set var="jobs" value="${it.jobs}"/>
 
-    <div class="pane-frame">
-       <div id="calendar-view">
-       </div>
+    <div class="jenkins-card" id="calendar-view">
     </div>
 
     <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
     <st:adjunct includes="io.jenkins.plugins.jquery3"/>
-    <j:if test="${it.greenBallsEnabled}">
-      <style>
-        .fc-event.event-result-success {
-          background-color: #528b02;
-          border-color: #528b02;
-        }
-        .fc-event.event-result-success.event-selected {
-          background-color: #7cad37;
-        }
-      </style>
-    </j:if>
     <script id="calendar-view-data" type="application/json">{
          "defaultView": "${it.calendarViewType.name().toLowerCase()}-view",
          "buttonText": {

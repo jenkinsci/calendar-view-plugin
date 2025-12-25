@@ -23,7 +23,7 @@
  */
 
 .fc-toolbar {
-  background: #eee;
+  background: var(--table-background);
   height:2.6em;
   border-bottom: 1px solid #ddd;
   padding:3px;
@@ -66,90 +66,68 @@
 }
 
 .fc-event.event-result-success {
-  background-color: #3a87ad;
-  border-color: #3a87ad;
+  background-color: var(--blue);
+  border-color: var(--blue);
 }
 
 .fc-event.event-result-failure {
-  background-color: #ff0000;
-  border-color: #ff0000;
+  background-color: var(--error-color);
+  border-color:var(--error-color);
 }
 
 .fc-event.event-result-unstable {
-  background-color: #a6982b;
-  border-color: #a6982b;
+  background-color: var(--warning-color);
+  border-color: var(--warning-color);
 }
 
 .fc-event.event-state-scheduled {
-  background-color: #eee;
-  border-color: gray;
+  background-color: var(--grey);
+  border-color: var(--grey);
   border-style: dashed;
 }
 
 .fc-event.event-state-running {
-  border-color:white;
+  border-color: white;
   border-style: dashed;
-  animation: blink-animation 1.5s infinite;
-  -webkit-animation: blink-animation 1.5s infinite;
+  animation: blink-animation 2s both ease-in-out infinite;
 }
 
 @keyframes blink-animation {
-  0%   { opacity:1; }
-  30%  { opacity:0.8; }
-  50%  { opacity:0; }
-  70%  { opacity:0.8; }
-  100% { opacity:1; }
-}
-@-o-keyframes blink-animation {
-  0%   { opacity:1; }
-  30%  { opacity:0.8; }
-  50%  { opacity:0; }
-  70%  { opacity:0.8; }
-  100% { opacity:1; }
-}
-@-moz-keyframes blink-animation {
-  0%   { opacity:1; }
-  30%  { opacity:0.8; }
-  50%  { opacity:0; }
-  70%  { opacity:0.8; }
-  100% { opacity:1; }
-}
-@-webkit-keyframes blink-animation {
-  0%   { opacity:1; }
-  30%  { opacity:0.8; }
-  50%  { opacity:0; }
-  70%  { opacity:0.8; }
-  100% { opacity:1; }
+    50% {
+        opacity: 0.2;
+    }
 }
 
 .fc-event.event-selected {
   background:#aaa;
 }
 .fc-event.event-result-success.event-selected {
-  background:#6ea5c0;
+  background:var(--light-blue);
 }
 .fc-event.event-result-failure.event-selected {
-  background:#ff8888;
+  background:var(--light-red);
 }
 .fc-event.event-result-unstable.event-selected {
-  background:#cac06f;
+  background:var(--light-orange);
 }
 .fc-event.event-state-scheduled.event-selected {
-  background:#ddd;
+  background:var(--light-grey);
 }
 
 .tippy-tooltip.jenkins-theme {
-  background-color: white;
-  border: 1px solid #ccc;
-  color: black;
-  padding:0px;
+  background-color:var(--background);
+  border: 1px solid var(--card-border-color);
+  color: var(--text-color);
+  padding:0;
   font-size:100%;
   text-align:left;
+  border-radius: 8px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-head {
   padding: 5px;
-  background: #eee;
+  background: var(--table-background);
+  border-radius: 8px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-head .tooltip-title {
@@ -171,20 +149,21 @@
   padding:10px;
 }
 
+.tippy-tooltip.jenkins-theme .tooltip-middle {
+    display:flex;
+    gap: 5px;
+    align-items: top;
+}
+
+
 .tippy-tooltip.jenkins-theme .tooltip-left {
-  display:inline-block;
-  vertical-align:top;
   padding-right:10px;
-  border-right:1px solid #ddd;
   min-width:200px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-right {
-  display:inline-block;
-  vertical-align:top;
   padding-left:10px;
-  border-left:1px solid #ddd;
-  margin-left:-1px;
+  border-left:1px solid var(--text-color-secondary);
   min-width:200px;
 }
 
@@ -194,7 +173,7 @@
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom {
-  border-top:1px solid #ddd;
+  border-top:1px solid var(--text-color-secondary);
   margin-top:20px;
   padding-top:10px;
 }
@@ -205,7 +184,6 @@
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .previous i:after {
   content:"\25C0";
-  color:#ccc;
   font-size:80%;
   font-style:normal;
   margin-right:2px;
@@ -217,24 +195,23 @@
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .next i:after {
   content:"\25B6";
-  color:#ccc;
   font-size:80%;
   font-style:normal;
   margin-left:2px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body .time {
-  color:gray;
+  color:var(--text-color-secondary);
   text-decoration:none;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body .time:hover {
-  color:gray;
+  color:var(--text-color-secondary);
   text-decoration:underline;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body .nextBuild {
-  color:gray;
+  color:var(--text-color-secondary);
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body ul {
@@ -247,16 +224,20 @@
 }
 
 .tippy-popper[x-placement^=top] .tippy-tooltip.jenkins-theme .tippy-arrow {
-  border-top: 7px solid #ccc;
+  border-top: 7px solid var(--text-color-secondary);
 }
 
 .tippy-popper[x-placement^=bottom] .tippy-tooltip.jenkins-theme .tippy-arrow {
-  border-bottom: 7px solid #ccc;
+  border-bottom: 7px solid var(--text-color-secondary);
+}
+
+#calendar-view {
+    padding: 0.5rem;
 }
 
 .calendar-view-config-default {
   font-size:90%;
-  color:gray;
+  color: var(--text-color-secondary);
 }
 
 .calendar-view-config-label {
@@ -268,7 +249,16 @@
   padding-left:0px;
 }
 
-.calendar-view-config-input  {
+.calendar-view-config-input {
   width:30%;
 }
 
+.calendar-view-config-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.calendar-view-config-container .jenkins-radio:not(:last-of-type) {
+    margin-bottom: 0;
+}

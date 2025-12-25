@@ -27,10 +27,6 @@ public final class PluginUtil {
         return plugin != null;
     }
 
-    public static boolean hasGreenballsPluginInstalled() {
-        return hasPluginInstalled("greenballs");
-    }
-
     public static boolean hasParameterizedSchedulerPluginInstalled() {
         return hasPluginInstalled("parameterized-scheduler");
     }
