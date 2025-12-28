@@ -33,8 +33,8 @@ THE SOFTWARE.
     "title": "<j:out value="${it.jsonEscape(event.title)}"/>",
     "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.url)}"/>",
     "icon": "<j:out value="${it.jsonEscape(icon)}"/>",
-    "start": "<i:formatDate value="${event.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-    "end": "<i:formatDate value="${event.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
+    "start": "<i:formatDate value="${event.start.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>",
+    "end": "<i:formatDate value="${event.end.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>",
     "duration": ${event.duration},
     "state": "${event.state.toString().toLowerCase()}",
     "className": "event-result-<j:if test="${event.state == 'FINISHED'}">${event.build.result.toString().toLowerCase()}</j:if><j:if test="${event.state == 'RUNNING'}">${event.job.lastCompletedBuild.result.toString().toLowerCase()}</j:if> event-state-${event.state.toString().toLowerCase()} event-id-${event.id}",
@@ -59,8 +59,8 @@ THE SOFTWARE.
           "title": "<j:out value="${it.jsonEscape(lastEvent.build.displayName)}"/>",
           "url": "<j:out value="${it.jsonEscape(rootURL + '/' + lastEvent.url)}"/>",
           "icon": "<j:out value="${it.jsonEscape(lastEventIcon)}"/>",
-          "start": "<i:formatDate value="${lastEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-          "end": "<i:formatDate value="${lastEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+          "start": "<i:formatDate value="${lastEvent.start.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>",
+          "end": "<i:formatDate value="${lastEvent.end.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>"
           }<j:if test="${!lastEventLoop.last}">,</j:if>
       </j:forEach>
       ],
@@ -77,8 +77,8 @@ THE SOFTWARE.
        <j:if test="${not empty event.nextScheduledEvent}">
        "nextScheduledBuild": {
          "id": "<j:out value="${it.jsonEscape(event.nextScheduledEvent.id)}"/>",
-         "start": "<i:formatDate value="${event.nextScheduledEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-         "end": "<i:formatDate value="${event.nextScheduledEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+         "start": "<i:formatDate value="${event.nextScheduledEvent.start.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>",
+         "end": "<i:formatDate value="${event.nextScheduledEvent.end.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>"
        },
        </j:if>
        <j:if test="${not empty event.previousStartedEvent}">
@@ -88,8 +88,8 @@ THE SOFTWARE.
          "title": "<j:out value="${it.jsonEscape(event.previousStartedEvent.build.displayName)}"/>",
          "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.previousStartedEvent.url)}"/>",
          "icon": "<j:out value="${it.jsonEscape(previousStartedEventIcon)}"/>",
-         "start": "<i:formatDate value="${event.previousStartedEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-         "end": "<i:formatDate value="${event.previousStartedEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+         "start": "<i:formatDate value="${event.previousStartedEvent.start.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>",
+         "end": "<i:formatDate value="${event.previousStartedEvent.end.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>"
        },
        </j:if>
        <j:if test="${not empty event.nextStartedEvent}">
@@ -99,8 +99,8 @@ THE SOFTWARE.
          "title": "<j:out value="${it.jsonEscape(event.nextStartedEvent.build.displayName)}"/>",
          "url": "<j:out value="${it.jsonEscape(rootURL + '/' + event.nextStartedEvent.url)}"/>",
          "icon": "<j:out value="${it.jsonEscape(nextStartedEventIcon)}"/>",
-         "start": "<i:formatDate value="${event.nextStartedEvent.start.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>",
-         "end": "<i:formatDate value="${event.nextStartedEvent.end.time}" pattern="YYYY-MM-dd'T'HH:mm:ss"/>"
+         "start": "<i:formatDate value="${event.nextStartedEvent.start.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>",
+         "end": "<i:formatDate value="${event.nextStartedEvent.end.time}" pattern="yyyy-MM-dd'T'HH:mm:ss"/>"
        },
        </j:if>
      </j:if>
