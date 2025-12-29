@@ -31,12 +31,13 @@ import hudson.model.TopLevelItem;
 import hudson.scheduler.CronTabList;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import io.jenkins.plugins.extended_timer_trigger.ExtendedCronTabList;
+import io.jenkins.plugins.extended_timer_trigger.ExtendedTimerTrigger;
 import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 import java.util.Locale;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedCronTabList;
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.jupiter.api.AfterAll;
@@ -204,6 +205,31 @@ class CronJobServiceTest {
 
             ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
             when(trigger.getParameterizedSpecification()).thenReturn("0 12 * * * % PARAM1=value;PARAM2=false");
+
+            List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
+            assertThat(cronTabs, hasSize(1));
+
+            CronWrapper<?> cronTab = cronTabs.get(0);
+            assertThat(next(cronTab, "2018-01-01 00:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 06:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 11:00:00 UTC"), is("2018-01-01 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 12:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+            assertThat(next(cronTab, "2018-01-01 13:00:00 UTC"), is("2018-01-02 12:00:00 CET"));
+        }
+
+        @Test
+        void testThatExtendedTimerTriggerWorks() throws ParseException {
+            Jenkins jenkins = mock(Jenkins.class);
+            when(jenkins.getPlugin("extended-timer-trigger")).thenReturn(mock(Plugin.class));
+            PluginUtil.setJenkins(jenkins);
+
+            ExtendedTimerTrigger trigger = mock(ExtendedTimerTrigger.class);
+            ExtendedCronTabList cronTabList = ExtendedCronTabList.create("""
+                    0 12 * * *
+                    %PARAM1=value
+                    %PARAM2=false
+                    """, null);
+            when(trigger.getExtendedCronTabList()).thenReturn(cronTabList);
 
             List<CronWrapper<?>> cronTabs = new CronJobService().getCronTabs(trigger);
             assertThat(cronTabs, hasSize(1));

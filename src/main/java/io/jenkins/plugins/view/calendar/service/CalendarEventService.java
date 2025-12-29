@@ -132,7 +132,7 @@ public class CalendarEventService {
             long timeInMillis = searchStart();
             do {
                 final Calendar next = nextRun(cronTab, timeInMillis);
-                if (searchRange.getStart().isAfter(next) || searchRange.getEnd().isBefore(next)) {
+                if (next == null || searchRange.getStart().isAfter(next) || searchRange.getEnd().isBefore(next)) {
                     break;
                 }
                 next.set(Calendar.SECOND, 0);
