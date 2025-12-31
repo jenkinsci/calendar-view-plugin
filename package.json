@@ -8,7 +8,6 @@
     "mvntest": "npm run test",
     "test": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js'",
     "coverage": "nyc --exclude 'src/test/js/**/*.js' mocha 'src/test/js/**/*.js' && nyc report --reporter=html",
-    "codecov": "nyc --exclude 'src/test/js/**/*.js' report --reporter=text-lcov > coverage.lcov && codecov",
     "build": "webpack --mode production",
     "dev": "webpack --watch --mode development"
   },
@@ -24,7 +23,6 @@
     "@babel/register": "7.25.9",
     "babel-loader": "8.4.1",
     "chai": "4.5.0",
-    "codecov": "3.8.3",
     "css-loader": "1.0.1",
     "eslint-config-standard": "12.0.0",
     "eslint-loader": "4.0.2",
