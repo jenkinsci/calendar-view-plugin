@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const ESLintPlugin = require("eslint-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -39,16 +40,12 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader'
       }
     ]
   },
   plugins: [
     new webpack.IgnorePlugin({resourceRegExp: /^\.\/locale$/, contextRegExp: /moment$/}),
+    new ESLintPlugin(),
     new MiniCssExtractPlugin({
       filename: 'calendar-view.css',
       chunkFilename: '[id].css'
