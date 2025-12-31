@@ -33,7 +33,7 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-node": "^8.0.0",
     "eslint-plugin-promise": "^4.0.0",
-    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-standard": "^5.0.0",
     "eslint-utils": "^1.4.1",
     "jsdom": "^13.0.0",
     "lodash": "^4.17.21",
