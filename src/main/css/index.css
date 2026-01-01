@@ -57,7 +57,7 @@
 .fc-event-container a.event-state-scheduled:link,
 .fc-event-container a.event-state-scheduled:active,
 .fc-event-container a.event-state-scheduled:visited {
-  color:black;
+  color: var(--text-color);
 }
 
 .fc-event {
