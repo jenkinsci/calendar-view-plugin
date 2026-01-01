@@ -5,7 +5,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 
-var requireUncached = require('require-uncached');
+var requireUncached = require('import-fresh');
 var mock = require('./mock');
 
 var build15 = mock.build(15, 'finished');
