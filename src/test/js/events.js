@@ -3,7 +3,7 @@
 /* global describe:false, it:false, beforeEach:false */
 /* eslint no-unused-expressions: 0 */
 
-var requireUncached = require('require-uncached');
+var requireUncached = require('import-fresh');
 var mock = require('./mock');
 
 var chai = require('chai');
