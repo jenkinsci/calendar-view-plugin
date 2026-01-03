@@ -31,7 +31,7 @@ public final class PluginUtil {
         return hasPluginInstalled("parameterized-scheduler");
     }
 
-    public static boolean hasWorkflowJobPluginInstalled() {
-        return hasPluginInstalled("workflow-job");
+    public static boolean hasExtendedTimerTriggerPluginInstalled() {
+        return hasPluginInstalled("extended-timer-trigger");
     }
 }

@@ -32,7 +32,9 @@ import hudson.triggers.TimerTrigger;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
 import hudson.util.RunList;
+import io.jenkins.plugins.extended_timer_trigger.ExtendedTimerTrigger;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedCronTabList;
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.mockito.stubbing.Answer;
 
@@ -131,6 +133,16 @@ public class TestUtil {
         for (String spec : specs) {
             ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
             when(trigger.getParameterizedSpecification()).thenReturn(spec);
+            triggers.put(mock(TriggerDescriptor.class), trigger);
+        }
+        return triggers;
+    }
+
+    public static Map<TriggerDescriptor, Trigger<?>> mockExtendedTimerTriggers(String... specs) {
+        Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
+        for (String spec : specs) {
+            ExtendedTimerTrigger trigger = mock(ExtendedTimerTrigger.class);
+            when(trigger.getCronSpec()).thenReturn(spec);
             triggers.put(mock(TriggerDescriptor.class), trigger);
         }
         return triggers;

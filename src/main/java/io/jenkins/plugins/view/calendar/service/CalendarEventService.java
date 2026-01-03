@@ -37,7 +37,6 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.scheduler.CronTab;
 import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 import io.jenkins.plugins.view.calendar.event.CalendarEventComparator;
@@ -110,8 +109,8 @@ public class CalendarEventService {
         for (final Job job: jobs) {
             if (job.isBuildable()) {
                 final long estimatedDuration = job.getEstimatedDuration();
-                final List<CronTab> cronTabs = cronJobService.getCronTabs(job, eventsType);
-                for (final CronTab cronTab: cronTabs) {
+                final List<CronWrapper<?>> cronTabs = cronJobService.getCronTabs(job, eventsType);
+                for (final CronWrapper<?> cronTab: cronTabs) {
                     collector.collectEvents(job, cronTab, estimatedDuration);
                 }
             }
@@ -129,11 +128,11 @@ public class CalendarEventService {
             this.inclusionRange = inclusionRange;
         }
 
-        public void collectEvents(final Job job, final CronTab cronTab, final long estimatedDuration) {
+        public void collectEvents(final Job job, final CronWrapper<?> cronTab, final long estimatedDuration) {
             long timeInMillis = searchStart();
             do {
                 final Calendar next = nextRun(cronTab, timeInMillis);
-                if (searchRange.getStart().isAfter(next) || searchRange.getEnd().isBefore(next)) {
+                if (next == null || searchRange.getStart().isAfter(next) || searchRange.getEnd().isBefore(next)) {
                     break;
                 }
                 next.set(Calendar.SECOND, 0);
@@ -148,7 +147,7 @@ public class CalendarEventService {
             } while (true);
         }
 
-        protected abstract Calendar nextRun(CronTab cronTab, long timeInMillis);
+        protected abstract Calendar nextRun(CronWrapper<?> cronTab, long timeInMillis);
 
         protected abstract long searchStart();
 
@@ -165,7 +164,7 @@ public class CalendarEventService {
         }
 
         @Override
-        protected Calendar nextRun(final CronTab cronTab, final long timeInMillis) {
+        protected Calendar nextRun(final CronWrapper<?> cronTab, final long timeInMillis) {
             return cronTab.ceil(timeInMillis);
         }
 
@@ -186,7 +185,7 @@ public class CalendarEventService {
         }
 
         @Override
-        protected Calendar nextRun(final CronTab cronTab, final long timeInMillis) {
+        protected Calendar nextRun(final CronWrapper<?> cronTab, final long timeInMillis) {
             return cronTab.floor(timeInMillis);
         }
 
