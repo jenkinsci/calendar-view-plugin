@@ -63,10 +63,14 @@ public class CronJobService {
     @SuppressWarnings("PMD.CyclomaticComplexity")
     public List<CronWrapper<?>> getCronTabs(final Trigger trigger, final Hash hash) {
         final List<CronWrapper<?>> cronTabs = new ArrayList<>();
-        final boolean isParameterizedTrigger = PluginUtil.hasParameterizedSchedulerPluginInstalled()
-                && trigger instanceof ParameterizedTimerTrigger;
         int lineNumber = 0;
         String timezone = null;
+
+        if (PluginUtil.hasParameterizedSchedulerPluginInstalled()
+                && trigger instanceof ParameterizedTimerTrigger ptt) {
+            ptt.getCronTabList().getCronTabs().forEach(ct -> cronTabs.add(new CronWrapper.ParameterizedCronWrapper(ct)));
+            return cronTabs;
+        }
 
         if (PluginUtil.hasExtendedTimerTriggerPluginInstalled()
                 && trigger instanceof ExtendedTimerTrigger ett) {
@@ -74,14 +78,10 @@ public class CronJobService {
             return cronTabs;
         }
 
-        final String specification = isParameterizedTrigger ?
-                ((ParameterizedTimerTrigger) trigger).getParameterizedSpecification() : trigger.getSpec();
+        final String specification = trigger.getSpec();
 
         for (String line : specification.split("\\r?\\n")) {
             lineNumber++;
-            if (isParameterizedTrigger) {
-                line = line.split("%")[0];
-            }
             line = line.trim();
 
             if (lineNumber == 1 && line.startsWith("TZ=")) {
@@ -89,18 +89,14 @@ public class CronJobService {
                 continue;
             }
 
-            if (line.length() == 0 || line.charAt(0) == '#') {
+            if (line.isEmpty() || line.charAt(0) == '#') {
                 continue;
             }
 
             try {
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
                 final CronTab cronTab = new CronTab(line, lineNumber, hash, timezone);
-                if (isParameterizedTrigger) {
-                    cronTabs.add(new CronWrapper.ParameterizedCronWrapper(cronTab));
-                } else {
-                    cronTabs.add(new CronWrapper.ClassicCronTab(cronTab));
-                }
+                cronTabs.add(new CronWrapper.ClassicCronTab(cronTab));
             } catch (IllegalArgumentException e) {
                 final String msg = "Unable to parse cron trigger spec: '" + line + "'";
                 Logger.getLogger(this.getClass()).error(msg, e);

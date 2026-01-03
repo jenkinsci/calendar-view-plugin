@@ -35,10 +35,26 @@ public abstract class CronWrapper<T> {
         }
     }
 
-    public static class ParameterizedCronWrapper extends ClassicCronTab {
+    public static class ParameterizedCronWrapper extends CronWrapper<ParameterizedCronTab> {
 
-        public ParameterizedCronWrapper(CronTab cronTab) {
-            super(cronTab);
+        private final ParameterizedCronTab cronTab;
+        public ParameterizedCronWrapper(ParameterizedCronTab cronTab) {
+            this.cronTab = cronTab;
+        }
+
+        @Override
+        public Calendar ceil(long timeInMillis) {
+            return cronTab.ceil(timeInMillis);
+        }
+
+        @Override
+        public Calendar floor(long timeInMillis) {
+            return cronTab.floor(timeInMillis);
+        }
+
+        @Override
+        public ParameterizedCronTab getCronTab() {
+            return cronTab;
         }
     }
 
