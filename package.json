@@ -14,7 +14,7 @@
   "author": "Sven Schoenung <sven.schoenung@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "fullcalendar": "3.10.5",
+    "fullcalendar": "6.1.20",
     "smoothscroll-polyfill": "0.4.4",
     "tippy.js": "2.6.0"
   },
