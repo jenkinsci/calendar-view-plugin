@@ -49,7 +49,7 @@
 .fc-event-container a:link,
 .fc-event-container a:active,
 .fc-event-container a:visited {
-  color:white;
+  color:black;
   text-decoration: none;
 }
 
@@ -66,8 +66,8 @@
 }
 
 .fc-event.event-result-success {
-  background-color: var(--blue);
-  border-color: var(--blue);
+  background-color: var(--success-color);
+  border-color: var(--success-color);
 }
 
 .fc-event.event-result-failure {
@@ -102,7 +102,7 @@
   background:#aaa;
 }
 .fc-event.event-result-success.event-selected {
-  background:var(--light-blue);
+  background:var(--light-green);
 }
 .fc-event.event-result-failure.event-selected {
   background:var(--light-red);
@@ -112,6 +112,10 @@
 }
 .fc-event.event-state-scheduled.event-selected {
   background:var(--light-grey);
+}
+
+.fc-unthemed td.fc-today {
+	background: var(--text-color-secondary);
 }
 
 .tippy-tooltip.jenkins-theme {
