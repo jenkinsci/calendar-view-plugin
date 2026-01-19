@@ -29,7 +29,7 @@
     "eslint-webpack-plugin": "5.0.2",
     "import-fresh": "3.3.1",
     "jsdom": "15.2.1",
-    "mini-css-extract-plugin": "2.9.4",
+    "mini-css-extract-plugin": "2.10.0",
     "mocha": "11.7.5",
     "mockery": "2.1.0",
     "nyc": "17.1.0",
