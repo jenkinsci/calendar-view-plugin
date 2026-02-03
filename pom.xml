@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>5.2102.v5f5fe09fccf1</version>
+        <version>6.2122.v70b_7b_f659d72</version>
         <relativePath />
     </parent>
     <groupId>io.jenkins.plugins</groupId>
@@ -21,6 +21,7 @@
         <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
         <node.version>24.12.0</node.version>
         <npm.version>11.6.2</npm.version>
+        <ban-commons-lang-2.skip>false</ban-commons-lang-2.skip>
     </properties>
     <name>Calendar View Plugin</name>
     <developers>
@@ -68,9 +69,24 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.jenkins-ci.plugins</groupId>
+                <artifactId>parameterized-scheduler</artifactId>
+                <!-- TODO requires https://github.com/jenkinsci/parameterized-scheduler-plugin/pull/297 -->
+                <version>374.v531b_4f4d99b_3</version>
+            </dependency>
+            <dependency>
+               <groupId>io.jenkins.plugins</groupId>
+                <artifactId>extended-timer-trigger</artifactId>
+                <version>48.vf99b_c63a_685b_</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>commons-text-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>jquery3-api</artifactId>
@@ -88,13 +104,11 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>parameterized-scheduler</artifactId>
-            <version>374.v531b_4f4d99b_3</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>extended-timer-trigger</artifactId>
-            <version>48.vf99b_c63a_685b_</version>
             <optional>true</optional>
         </dependency>
         <dependency>
