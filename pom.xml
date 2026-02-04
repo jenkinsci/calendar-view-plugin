@@ -72,8 +72,8 @@
             <dependency>
                 <groupId>org.jenkins-ci.plugins</groupId>
                 <artifactId>parameterized-scheduler</artifactId>
-                <!-- TODO requires https://github.com/jenkinsci/parameterized-scheduler-plugin/pull/297 -->
-                <version>374.v531b_4f4d99b_3</version>
+                <!-- TODO Until https://github.com/jenkinsci/bom/commit/72bb85360ded90bce299adc93e385795764fc8c2 in BOM used here -->
+                <version>378.va_234d1c44456</version>
             </dependency>
             <dependency>
                <groupId>io.jenkins.plugins</groupId>
