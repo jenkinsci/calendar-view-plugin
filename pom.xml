@@ -76,8 +76,9 @@
                 <version>378.va_234d1c44456</version>
             </dependency>
             <dependency>
-               <groupId>io.jenkins.plugins</groupId>
+                <groupId>io.jenkins.plugins</groupId>
                 <artifactId>extended-timer-trigger</artifactId>
+                <!-- TODO Until BOM updated with plugin in it -->
                 <version>48.vf99b_c63a_685b_</version>
             </dependency>
         </dependencies>
