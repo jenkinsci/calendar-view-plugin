@@ -32,7 +32,6 @@ import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -40,6 +39,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Restricted(NoExternalUse.class)
 public class CalendarEventFactory {
@@ -70,7 +70,7 @@ public class CalendarEventFactory {
         private transient List<StartedCalendarEvent> lastEvents;
 
         /* default */ final String initId(final String url, final long startTimeInMillis) {
-            return StringUtils.defaultString(url, "")
+            return Objects.requireNonNullElse(url, "")
               .replace("/", "-")
               .toLowerCase(Locale.ENGLISH) + startTimeInMillis;
         }

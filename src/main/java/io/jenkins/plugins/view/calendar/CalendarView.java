@@ -32,7 +32,7 @@ import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.service.CronJobService;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.RequestUtil;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -423,7 +423,7 @@ public class CalendarView extends ListView {
     }
 
     public String jsonEscape(final String text) {
-        return StringEscapeUtils.escapeJavaScript(text);
+        return StringEscapeUtils.escapeEcmaScript(text);
     }
 
     @Extension
