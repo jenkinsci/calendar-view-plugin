@@ -35,7 +35,6 @@ import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.PluginUtil;
 
 import jenkins.triggers.TriggeredItem;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
 import org.kohsuke.accmod.Restricted;
@@ -119,15 +118,17 @@ public class CronJobService {
         for (final Trigger<?> jobTrigger: jobTriggers) {
             if (eventsType == CalendarViewEventsType.ALL ||
                     (eventsType == CalendarViewEventsType.BUILDS ^ jobTrigger instanceof SCMTrigger)) {
-                if (StringUtils.isNotBlank(jobTrigger.getSpec())) {
+                if (jobTrigger.getSpec() != null && !jobTrigger.getSpec().isBlank()) {
                     cronTriggers.add(jobTrigger);
                 } else if (PluginUtil.hasParameterizedSchedulerPluginInstalled()
-                        && jobTrigger instanceof ParameterizedTimerTrigger
-                        && StringUtils.isNotBlank(((ParameterizedTimerTrigger) jobTrigger).getParameterizedSpecification())) {
+                        && jobTrigger instanceof ParameterizedTimerTrigger ptt
+                        && ptt.getParameterizedSpecification() != null
+                        && !ptt.getParameterizedSpecification().isBlank()) {
                     cronTriggers.add(jobTrigger);
-                } else if (PluginUtil.hasExtendedTimerTriggerPluginInstalled() &&
-                        jobTrigger instanceof ExtendedTimerTrigger
-                        && StringUtils.isNotBlank(((ExtendedTimerTrigger) jobTrigger).getCronSpec())) {
+                } else if (PluginUtil.hasExtendedTimerTriggerPluginInstalled()
+                        && jobTrigger instanceof ExtendedTimerTrigger ett
+                        && ett.getCronSpec() != null
+                        && !ett.getCronSpec().isBlank()) {
                     cronTriggers.add(jobTrigger);
                 }
             }
