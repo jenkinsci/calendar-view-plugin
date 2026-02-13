@@ -25,6 +25,9 @@ package io.jenkins.plugins.view.calendar.event;
 
 import hudson.Util;
 import hudson.model.Job;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
+import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Run;
 import io.jenkins.plugins.view.calendar.CalendarView.CalendarViewEventsType;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
@@ -39,7 +42,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 @Restricted(NoExternalUse.class)
 public class CalendarEventFactory {
@@ -51,8 +56,8 @@ public class CalendarEventFactory {
         this.calendarEventService = calendarEventService;
     }
 
-    public ScheduledCalendarEvent createScheduledEvent(final Job job, final Calendar start, final long duration) {
-        return new ScheduledCalendarEventImpl(job, start, duration);
+    public ScheduledCalendarEvent createScheduledEvent(final Job job, final Map<String, String> parameters, final Calendar start, final long duration) {
+        return new ScheduledCalendarEventImpl(job, parameters, start, duration);
     }
 
     public StartedCalendarEvent createStartedEvent(final Job job, final Run build) {
@@ -68,6 +73,7 @@ public class CalendarEventFactory {
         protected String url;
         protected long duration;
         private transient List<StartedCalendarEvent> lastEvents;
+        protected Map<String, String> parameters = new TreeMap<String, String>();
 
         /* default */ final String initId(final String url, final long startTimeInMillis) {
             return Objects.requireNonNullElse(url, "")
@@ -152,10 +158,15 @@ public class CalendarEventFactory {
             }
             return this.lastEvents;
         }
+
+        @Override
+        public Map<String, String> getParameters() {
+            return this.parameters;
+        }
     }
 
     private class ScheduledCalendarEventImpl extends CalendarEventImpl implements ScheduledCalendarEvent {
-        public ScheduledCalendarEventImpl(final Job job, final Calendar start, final long durationInMillis) {
+        public ScheduledCalendarEventImpl(final Job job, final Map<String, String> parameters, final Calendar start, final long durationInMillis) {
             super();
             this.job = job;
             this.id = initId(job.getUrl(), start.getTimeInMillis());
@@ -164,6 +175,19 @@ public class CalendarEventFactory {
             this.duration = durationInMillis;
             this.start = new Moment(start);
             this.end = initEnd(start.getTimeInMillis(), durationInMillis);
+            ParametersDefinitionProperty parameterDefinitions = (ParametersDefinitionProperty) this.job.getProperty(ParametersDefinitionProperty.class);
+            if (parameterDefinitions != null) {
+              for (ParameterDefinition parameterDefinition : parameterDefinitions.getParameterDefinitions()) {
+                ParameterValue parameterValue = parameterDefinition.getDefaultParameterValue();
+                if (parameterValue != null) {
+                  Object value = parameterValue.getValue();
+                  if (value != null) {
+                    this.parameters.put(parameterValue.getName(), value.toString());
+                  }
+                }
+              }
+            }
+            this.parameters.putAll(parameters);
         }
 
         @Override
@@ -201,6 +225,7 @@ public class CalendarEventFactory {
                 this.state = CalendarEventState.FINISHED;
             }
             this.end = initEnd(start.getTimeInMillis(), this.duration);
+            ((List<ParameterValue>) build.getParameterValues()).forEach(parameter -> this.parameters.put(parameter.getName(), parameter.getValue().toString()));
         }
 
         @Override

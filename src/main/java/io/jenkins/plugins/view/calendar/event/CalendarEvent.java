@@ -30,6 +30,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.util.List;
+import java.util.Map;
 
 @Restricted(NoExternalUse.class)
 public interface CalendarEvent {
@@ -58,4 +59,6 @@ public interface CalendarEvent {
     CalendarEventState getState();
 
     List<StartedCalendarEvent> getLastEvents();
+
+    Map<String, String> getParameters();
 }

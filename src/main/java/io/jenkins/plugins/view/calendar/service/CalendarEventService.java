@@ -138,7 +138,7 @@ public class CalendarEventService {
                 next.set(Calendar.SECOND, 0);
                 next.set(Calendar.MILLISECOND, 0);
                 @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                final ScheduledCalendarEvent event = calendarEventFactory.createScheduledEvent(job, next, estimatedDuration);
+                final ScheduledCalendarEvent event = calendarEventFactory.createScheduledEvent(job, cronTab.getParameters(), next, estimatedDuration);
                 if (!event.isInRange(inclusionRange)) {
                     break;
                 }
@@ -274,7 +274,7 @@ public class CalendarEventService {
         final Calendar nextStart = cronJobService.getNextStart(job, eventsType);
         if (nextStart != null) {
             final long estimatedDuration = job.getEstimatedDuration();
-            return calendarEventFactory.createScheduledEvent(job, nextStart, estimatedDuration);
+            return calendarEventFactory.createScheduledEvent(job, Collections.emptyMap(), nextStart, estimatedDuration);
         }
         return null;
     }

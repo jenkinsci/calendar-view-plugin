@@ -49,7 +49,8 @@ THE SOFTWARE.
            "buildHistory": "${%Build History}:",
            "buildHistoryEmpty": "${%No past builds}",
            "project": "${%Project}: ",
-           "nextScheduledBuild": "${%Next build}: "
+           "nextScheduledBuild": "${%Next build}: ",
+           "parameters": "${%Parameters}:"
          },
          "names": {
            "monthNames": [

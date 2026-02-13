@@ -38,6 +38,14 @@ THE SOFTWARE.
     "duration": ${event.duration},
     "state": "${event.state.toString().toLowerCase()}",
     "className": "event-result-<j:if test="${event.state == 'FINISHED'}">${event.build.result.toString().toLowerCase()}</j:if><j:if test="${event.state == 'RUNNING'}">${event.job.lastCompletedBuild.result.toString().toLowerCase()}</j:if> event-state-${event.state.toString().toLowerCase()} event-id-${event.id}",
+    "parameters": [
+      <j:forEach var="parameter" items="${event.parameters}" varStatus="parameterLoop">
+        {
+          "name": "<j:out value="${it.jsonEscape(parameter.key)}"/>",
+          "value": "<j:out value="${it.jsonEscape(parameter.value)}"/>"
+        }<j:if test="${!parameterLoop.last}">,</j:if>
+      </j:forEach>
+    ],
     <j:if test="${event.state == 'SCHEDULED' || event.state == 'RUNNING'}">
       <j:if test="${event.state == 'SCHEDULED'}">
       "timestampString": "<j:out value="${%startsIn(event.timestampString)}"/>",
