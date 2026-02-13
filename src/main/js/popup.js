@@ -63,7 +63,8 @@ function buildInfo(event) {
   return $('<div class="tooltip-left"></div>')
     .append($('<b></b>').text(CalendarViewOptions.popupText.build))
     .append($('<div class="timestamp"></div>').text(event.timestampString))
-    .append($('<div class="duration"></div>').text(event.durationString));
+    .append($('<div class="duration"></div>').text(event.durationString))
+    .append((event.parameters && event.parameters.length > 0) ? parameters(event) : '');
 }
 
 function nextScheduledBuild(event, view) {
@@ -89,6 +90,14 @@ function noBuildHistoryEntries() {
 
 function buildHistoryEntries(event, view) {
   return event.builds.map(function(b) { return $('<li></li>').append(build(b, view)); });
+}
+
+function parameters(event) {
+  return $('<div class="parameterBlock"></div>')
+    .append($('<b></b>').text(CalendarViewOptions.popupText.parameters))
+    .append($('<div class="parameters"></div>')
+      .append($('<ul></ul>')
+        .append(event.parameters.map(function(b) { return $('<li></li>').append([b.name, '=', b.value]); }))));
 }
 
 function prevAndNextBuild(event, view) {

@@ -46,6 +46,7 @@ import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -102,7 +103,7 @@ class CalendarEventFactoryTest {
         when(project.getBuildHealth()).thenReturn(health);
 
         Moment now = new Moment();
-        ScheduledCalendarEvent event = getCalendarEventFactory(now).createScheduledEvent(project, start, duration);
+        ScheduledCalendarEvent event = getCalendarEventFactory(now).createScheduledEvent(project, Collections.emptyMap(), start, duration);
         assertThat(event.getJob(), is(project));
         assertThat(event.getTitle(), is("Example Project"));
         assertThat(event.getStart(), is(mom(start)));
@@ -148,63 +149,63 @@ class CalendarEventFactoryTest {
         // MomentRange:       |           |
         // Event:       #####
         Calendar start1 = cal("2018-01-01 00:00:00 UTC");
-        CalendarEvent event1 = getCalendarEventFactory(now).createScheduledEvent(item, start1, hours(6));
+        CalendarEvent event1 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start1, hours(6));
         assertThat(event1.getEnd(), is(mom("2018-01-01 06:00:00 UTC")));
         assertThat(event1.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:                   #####
         Calendar start2 = cal("2018-01-02 00:00:00 UTC");
-        CalendarEvent event2 = getCalendarEventFactory(now).createScheduledEvent(item, start2, hours(6));
+        CalendarEvent event2 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start2, hours(6));
         assertThat(event2.getEnd(), is(mom("2018-01-02 06:00:00 UTC")));
         assertThat(event2.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event:   #####
         Calendar start3 = cal("2017-12-31 18:00:00 UTC");
-        CalendarEvent event3 = getCalendarEventFactory(now).createScheduledEvent(item, start3, hours(6));
+        CalendarEvent event3 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start3, hours(6));
         assertThat(event3.getEnd(), is(mom("2018-01-01 00:00:00 UTC")));
         assertThat(event3.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event:               #####
         Calendar start4 = cal("2018-01-01 18:00:00 UTC");
-        CalendarEvent event4 = getCalendarEventFactory(now).createScheduledEvent(item, start4, hours(6));
+        CalendarEvent event4 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start4, hours(6));
         assertThat(event4.getEnd(), is(mom("2018-01-02 00:00:00 UTC")));
         assertThat(event4.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:     #####
         Calendar start5 = cal("2017-12-31 21:00:00 UTC");
-        CalendarEvent event5 = getCalendarEventFactory(now).createScheduledEvent(item, start5, hours(6));
+        CalendarEvent event5 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start5, hours(6));
         assertThat(event5.getEnd(), is(mom("2018-01-01 03:00:00 UTC")));
         assertThat(event5.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:                 #####
         Calendar start6 = cal("2018-01-01 21:00:00 UTC");
-        CalendarEvent event6 = getCalendarEventFactory(now).createScheduledEvent(item, start6, hours(6));
+        CalendarEvent event6 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start6, hours(6));
         assertThat(event6.getEnd(), is(mom("2018-01-02 03:00:00 UTC")));
         assertThat(event6.isInRange(range), is(true));
 
         // MomentRange:       |           |
         // Event:                     #####
         Calendar start7 = cal("2018-01-02 03:00:00 UTC");
-        CalendarEvent event7 = getCalendarEventFactory(now).createScheduledEvent(item, start7, hours(6));
+        CalendarEvent event7 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start7, hours(6));
         assertThat(event7.getEnd(), is(mom("2018-01-02 09:00:00 UTC")));
         assertThat(event7.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event: #####
         Calendar start8 = cal("2017-12-31 03:00:00 UTC");
-        CalendarEvent event8 = getCalendarEventFactory(now).createScheduledEvent(item, start8, hours(6));
+        CalendarEvent event8 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start8, hours(6));
         assertThat(event8.getEnd(), is(mom("2017-12-31 09:00:00 UTC")));
         assertThat(event8.isInRange(range), is(not(true)));
 
         // MomentRange:       |           |
         // Event:      ###############
         Calendar start9 = cal("2017-12-31 21:00:00 UTC");
-        CalendarEvent event9 = getCalendarEventFactory(now).createScheduledEvent(item, start9, hours(30));
+        CalendarEvent event9 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start9, hours(30));
         assertThat(event9.getEnd(), is(mom("2018-01-02 03:00:00 UTC")));
         assertThat(event9.isInRange(range), is(true));
     }
