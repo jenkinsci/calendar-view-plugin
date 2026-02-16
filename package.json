@@ -34,7 +34,7 @@
     "mockery": "2.1.0",
     "nyc": "17.1.0",
     "terser-webpack-plugin": "5.3.16",
-    "webpack": "5.105.0",
+    "webpack": "5.105.2",
     "webpack-cli": "6.0.1"
   },
   "engines": {
