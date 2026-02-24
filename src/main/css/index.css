@@ -66,13 +66,13 @@
 }
 
 .fc-event.event-result-success {
-  background-color: var(--success-color);
-  border-color: var(--success-color);
+  background-color: var(--result-success-color);
+  border-color: var(--result-success-color);
 }
 
 .fc-event.event-result-failure {
-  background-color: var(--error-color);
-  border-color:var(--error-color);
+  background-color: var(--result-failure-color);
+  border-color:var(--result-failure-color);
 }
 
 .fc-event.event-result-unstable {
@@ -102,10 +102,10 @@
   background:#aaa;
 }
 .fc-event.event-result-success.event-selected {
-  background:var(--light-green);
+  background:var(--result-success-selected-color);
 }
 .fc-event.event-result-failure.event-selected {
-  background:var(--light-red);
+  background:var(--result-failure-selected-color);
 }
 .fc-event.event-result-unstable.event-selected {
   background:var(--light-orange);

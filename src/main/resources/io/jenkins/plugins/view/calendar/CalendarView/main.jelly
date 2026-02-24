@@ -25,6 +25,7 @@ THE SOFTWARE.
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
+
     <j:set var="views" value="${it.owner.views}" />
     <j:set var="currentView" value="${it}" />
 
@@ -35,10 +36,12 @@ THE SOFTWARE.
     </div>
 
     <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
+
     <st:adjunct includes="io.jenkins.plugins.jquery3"/>
     <script id="calendar-view-data" type="application/json">{
-         "defaultView": "${it.calendarViewType.name().toLowerCase()}-view",
-         "buttonText": {
+        "defaultView": "${it.calendarViewType.name().toLowerCase()}-view",
+        "resultsColors": "${it.resultsColors.name().toLowerCase()}",
+        "buttonText": {
            "today": "${%ButtonText.Today}",
            "month-view": "${%ButtonText.Month}",
            "week-view": "${%ButtonText.Week}",
@@ -141,6 +144,7 @@ THE SOFTWARE.
          }
        }</script>
     <st:adjunct includes="io.jenkins.plugins.view.calendar.CalendarView.resource"/>
+
     <script type="text/javascript" src="${rootURL}/plugin/calendar-view/bundles/calendar-view.js"></script>
 
 </j:jelly>
