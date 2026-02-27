@@ -51,7 +51,7 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
         <f:entry title="${%Success / Failure Colors}" field="resultsColors">
             <div class="calendar-view-config-container">
                 <f:radio name="resultsColors" value="GREEN_RED" checked="${it.resultsColors=='GREEN_RED'}" title="${%Green / Red}"/>
-                <f:radio name="resultsColors" value="YELLOW_BLUE" checked="${it.resultsColors=='YELLOW_BLUE'}" title="${%Yellow / Blue}"/>
+                <f:radio name="resultsColors" value="CYAN_RED" checked="${it.resultsColors=='CYAN_RED'}" title="${%Cyan / Red}"/>
             </div>
         </f:entry>
 

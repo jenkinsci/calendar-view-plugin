@@ -68,7 +68,7 @@ public class CalendarView extends ListView {
     }
 
     public static enum ResultsColors {
-        GREEN_RED, YELLOW_BLUE
+        GREEN_RED, CYAN_RED
     }
 
     private CalendarViewEventsType calendarViewEventsType;
