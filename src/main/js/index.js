@@ -38,6 +38,20 @@ const hashParamOptions = hashParams.parse(window.location.hash);
 var timeout = null;
 
 $(function() {
+  const root = document.documentElement;
+  if (CalendarViewOptions.resultsColors === 'cyan_red') {
+    root.style.setProperty('--result-success-color', '#5291CB');
+    root.style.setProperty('--result-failure-color', '#CF0000');
+    root.style.setProperty('--result-success-selected-color', '#6A9AC7');
+    root.style.setProperty('--result-failure-selected-color', '#FF0000');
+  }
+  else{
+    root.style.setProperty('--result-success-color', '#00B80E');
+    root.style.setProperty('--result-failure-color', '#CF0000');
+    root.style.setProperty('--result-success-selected-color', '#00E610');
+    root.style.setProperty('--result-failure-selected-color', '#FF0000');
+  }
+
   $('#calendar-view').fullCalendar({
     events: 'events',
     defaultView: hashParamOptions['view'] || CalendarViewOptions.defaultView,

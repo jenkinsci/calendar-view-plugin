@@ -67,8 +67,13 @@ public class CalendarView extends ListView {
        MONTH, WEEK, DAY;
     }
 
+    public static enum ResultsColors {
+        GREEN_RED, CYAN_RED
+    }
+
     private CalendarViewEventsType calendarViewEventsType;
     private CalendarViewType calendarViewType;
+    private ResultsColors resultsColors;
 
     private Boolean useCustomFormats;
     private Boolean useCustomWeekSettings;
@@ -122,6 +127,14 @@ public class CalendarView extends ListView {
 
     public void setCalendarViewType(final CalendarViewType calendarViewType) {
         this.calendarViewType = calendarViewType;
+    }
+
+    public ResultsColors getResultsColors() {
+        return defaultIfNull(resultsColors, ResultsColors.GREEN_RED);
+    }
+
+    public void setResultsColors(final ResultsColors resultsColors) {
+        this.resultsColors = resultsColors;
     }
 
     public boolean isUseCustomFormats() {
@@ -366,6 +379,7 @@ public class CalendarView extends ListView {
     private void updateFields(final StaplerRequest2 req) {
         setCalendarViewEventsType(CalendarViewEventsType.valueOf(req.getParameter("calendarViewEventsType")));
         setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
+        setResultsColors(ResultsColors.valueOf(req.getParameter("resultsColors")));
 
         setUseCustomFormats(req.getParameter("useCustomFormats") != null);
         setUseCustomWeekSettings(req.getParameter("useCustomWeekSettings") != null);

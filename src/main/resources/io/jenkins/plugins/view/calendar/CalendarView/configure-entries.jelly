@@ -48,6 +48,13 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
           </div>
         </f:entry>
 
+        <f:entry title="${%Success / Failure Colors}" field="resultsColors">
+            <div class="calendar-view-config-container">
+                <f:radio name="resultsColors" value="GREEN_RED" checked="${it.resultsColors=='GREEN_RED'}" title="${%Green / Red}"/>
+                <f:radio name="resultsColors" value="CYAN_RED" checked="${it.resultsColors=='CYAN_RED'}" title="${%Cyan / Red}"/>
+            </div>
+        </f:entry>
+
         <f:optionalBlock name="useCustomWeekSettings" title="${%Use custom week day settings}"
                          checked="${it.useCustomWeekSettings}">
             <f:entry title="${%Weeks}">
