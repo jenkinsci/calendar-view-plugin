@@ -40,7 +40,24 @@ THE SOFTWARE.
     <st:adjunct includes="io.jenkins.plugins.jquery3"/>
     <script id="calendar-view-data" type="application/json">{
         "defaultView": "${it.calendarViewType.name().toLowerCase()}-view",
-        "resultsColors": "${it.resultsColors.name().toLowerCase()}",
+        "resultsColors": {
+           "success": "${it.resultsColors.success}",
+           "successText": "${it.resultsColors.successText}",
+           "successSelected": "${it.resultsColors.successSelected}",
+           "successSelectedText": "${it.resultsColors.successSelectedText}",
+           "unstable": "${it.resultsColors.unstable}",
+           "unstableText": "${it.resultsColors.unstableText}",
+           "unstableSelected": "${it.resultsColors.unstableSelected}",
+           "unstableSelectedText": "${it.resultsColors.unstableSelectedText}",
+           "failure": "${it.resultsColors.failure}",
+           "failureText": "${it.resultsColors.failureText}",
+           "failureSelected": "${it.resultsColors.failureSelected}",
+           "failureSelectedText": "${it.resultsColors.failureSelectedText}",
+           "scheduled": "${it.resultsColors.scheduled}",
+           "scheduledText": "${it.resultsColors.scheduledText}",
+           "scheduledSelected": "${it.resultsColors.scheduledSelected}",
+           "scheduledSelectedText": "${it.resultsColors.scheduledSelectedText}"
+        },
         "buttonText": {
            "today": "${%ButtonText.Today}",
            "month-view": "${%ButtonText.Month}",

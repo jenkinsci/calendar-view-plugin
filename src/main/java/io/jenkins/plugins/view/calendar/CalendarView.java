@@ -26,425 +26,512 @@
  */
 package io.jenkins.plugins.view.calendar;
 
-import hudson.model.*;
+import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
+import static io.jenkins.plugins.view.calendar.util.FieldUtil.defaultIfNull;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validateEnum;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validateInList;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validatePattern;
+import static io.jenkins.plugins.view.calendar.util.ValidationUtil.validateRange;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.apache.commons.text.StringEscapeUtils;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest2;
+
+import hudson.Extension;
+import hudson.model.Descriptor;
+import hudson.model.Job;
+import hudson.model.ListView;
+import hudson.model.TopLevelItem;
 import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 import io.jenkins.plugins.view.calendar.service.CalendarEventService;
 import io.jenkins.plugins.view.calendar.service.CronJobService;
 import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.util.RequestUtil;
-import org.apache.commons.text.StringEscapeUtils;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.DataBoundConstructor;
-
-import hudson.Extension;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest2;
-
 import jakarta.servlet.ServletException;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.*;
-import java.util.regex.Pattern;
 
-import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
-import static io.jenkins.plugins.view.calendar.util.FieldUtil.defaultIfNull;
-import static io.jenkins.plugins.view.calendar.util.ValidationUtil.*;
-
-@SuppressWarnings({
-    "PMD.GodClass",
-    "PMD.ExcessivePublicCount",
-    "PMD.TooManyFields"
-})
+@SuppressWarnings({ "PMD.GodClass", "PMD.ExcessivePublicCount", "PMD.TooManyFields" })
 @Restricted(NoExternalUse.class)
 public class CalendarView extends ListView {
 
-    public static enum CalendarViewEventsType {
-       ALL, BUILDS, POLLINGS;
+  public static enum CalendarViewEventsType {
+    ALL, BUILDS, POLLINGS;
+  }
+
+  public static enum CalendarViewType {
+    MONTH, WEEK, DAY;
+  }
+
+  public static enum ResultsColors {
+    DEFAULT( //
+        "--success-color", // success
+        "--black", // successText
+        "--light-green", // successSelected
+        "--black", // successSelectedText
+        "--warning-color", // unstable
+        "--black", // unstableText
+        "--light-orange", // unstableSelected
+        "--black", // unstableSelectedText
+        "--error-color", // failure
+        "--white", // failureText
+        "--light-red", // failureSelected
+        "--white", // failureSelectedText
+        "--background", // scheduled
+        "--text-color", // scheduledText
+        "--text-color", // scheduledSelected
+        "--background" // scheduledSelectedText
+    ),
+    LEGACY( //
+        "--blue", // success
+        "--white", // successText
+        "--light-blue", // successSelected
+        "--white", // successSelectedText
+        "--warning-color", // unstable
+        "--black", // unstableText
+        "--light-orange", // unstableSelected
+        "--black", // unstableSelectedText
+        "--error-color", // failure
+        "--white", // failureText
+        "--light-red", // failureSelected
+        "--white", // failureSelectedText
+        "--background", // scheduled
+        "--text-color", // scheduledText
+        "--text-color", // scheduledSelected
+        "--background" // scheduledSelectedText
+    );
+
+    public final String success;
+    public final String successText;
+    public final String successSelected;
+    public final String successSelectedText;
+
+    public final String unstable;
+    public final String unstableText;
+    public final String unstableSelected;
+    public final String unstableSelectedText;
+
+    public final String failure;
+    public final String failureText;
+    public final String failureSelected;
+    public final String failureSelectedText;
+
+    public final String scheduled;
+    public final String scheduledText;
+    public final String scheduledSelected;
+    public final String scheduledSelectedText;
+
+    ResultsColors( //
+        String success, String successText, String successSelected, String successSelectedText, //
+        String unstable, String unstableText, String unstableSelected, String unstableSelectedText, //
+        String failure, String failureText, String failureSelected, String failureSelectedText, //
+        String scheduled, String scheduledText, String scheduledSelected, String scheduledSelectedText //
+      ) {
+      this.success = success;
+      this.successText = successText;
+      this.successSelected = successSelected;
+      this.successSelectedText = successSelectedText;
+
+      this.unstable = unstable;
+      this.unstableText = unstableText;
+      this.unstableSelected = unstableSelected;
+      this.unstableSelectedText = unstableSelectedText;
+
+      this.failure = failure;
+      this.failureText = failureText;
+      this.failureSelected = failureSelected;
+      this.failureSelectedText = failureSelectedText;
+
+      this.scheduled = scheduled;
+      this.scheduledText = scheduledText;
+      this.scheduledSelected = scheduledSelected;
+      this.scheduledSelectedText = scheduledSelectedText;
     }
+  }
 
-    public static enum CalendarViewType {
-       MONTH, WEEK, DAY;
+  private CalendarViewEventsType calendarViewEventsType;
+  private CalendarViewType calendarViewType;
+  private ResultsColors resultsColors;
+
+  private Boolean useCustomFormats;
+  private Boolean useCustomWeekSettings;
+  private Boolean useCustomSlotSettings;
+
+  private Boolean weekSettingsShowWeekends;
+  private Boolean weekSettingsShowWeekNumbers;
+  private Integer weekSettingsFirstDay;
+
+  private String monthTitleFormat;
+  private String monthColumnHeaderFormat;
+  private String monthTimeFormat;
+  private String monthPopupBuildTimeFormat;
+
+  private String weekTitleFormat;
+  private String weekColumnHeaderFormat;
+  private String weekTimeFormat;
+  private String weekSlotTimeFormat;
+  private String weekPopupBuildTimeFormat;
+
+  private String dayTitleFormat;
+  private String dayColumnHeaderFormat;
+  private String dayTimeFormat;
+  private String daySlotTimeFormat;
+  private String dayPopupBuildTimeFormat;
+
+  private String weekSlotDuration;
+  private String weekMinTime;
+  private String weekMaxTime;
+
+  private String daySlotDuration;
+  private String dayMinTime;
+  private String dayMaxTime;
+
+  @DataBoundConstructor
+  public CalendarView(final String name) {
+    super(name);
+  }
+
+  public CalendarViewEventsType getCalendarViewEventsType() {
+    return defaultIfNull(calendarViewEventsType, CalendarViewEventsType.ALL);
+  }
+
+  public void setCalendarViewEventsType(final CalendarViewEventsType calendarViewEventsType) {
+    this.calendarViewEventsType = calendarViewEventsType;
+  }
+
+  public CalendarViewType getCalendarViewType() {
+    return defaultIfNull(calendarViewType, CalendarViewType.WEEK);
+  }
+
+  public void setCalendarViewType(final CalendarViewType calendarViewType) {
+    this.calendarViewType = calendarViewType;
+  }
+
+  public ResultsColors getResultsColors() {
+    return defaultIfNull(resultsColors, ResultsColors.DEFAULT);
+  }
+
+  public void setResultsColors(final ResultsColors resultsColors) {
+    this.resultsColors = resultsColors;
+  }
+
+  public boolean isUseCustomFormats() {
+    return defaultIfNull(useCustomFormats, false);
+  }
+
+  public void setUseCustomFormats(final boolean useCustomFormats) {
+    this.useCustomFormats = useCustomFormats;
+  }
+
+  public boolean isUseCustomWeekSettings() {
+    return defaultIfNull(useCustomWeekSettings, false);
+  }
+
+  public void setUseCustomWeekSettings(final boolean useCustomWeekSettings) {
+    this.useCustomWeekSettings = useCustomWeekSettings;
+  }
+
+  public boolean isUseCustomSlotSettings() {
+    return defaultIfNull(useCustomSlotSettings, false);
+  }
+
+  public void setUseCustomSlotSettings(final boolean useCustomSlotSettings) {
+    this.useCustomSlotSettings = useCustomSlotSettings;
+  }
+
+  public boolean isWeekSettingsShowWeekends() {
+    return defaultIfNull(weekSettingsShowWeekends, true);
+  }
+
+  public void setWeekSettingsShowWeekends(final boolean weekSettingsShowWeekends) {
+    this.weekSettingsShowWeekends = weekSettingsShowWeekends;
+  }
+
+  public boolean isWeekSettingsShowWeekNumbers() {
+    return defaultIfNull(weekSettingsShowWeekNumbers, true);
+  }
+
+  public void setWeekSettingsShowWeekNumbers(final boolean weekSettingsShowWeekNumbers) {
+    this.weekSettingsShowWeekNumbers = weekSettingsShowWeekNumbers;
+  }
+
+  public int getWeekSettingsFirstDay() {
+    return defaultIfNull(weekSettingsFirstDay, 1);
+  }
+
+  public void setWeekSettingsFirstDay(final int weekSettingsFirstDay) {
+    this.weekSettingsFirstDay = weekSettingsFirstDay;
+  }
+
+  public String getMonthTitleFormat() {
+    return defaultIfNull(monthTitleFormat, "");
+  }
+
+  public void setMonthTitleFormat(final String monthTitleFormat) {
+    this.monthTitleFormat = monthTitleFormat;
+  }
+
+  public String getMonthColumnHeaderFormat() {
+    return defaultIfNull(monthColumnHeaderFormat, "");
+  }
+
+  public void setMonthColumnHeaderFormat(final String monthColumnHeaderFormat) {
+    this.monthColumnHeaderFormat = monthColumnHeaderFormat;
+  }
+
+  public String getMonthTimeFormat() {
+    return defaultIfNull(monthTimeFormat, "");
+  }
+
+  public void setMonthTimeFormat(final String monthTimeFormat) {
+    this.monthTimeFormat = monthTimeFormat;
+  }
+
+  public String getMonthPopupBuildTimeFormat() {
+    return defaultIfNull(monthPopupBuildTimeFormat, "");
+  }
+
+  public void setMonthPopupBuildTimeFormat(final String monthPopupBuildTimeFormat) {
+    this.monthPopupBuildTimeFormat = monthPopupBuildTimeFormat;
+  }
+
+  public String getWeekTitleFormat() {
+    return defaultIfNull(weekTitleFormat, "");
+  }
+
+  public void setWeekTitleFormat(final String weekTitleFormat) {
+    this.weekTitleFormat = weekTitleFormat;
+  }
+
+  public String getWeekColumnHeaderFormat() {
+    return defaultIfNull(weekColumnHeaderFormat, "");
+  }
+
+  public void setWeekColumnHeaderFormat(final String weekColumnHeaderFormat) {
+    this.weekColumnHeaderFormat = weekColumnHeaderFormat;
+  }
+
+  public String getWeekTimeFormat() {
+    return defaultIfNull(weekTimeFormat, "");
+  }
+
+  public void setWeekTimeFormat(final String weekTimeFormat) {
+    this.weekTimeFormat = weekTimeFormat;
+  }
+
+  public String getWeekSlotTimeFormat() {
+    return defaultIfNull(weekSlotTimeFormat, "");
+  }
+
+  public void setWeekSlotTimeFormat(final String weekSlotTimeFormat) {
+    this.weekSlotTimeFormat = weekSlotTimeFormat;
+  }
+
+  public String getWeekPopupBuildTimeFormat() {
+    return defaultIfNull(weekPopupBuildTimeFormat, "");
+  }
+
+  public void setWeekPopupBuildTimeFormat(final String weekPopupBuildTimeFormat) {
+    this.weekPopupBuildTimeFormat = weekPopupBuildTimeFormat;
+  }
+
+  public String getDayTitleFormat() {
+    return defaultIfNull(dayTitleFormat, "");
+  }
+
+  public void setDayTitleFormat(final String dayTitleFormat) {
+    this.dayTitleFormat = dayTitleFormat;
+  }
+
+  public String getDayColumnHeaderFormat() {
+    return defaultIfNull(dayColumnHeaderFormat, "");
+  }
+
+  public void setDayColumnHeaderFormat(final String dayColumnHeaderFormat) {
+    this.dayColumnHeaderFormat = dayColumnHeaderFormat;
+  }
+
+  public String getDayTimeFormat() {
+    return defaultIfNull(dayTimeFormat, "");
+  }
+
+  public void setDayTimeFormat(final String dayTimeFormat) {
+    this.dayTimeFormat = dayTimeFormat;
+  }
+
+  public String getDaySlotTimeFormat() {
+    return defaultIfNull(daySlotTimeFormat, "");
+  }
+
+  public void setDaySlotTimeFormat(final String daySlotTimeFormat) {
+    this.daySlotTimeFormat = daySlotTimeFormat;
+  }
+
+  public String getDayPopupBuildTimeFormat() {
+    return defaultIfNull(dayPopupBuildTimeFormat, "");
+  }
+
+  public void setDayPopupBuildTimeFormat(final String dayPopupBuildTimeFormat) {
+    this.dayPopupBuildTimeFormat = dayPopupBuildTimeFormat;
+  }
+
+  public String getWeekSlotDuration() {
+    return defaultIfNull(weekSlotDuration, "00:30:00");
+  }
+
+  public void setWeekSlotDuration(final String weekSlotDuration) {
+    this.weekSlotDuration = weekSlotDuration;
+  }
+
+  public String getDaySlotDuration() {
+    return defaultIfNull(daySlotDuration, "00:30:00");
+  }
+
+  public void setDaySlotDuration(final String daySlotDuration) {
+    this.daySlotDuration = daySlotDuration;
+  }
+
+  public String getWeekMinTime() {
+    return defaultIfNull(weekMinTime, "00:00:00");
+  }
+
+  public void setWeekMinTime(final String weekMinTime) {
+    this.weekMinTime = weekMinTime;
+  }
+
+  public String getWeekMaxTime() {
+    return defaultIfNull(weekMaxTime, "24:00:00");
+  }
+
+  public void setWeekMaxTime(final String weekMaxTime) {
+    this.weekMaxTime = weekMaxTime;
+  }
+
+  public String getDayMinTime() {
+    return defaultIfNull(dayMinTime, "00:00:00");
+  }
+
+  public void setDayMinTime(final String dayMinTime) {
+    this.dayMinTime = dayMinTime;
+  }
+
+  public String getDayMaxTime() {
+    return defaultIfNull(dayMaxTime, "24:00:00");
+  }
+
+  public void setDayMaxTime(final String dayMaxTime) {
+    this.dayMaxTime = dayMaxTime;
+  }
+
+  @Override
+  public boolean isAutomaticRefreshEnabled() {
+    return false;
+  }
+
+  @Override
+  protected void submit(final StaplerRequest2 req) throws ServletException, Descriptor.FormException, IOException {
+    this.validate(req);
+    super.submit(req);
+    this.updateFields(req);
+  }
+
+  private void validate(final StaplerRequest2 req) throws Descriptor.FormException {
+    final List<String> validSlotDurations = Collections.unmodifiableList(Arrays.asList("00:05:00", "00:10:00", "00:15:00", "00:20:00", "00:30:00", "01:00:00"));
+    final Pattern validDateTimePattern = Pattern.compile("(0[0-9]|1[0-9]|2[0-4]):00:00");
+
+    validateEnum(req, "calendarViewEventsType", CalendarViewEventsType.class);
+    validateEnum(req, "calendarViewType", CalendarViewType.class);
+    validateEnum(req, "resultsColors", ResultsColors.class);
+    validateRange(req, "weekSettingsFirstDay", 0, 7);
+
+    validateInList(req, "weekSlotDuration", validSlotDurations);
+    validatePattern(req, "weekMinTime", validDateTimePattern);
+    validatePattern(req, "weekMaxTime", validDateTimePattern);
+
+    validateInList(req, "daySlotDuration", validSlotDurations);
+    validatePattern(req, "dayMinTime", validDateTimePattern);
+    validatePattern(req, "dayMaxTime", validDateTimePattern);
+  }
+
+  private void updateFields(final StaplerRequest2 req) {
+    setCalendarViewEventsType(CalendarViewEventsType.valueOf(req.getParameter("calendarViewEventsType")));
+    setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
+    setResultsColors(ResultsColors.valueOf(req.getParameter("resultsColors")));
+
+    setUseCustomFormats(req.getParameter("useCustomFormats") != null);
+    setUseCustomWeekSettings(req.getParameter("useCustomWeekSettings") != null);
+    setUseCustomSlotSettings(req.getParameter("useCustomSlotSettings") != null);
+
+    setWeekSettingsShowWeekends(req.getParameter("weekSettingsShowWeekends") != null);
+    setWeekSettingsShowWeekNumbers(req.getParameter("weekSettingsShowWeekNumbers") != null);
+    setWeekSettingsFirstDay(Integer.parseInt(req.getParameter("weekSettingsFirstDay")));
+
+    setMonthTitleFormat(req.getParameter("monthTitleFormat"));
+    setMonthColumnHeaderFormat(req.getParameter("monthColumnHeaderFormat"));
+    setMonthTimeFormat(req.getParameter("monthTimeFormat"));
+    setMonthPopupBuildTimeFormat(req.getParameter("monthPopupBuildTimeFormat"));
+
+    setWeekTitleFormat(req.getParameter("weekTitleFormat"));
+    setWeekColumnHeaderFormat(req.getParameter("weekColumnHeaderFormat"));
+    setWeekTimeFormat(req.getParameter("weekTimeFormat"));
+    setWeekSlotTimeFormat(req.getParameter("weekSlotTimeFormat"));
+    setWeekPopupBuildTimeFormat(req.getParameter("weekPopupBuildTimeFormat"));
+
+    setDayTitleFormat(req.getParameter("dayTitleFormat"));
+    setDayColumnHeaderFormat(req.getParameter("dayColumnHeaderFormat"));
+    setDayTimeFormat(req.getParameter("dayTimeFormat"));
+    setDaySlotTimeFormat(req.getParameter("daySlotTimeFormat"));
+    setDayPopupBuildTimeFormat(req.getParameter("dayPopupBuildTimeFormat"));
+
+    setWeekSlotDuration(req.getParameter("weekSlotDuration"));
+    setWeekMinTime(req.getParameter("weekMinTime"));
+    setWeekMaxTime(req.getParameter("weekMaxTime"));
+
+    setDaySlotDuration(req.getParameter("daySlotDuration"));
+    setDayMinTime(req.getParameter("dayMinTime"));
+    setDayMaxTime(req.getParameter("dayMaxTime"));
+  }
+
+  public List<Job> getJobs() {
+    final List<TopLevelItem> items = getItems();
+    final List<Job> jobs = new ArrayList<>(items.size());
+    for (final TopLevelItem item : items) {
+      if (item instanceof Job) {
+        jobs.add((Job) item);
+      }
     }
+    return jobs;
+  }
 
-    public static enum ResultsColors {
-        GREEN_RED, CYAN_RED
-    }
+  public List<CalendarEvent> getEvents() throws ParseException {
+    final StaplerRequest2 req = Stapler.getCurrentRequest2();
 
-    private CalendarViewEventsType calendarViewEventsType;
-    private CalendarViewType calendarViewType;
-    private ResultsColors resultsColors;
+    final Calendar start = RequestUtil.getParamAsCalendar(req, "start");
+    final Calendar end = RequestUtil.getParamAsCalendar(req, "end");
 
-    private Boolean useCustomFormats;
-    private Boolean useCustomWeekSettings;
-    private Boolean useCustomSlotSettings;
+    final Moment now = new Moment();
+    return new CalendarEventService(now, new CronJobService(now)).getCalendarEvents(getJobs(), range(start, end), getCalendarViewEventsType());
+  }
 
-    private Boolean weekSettingsShowWeekends;
-    private Boolean weekSettingsShowWeekNumbers;
-    private Integer weekSettingsFirstDay;
+  public String jsonEscape(final String text) {
+    return StringEscapeUtils.escapeEcmaScript(text);
+  }
 
-    private String monthTitleFormat;
-    private String monthColumnHeaderFormat;
-    private String monthTimeFormat;
-    private String monthPopupBuildTimeFormat;
-
-    private String weekTitleFormat;
-    private String weekColumnHeaderFormat;
-    private String weekTimeFormat;
-    private String weekSlotTimeFormat;
-    private String weekPopupBuildTimeFormat;
-
-    private String dayTitleFormat;
-    private String dayColumnHeaderFormat;
-    private String dayTimeFormat;
-    private String daySlotTimeFormat;
-    private String dayPopupBuildTimeFormat;
-
-    private String weekSlotDuration;
-    private String weekMinTime;
-    private String weekMaxTime;
-
-    private String daySlotDuration;
-    private String dayMinTime;
-    private String dayMaxTime;
-
-    @DataBoundConstructor
-    public CalendarView(final String name) {
-        super(name);
-    }
-
-    public CalendarViewEventsType getCalendarViewEventsType() {
-        return defaultIfNull(calendarViewEventsType, CalendarViewEventsType.ALL);
-    }
-
-    public void setCalendarViewEventsType(final CalendarViewEventsType calendarViewEventsType) {
-        this.calendarViewEventsType = calendarViewEventsType;
-    }
-
-    public CalendarViewType getCalendarViewType() {
-        return defaultIfNull(calendarViewType, CalendarViewType.WEEK);
-    }
-
-    public void setCalendarViewType(final CalendarViewType calendarViewType) {
-        this.calendarViewType = calendarViewType;
-    }
-
-    public ResultsColors getResultsColors() {
-        return defaultIfNull(resultsColors, ResultsColors.GREEN_RED);
-    }
-
-    public void setResultsColors(final ResultsColors resultsColors) {
-        this.resultsColors = resultsColors;
-    }
-
-    public boolean isUseCustomFormats() {
-        return defaultIfNull(useCustomFormats, false);
-    }
-
-    public void setUseCustomFormats(final boolean useCustomFormats) {
-        this.useCustomFormats = useCustomFormats;
-    }
-
-    public boolean isUseCustomWeekSettings() {
-        return defaultIfNull(useCustomWeekSettings, false);
-    }
-
-    public void setUseCustomWeekSettings(final boolean useCustomWeekSettings) {
-        this.useCustomWeekSettings = useCustomWeekSettings;
-    }
-
-    public boolean isUseCustomSlotSettings() {
-        return defaultIfNull(useCustomSlotSettings, false);
-    }
-
-    public void setUseCustomSlotSettings(final boolean useCustomSlotSettings) {
-        this.useCustomSlotSettings = useCustomSlotSettings;
-    }
-
-    public boolean isWeekSettingsShowWeekends() {
-        return defaultIfNull(weekSettingsShowWeekends, true);
-    }
-
-    public void setWeekSettingsShowWeekends(final boolean weekSettingsShowWeekends) {
-        this.weekSettingsShowWeekends = weekSettingsShowWeekends;
-    }
-
-    public boolean isWeekSettingsShowWeekNumbers() {
-        return defaultIfNull(weekSettingsShowWeekNumbers, true);
-    }
-
-    public void setWeekSettingsShowWeekNumbers(final boolean weekSettingsShowWeekNumbers) {
-        this.weekSettingsShowWeekNumbers = weekSettingsShowWeekNumbers;
-    }
-
-    public int getWeekSettingsFirstDay() {
-        return defaultIfNull(weekSettingsFirstDay, 1);
-    }
-
-    public void setWeekSettingsFirstDay(final int weekSettingsFirstDay) {
-        this.weekSettingsFirstDay = weekSettingsFirstDay;
-    }
-
-    public String getMonthTitleFormat() {
-        return defaultIfNull(monthTitleFormat, "");
-    }
-
-    public void setMonthTitleFormat(final String monthTitleFormat) {
-        this.monthTitleFormat = monthTitleFormat;
-    }
-
-    public String getMonthColumnHeaderFormat() {
-        return defaultIfNull(monthColumnHeaderFormat, "");
-    }
-
-    public void setMonthColumnHeaderFormat(final String monthColumnHeaderFormat) {
-        this.monthColumnHeaderFormat = monthColumnHeaderFormat;
-    }
-
-    public String getMonthTimeFormat() {
-        return defaultIfNull(monthTimeFormat, "");
-    }
-
-    public void setMonthTimeFormat(final String monthTimeFormat) {
-        this.monthTimeFormat = monthTimeFormat;
-    }
-
-    public String getMonthPopupBuildTimeFormat() {
-        return defaultIfNull(monthPopupBuildTimeFormat, "");
-    }
-
-    public void setMonthPopupBuildTimeFormat(final String monthPopupBuildTimeFormat) {
-        this.monthPopupBuildTimeFormat = monthPopupBuildTimeFormat;
-    }
-
-    public String getWeekTitleFormat() {
-        return defaultIfNull(weekTitleFormat, "");
-    }
-
-    public void setWeekTitleFormat(final String weekTitleFormat) {
-        this.weekTitleFormat = weekTitleFormat;
-    }
-
-    public String getWeekColumnHeaderFormat() {
-        return defaultIfNull(weekColumnHeaderFormat, "");
-    }
-
-    public void setWeekColumnHeaderFormat(final String weekColumnHeaderFormat) {
-        this.weekColumnHeaderFormat = weekColumnHeaderFormat;
-    }
-
-    public String getWeekTimeFormat() {
-        return defaultIfNull(weekTimeFormat, "");
-    }
-
-    public void setWeekTimeFormat(final String weekTimeFormat) {
-        this.weekTimeFormat = weekTimeFormat;
-    }
-
-    public String getWeekSlotTimeFormat() {
-        return defaultIfNull(weekSlotTimeFormat, "");
-    }
-
-    public void setWeekSlotTimeFormat(final String weekSlotTimeFormat) {
-        this.weekSlotTimeFormat = weekSlotTimeFormat;
-    }
-
-    public String getWeekPopupBuildTimeFormat() {
-        return defaultIfNull(weekPopupBuildTimeFormat, "");
-    }
-
-    public void setWeekPopupBuildTimeFormat(final String weekPopupBuildTimeFormat) {
-        this.weekPopupBuildTimeFormat = weekPopupBuildTimeFormat;
-    }
-
-    public String getDayTitleFormat() {
-        return defaultIfNull(dayTitleFormat, "");
-    }
-
-    public void setDayTitleFormat(final String dayTitleFormat) {
-        this.dayTitleFormat = dayTitleFormat;
-    }
-
-    public String getDayColumnHeaderFormat() {
-        return defaultIfNull(dayColumnHeaderFormat, "");
-    }
-
-    public void setDayColumnHeaderFormat(final String dayColumnHeaderFormat) {
-        this.dayColumnHeaderFormat = dayColumnHeaderFormat;
-    }
-
-    public String getDayTimeFormat() {
-        return defaultIfNull(dayTimeFormat, "");
-    }
-
-    public void setDayTimeFormat(final String dayTimeFormat) {
-        this.dayTimeFormat = dayTimeFormat;
-    }
-
-    public String getDaySlotTimeFormat() {
-        return defaultIfNull(daySlotTimeFormat, "");
-    }
-
-    public void setDaySlotTimeFormat(final String daySlotTimeFormat) {
-        this.daySlotTimeFormat = daySlotTimeFormat;
-    }
-
-    public String getDayPopupBuildTimeFormat() {
-        return defaultIfNull(dayPopupBuildTimeFormat, "");
-    }
-
-    public void setDayPopupBuildTimeFormat(final String dayPopupBuildTimeFormat) {
-        this.dayPopupBuildTimeFormat = dayPopupBuildTimeFormat;
-    }
-
-    public String getWeekSlotDuration() {
-        return defaultIfNull(weekSlotDuration, "00:30:00");
-    }
-
-    public void setWeekSlotDuration(final String weekSlotDuration) {
-        this.weekSlotDuration = weekSlotDuration;
-    }
-
-    public String getDaySlotDuration() {
-        return defaultIfNull(daySlotDuration, "00:30:00");
-    }
-
-    public void setDaySlotDuration(final String daySlotDuration) {
-        this.daySlotDuration = daySlotDuration;
-    }
-
-    public String getWeekMinTime() {
-        return defaultIfNull(weekMinTime, "00:00:00");
-    }
-
-    public void setWeekMinTime(final String weekMinTime) {
-        this.weekMinTime = weekMinTime;
-    }
-
-    public String getWeekMaxTime() {
-        return defaultIfNull(weekMaxTime, "24:00:00");
-    }
-
-    public void setWeekMaxTime(final String weekMaxTime) {
-        this.weekMaxTime = weekMaxTime;
-    }
-
-    public String getDayMinTime() {
-        return defaultIfNull(dayMinTime, "00:00:00");
-    }
-
-    public void setDayMinTime(final String dayMinTime) {
-        this.dayMinTime = dayMinTime;
-    }
-
-    public String getDayMaxTime() {
-        return defaultIfNull(dayMaxTime, "24:00:00");
-    }
-
-    public void setDayMaxTime(final String dayMaxTime) {
-        this.dayMaxTime = dayMaxTime;
-    }
-
+  @Extension
+  public static final class DescriptorImpl extends ListView.DescriptorImpl {
     @Override
-    public boolean isAutomaticRefreshEnabled() {
-        return false;
+    public String getDisplayName() {
+      return Messages.CalendarView_DisplayName();
     }
-
-    @Override
-    protected void submit(final StaplerRequest2 req) throws ServletException, Descriptor.FormException, IOException {
-        this.validate(req);
-        super.submit(req);
-        this.updateFields(req);
-    }
-
-    private void validate(final StaplerRequest2 req) throws Descriptor.FormException {
-        final List<String> validSlotDurations = Collections.unmodifiableList(Arrays.asList(
-            "00:05:00", "00:10:00", "00:15:00", "00:20:00", "00:30:00", "01:00:00"
-        ));
-        final Pattern validDateTimePattern = Pattern.compile("(0[0-9]|1[0-9]|2[0-4]):00:00");
-
-        validateEnum(req, "calendarViewEventsType", CalendarViewEventsType.class);
-        validateEnum(req, "calendarViewType", CalendarViewType.class);
-        validateRange(req, "weekSettingsFirstDay", 0, 7);
-
-        validateInList(req, "weekSlotDuration", validSlotDurations);
-        validatePattern(req, "weekMinTime", validDateTimePattern);
-        validatePattern(req, "weekMaxTime", validDateTimePattern);
-
-        validateInList(req, "daySlotDuration", validSlotDurations);
-        validatePattern(req, "dayMinTime", validDateTimePattern);
-        validatePattern(req, "dayMaxTime", validDateTimePattern);
-    }
-
-    private void updateFields(final StaplerRequest2 req) {
-        setCalendarViewEventsType(CalendarViewEventsType.valueOf(req.getParameter("calendarViewEventsType")));
-        setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
-        setResultsColors(ResultsColors.valueOf(req.getParameter("resultsColors")));
-
-        setUseCustomFormats(req.getParameter("useCustomFormats") != null);
-        setUseCustomWeekSettings(req.getParameter("useCustomWeekSettings") != null);
-        setUseCustomSlotSettings(req.getParameter("useCustomSlotSettings") != null);
-
-        setWeekSettingsShowWeekends(req.getParameter("weekSettingsShowWeekends") != null);
-        setWeekSettingsShowWeekNumbers(req.getParameter("weekSettingsShowWeekNumbers") != null);
-        setWeekSettingsFirstDay(Integer.parseInt(req.getParameter("weekSettingsFirstDay")));
-
-        setMonthTitleFormat(req.getParameter("monthTitleFormat"));
-        setMonthColumnHeaderFormat(req.getParameter("monthColumnHeaderFormat"));
-        setMonthTimeFormat(req.getParameter("monthTimeFormat"));
-        setMonthPopupBuildTimeFormat(req.getParameter("monthPopupBuildTimeFormat"));
-
-        setWeekTitleFormat(req.getParameter("weekTitleFormat"));
-        setWeekColumnHeaderFormat(req.getParameter("weekColumnHeaderFormat"));
-        setWeekTimeFormat(req.getParameter("weekTimeFormat"));
-        setWeekSlotTimeFormat(req.getParameter("weekSlotTimeFormat"));
-        setWeekPopupBuildTimeFormat(req.getParameter("weekPopupBuildTimeFormat"));
-
-        setDayTitleFormat(req.getParameter("dayTitleFormat"));
-        setDayColumnHeaderFormat(req.getParameter("dayColumnHeaderFormat"));
-        setDayTimeFormat(req.getParameter("dayTimeFormat"));
-        setDaySlotTimeFormat(req.getParameter("daySlotTimeFormat"));
-        setDayPopupBuildTimeFormat(req.getParameter("dayPopupBuildTimeFormat"));
-
-        setWeekSlotDuration(req.getParameter("weekSlotDuration"));
-        setWeekMinTime(req.getParameter("weekMinTime"));
-        setWeekMaxTime(req.getParameter("weekMaxTime"));
-
-        setDaySlotDuration(req.getParameter("daySlotDuration"));
-        setDayMinTime(req.getParameter("dayMinTime"));
-        setDayMaxTime(req.getParameter("dayMaxTime"));
-    }
-
-    public List<Job> getJobs() {
-        final List<TopLevelItem> items = getItems();
-        final List<Job> jobs = new ArrayList<>(items.size());
-        for (final TopLevelItem item: items) {
-            if (item instanceof Job) {
-                jobs.add((Job)item);
-            }
-        }
-        return jobs;
-    }
-
-    public List<CalendarEvent> getEvents() throws ParseException {
-        final StaplerRequest2 req = Stapler.getCurrentRequest2();
-
-        final Calendar start = RequestUtil.getParamAsCalendar(req, "start");
-        final Calendar end = RequestUtil.getParamAsCalendar(req, "end");
-
-        final Moment now = new Moment();
-        return new CalendarEventService(now, new CronJobService(now)).getCalendarEvents(getJobs(), range(start, end), getCalendarViewEventsType());
-    }
-
-    public String jsonEscape(final String text) {
-        return StringEscapeUtils.escapeEcmaScript(text);
-    }
-
-    @Extension
-    public static final class DescriptorImpl extends ListView.DescriptorImpl {
-        @Override
-        public String getDisplayName() {
-            return Messages.CalendarView_DisplayName();
-        }
-    }
+  }
 }

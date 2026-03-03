@@ -24,40 +24,32 @@
 
 .fc-toolbar {
   background: var(--table-background);
-  height:2.6em;
+  height: 2.6em;
   border-bottom: 1px solid #ddd;
-  padding:3px;
-}
-
-.fc-center {
-  line-height:2.2em;
+  padding: 3px;
 }
 
 .fc-toolbar.fc-header-toolbar {
-  margin-bottom:0px;
+  margin-bottom: 0px;
 }
 
 .fc-toolbar .fc-clear {
-  clear:none;
+  clear: none;
+}
+
+.fc-center {
+  line-height: 2.2em;
 }
 
 .fc-view-container {
-  padding:5px;
+  padding: 5px;
 }
 
 .fc-event-container a,
 .fc-event-container a:link,
 .fc-event-container a:active,
 .fc-event-container a:visited {
-  color:black;
   text-decoration: none;
-}
-
-.fc-event-container a.event-state-scheduled,
-.fc-event-container a.event-state-scheduled:link,
-.fc-event-container a.event-state-scheduled:active,
-.fc-event-container a.event-state-scheduled:visited {
-  color: var(--text-color);
 }
 
 .fc-event {
@@ -65,29 +57,56 @@
   border-color: #888888;
 }
 
+.fc-event.event-selected {
+  background:#aaa;
+}
+
 .fc-event.event-result-success {
   background-color: var(--result-success-color);
   border-color: var(--result-success-color);
+  color: var(--result-success-text-color);
+}
+
+.fc-event.event-result-success.event-selected {
+  background: var(--result-success-selected-color);
+  color: var(--result-success-selected-text-color);
 }
 
 .fc-event.event-result-failure {
   background-color: var(--result-failure-color);
-  border-color:var(--result-failure-color);
+  border-color: var(--result-failure-color);
+  color: var(--result-failure-text-color);
+}
+
+.fc-event.event-result-failure.event-selected {
+  background: var(--result-failure-selected-color);
+  color: var(--result-failure-selected-text-color);
 }
 
 .fc-event.event-result-unstable {
-  background-color: var(--warning-color);
-  border-color: var(--warning-color);
+  background-color: var(--result-unstable-color);
+  border-color: var(--result-unstable-color);
+  color: var(--result-unstable-text-color);
+}
+
+.fc-event.event-result-unstable.event-selected {
+  background: var(--result-unstable-selected-color);
+  color: var(--result-unstable-selected-text-color);
 }
 
 .fc-event.event-state-scheduled {
-  background-color: var(--grey);
-  border-color: var(--grey);
+  background-color: var(--result-scheduled-color);
+  border-color: var(--result-scheduled-text-color);
   border-style: dashed;
+  color: var(--result-scheduled-text-color);
+}
+
+.fc-event.event-state-scheduled.event-selected {
+  background: var(--result-scheduled-selected-color);
+  color: var(--result-scheduled-selected-text-color);
 }
 
 .fc-event.event-state-running {
-  border-color: white;
   border-style: dashed;
   animation: blink-animation 2s both ease-in-out infinite;
 }
@@ -98,42 +117,26 @@
     }
 }
 
-.fc-event.event-selected {
-  background:#aaa;
-}
-.fc-event.event-result-success.event-selected {
-  background:var(--result-success-selected-color);
-}
-.fc-event.event-result-failure.event-selected {
-  background:var(--result-failure-selected-color);
-}
-.fc-event.event-result-unstable.event-selected {
-  background:var(--light-orange);
-}
-.fc-event.event-state-scheduled.event-selected {
-  background:var(--light-grey);
-}
-
 .fc-unthemed td.fc-today {
-	background: var(--text-color-secondary);
+	background: grey;
 }
 
 .tippy-tooltip.jenkins-theme {
-  background-color:var(--background);
+  background-color: var(--background);
   border: 1px solid var(--card-border-color);
   color: var(--text-color);
-  padding:0;
-  font-size:100%;
-  text-align:left;
+  padding: 0;
+  font-size: 100%;
+  text-align: left;
   border-radius: 8px;
 }
 
 .tippy-tooltip.jenkins-theme .parameterBlock {
-  padding-top:10px;
+  padding-top: 10px;
 }
 
 .tippy-tooltip.jenkins-theme .parameters {
-  padding-left:10px;
+  padding-left: 10px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-head {
@@ -148,8 +151,8 @@
 
 .tippy-tooltip.jenkins-theme .tooltip-head .tooltip-close {
   float: right;
-  margin-right:3px;
-  margin-left:5px;
+  margin-right: 3px;
+  margin-left: 5px;
   cursor: pointer;
 }
 
@@ -158,81 +161,77 @@
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body {
-  padding:10px;
+  padding: 10px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-middle {
-    display:flex;
+    display: flex;
     gap: 5px;
     align-items: top;
 }
 
-
 .tippy-tooltip.jenkins-theme .tooltip-left {
-  padding-right:10px;
-  min-width:200px;
+  padding-right: 10px;
+  min-width: 200px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-right {
-  padding-left:10px;
-  border-left:1px solid var(--text-color-secondary);
-  min-width:200px;
+  padding-left: 10px;
+  border-left: 1px solid var(--text-color-secondary);
+  min-width: 200px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-right ul a {
-  display:inline-block;
-  min-width:3em;
+  display: inline-block;
+  min-width: 3em;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom {
-  border-top:1px solid var(--text-color-secondary);
-  margin-top:20px;
-  padding-top:10px;
+  border-top: 1px solid var(--text-color-secondary);
+  margin-top: 20px;
+  padding-top: 10px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .previous {
-  float:left;
+  float: left;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .previous i:after {
   content:"\25C0";
-  font-size:80%;
-  font-style:normal;
-  margin-right:2px;
+  font-size: 80%;
+  font-style: normal;
+  margin-right: 2px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .next {
-  float:right;
+  float: right;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .next i:after {
   content:"\25B6";
-  font-size:80%;
-  font-style:normal;
-  margin-left:2px;
+  font-size: 80%;
+  font-style: normal;
+  margin-left: 2px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body .time {
-  color:var(--text-color-secondary);
-  text-decoration:none;
+  color: var(--text-color-secondary);
+  text-decoration: none;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body .time:hover {
-  color:var(--text-color-secondary);
-  text-decoration:underline;
+  color: var(--text-color-secondary);
+  text-decoration: underline;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body .nextBuild {
-  color:var(--text-color-secondary);
+  color: var(--text-color-secondary);
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-body ul {
-  margin:0px;
-  padding:0px;
-  list-style-type:none;
-}
-
-.tippy-tooltip.jenkins-theme .tooltip-body ul {
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
 }
 
 .tippy-popper[x-placement^=top] .tippy-tooltip.jenkins-theme .tippy-arrow {
@@ -248,21 +247,21 @@
 }
 
 .calendar-view-config-default {
-  font-size:90%;
+  font-size: 90%;
   color: var(--text-color-secondary);
 }
 
 .calendar-view-config-label {
-  vertical-align:middle;
-  padding:0px 10px 20px 10px;
+  vertical-align: middle;
+  padding: 0px 10px 20px 10px;
 }
 
 .calendar-view-config-label.first-label {
-  padding-left:0px;
+  padding-left: 0px;
 }
 
 .calendar-view-config-input {
-  width:30%;
+  width: 30%;
 }
 
 .calendar-view-config-container {
