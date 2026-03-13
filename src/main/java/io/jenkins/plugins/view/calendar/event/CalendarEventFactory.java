@@ -187,7 +187,9 @@ public class CalendarEventFactory {
                 }
               }
             }
-            this.parameters.putAll(parameters);
+            if (parameters != null) {
+                this.parameters.putAll(parameters);
+            }
         }
 
         @Override
