@@ -63,6 +63,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -208,6 +209,17 @@ class CalendarEventFactoryTest {
         CalendarEvent event9 = getCalendarEventFactory(now).createScheduledEvent(item, Collections.emptyMap(), start9, hours(30));
         assertThat(event9.getEnd(), is(mom("2018-01-02 03:00:00 UTC")));
         assertThat(event9.isInRange(range), is(true));
+    }
+
+    @Test
+    void nullParametersShouldNotCauseExceptions() throws ParseException {
+
+        Job item = mock(Job.class);
+
+        Moment now = new Moment();
+
+        Calendar start = cal("2018-01-01 00:00:00 UTC");
+        assertDoesNotThrow(() -> getCalendarEventFactory(now).createScheduledEvent(item, null, start, hours(6)));
     }
 
     @Test
