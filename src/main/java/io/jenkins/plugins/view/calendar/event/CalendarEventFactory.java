@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 
 @Restricted(NoExternalUse.class)
@@ -227,7 +228,14 @@ public class CalendarEventFactory {
                 this.state = CalendarEventState.FINISHED;
             }
             this.end = initEnd(start.getTimeInMillis(), this.duration);
-            ((List<ParameterValue>) build.getParameterValues()).forEach(parameter -> this.parameters.put(parameter.getName(), parameter.getValue().toString()));
+            for (ParameterValue parameterValue : (List<ParameterValue>) build.getParameterValues()) {
+              if (parameterValue != null) {
+                Object value = parameterValue.getValue();
+                if (value != null) {
+                  this.parameters.put(parameterValue.getName(), value.toString());
+                }
+              }
+            }
         }
 
         @Override
