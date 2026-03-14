@@ -16,8 +16,8 @@ describe('hashParams.parse()', function() {
   });
 
   it('should return object with single property for string with single param', function() {
-    expect(hashParams.parse('param1=val1')).to.eql({param1: 'val1'});
-    expect(hashParams.parse('#param1=val1')).to.eql({param1: 'val1'});
+    expect(hashParams.parse('param1=val1')).to.eql({ param1: 'val1' });
+    expect(hashParams.parse('#param1=val1')).to.eql({ param1: 'val1' });
   });
 
   it('should return object with multiple properties for string with multiple params', function() {
@@ -37,11 +37,11 @@ describe('hashParams.parse()', function() {
   it('should not return properties for params without value', function() {
     expect(hashParams.parse('param1')).to.eql({});
     expect(hashParams.parse('param1|param2|param3')).to.eql({});
-    expect(hashParams.parse('param1|param2=val2|param3')).to.eql({param2: 'val2'});
+    expect(hashParams.parse('param1|param2=val2|param3')).to.eql({ param2: 'val2' });
 
     expect(hashParams.parse('#param1')).to.eql({});
     expect(hashParams.parse('#param1|param2|param3')).to.eql({});
-    expect(hashParams.parse('#param1|param2=val2|param3')).to.eql({param2: 'val2'});
+    expect(hashParams.parse('#param1|param2=val2|param3')).to.eql({ param2: 'val2' });
   });
 
   it('should return value for later parameter if two parameters have the same name', function() {
@@ -58,11 +58,11 @@ describe('hashParams.serialize()', function() {
   });
 
   it('should return string with one param for object with single property', function() {
-    expect(hashParams.serialize({params1: 'val1'})).to.eql('#params1=val1');
+    expect(hashParams.serialize({ params1: 'val1' })).to.eql('#params1=val1');
   });
 
   it('should return string with multiple params for object with multiple properties', function() {
-    expect(hashParams.serialize({params1: 'val1', params2: 'val2', params3: 'val3'})).to.be.oneOf([
+    expect(hashParams.serialize({ params1: 'val1', params2: 'val2', params3: 'val3' })).to.be.oneOf([
       '#params1=val1|params2=val2|params3=val3',
       '#params1=val1|params3=val3|params2=val2',
       '#params2=val2|params1=val1|params3=val3',
@@ -73,7 +73,7 @@ describe('hashParams.serialize()', function() {
   });
 
   it('should not include properties with value undefined or null', function() {
-    expect(hashParams.serialize({params1: 'val1', params2: undefined})).to.be.eql('#params1=val1');
-    expect(hashParams.serialize({params1: 'val1', params2: null})).to.be.eql('#params1=val1');
+    expect(hashParams.serialize({ params1: 'val1', params2: undefined })).to.be.eql('#params1=val1');
+    expect(hashParams.serialize({ params1: 'val1', params2: null })).to.be.eql('#params1=val1');
   });
 });

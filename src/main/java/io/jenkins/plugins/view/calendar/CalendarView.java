@@ -74,7 +74,7 @@ public class CalendarView extends ListView {
   }
 
   public static enum ResultsColors {
-    DEFAULT( //
+    DEFAULT(//
         "--success-color", // success
         "--black", // successText
         "--light-green", // successSelected
@@ -90,9 +90,9 @@ public class CalendarView extends ListView {
         "--background", // scheduled
         "--text-color", // scheduledText
         "--text-color", // scheduledSelected
-        "--background" // scheduledSelectedText
-    ),
-    LEGACY( //
+        "--background"// scheduledSelectedText
+    ), //
+    LEGACY(//
         "--blue", // success
         "--white", // successText
         "--light-blue", // successSelected
@@ -108,7 +108,7 @@ public class CalendarView extends ListView {
         "--background", // scheduled
         "--text-color", // scheduledText
         "--text-color", // scheduledSelected
-        "--background" // scheduledSelectedText
+        "--background"// scheduledSelectedText
     );
 
     public final String success;
@@ -136,7 +136,7 @@ public class CalendarView extends ListView {
         String unstable, String unstableText, String unstableSelected, String unstableSelectedText, //
         String failure, String failureText, String failureSelected, String failureSelectedText, //
         String scheduled, String scheduledText, String scheduledSelected, String scheduledSelectedText //
-      ) {
+    ) {
       this.success = success;
       this.successText = successText;
       this.successSelected = successSelected;

@@ -23,42 +23,43 @@
  */
 package io.jenkins.plugins.view.calendar.event;
 
-import hudson.model.Job;
-import io.jenkins.plugins.view.calendar.time.Moment;
-import io.jenkins.plugins.view.calendar.time.MomentRange;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
 import java.util.List;
 import java.util.Map;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
+import hudson.model.Job;
+import io.jenkins.plugins.view.calendar.time.Moment;
+import io.jenkins.plugins.view.calendar.time.MomentRange;
+
 @Restricted(NoExternalUse.class)
 public interface CalendarEvent {
-    String getId();
+  String getId();
 
-    Job getJob();
+  Job getJob();
 
-    Moment getStart();
+  Moment getStart();
 
-    Moment getEnd();
+  Moment getEnd();
 
-    String getUrl();
+  String getUrl();
 
-    String getTitle();
+  String getTitle();
 
-    long getDuration();
+  long getDuration();
 
-    String getTimestampString();
+  String getTimestampString();
 
-    String getDurationString();
+  String getDurationString();
 
-    String getIconClassName();
+  String getIconClassName();
 
-    boolean isInRange(MomentRange range);
+  boolean isInRange(MomentRange range);
 
-    CalendarEventState getState();
+  CalendarEventState getState();
 
-    List<StartedCalendarEvent> getLastEvents();
+  List<StartedCalendarEvent> getLastEvents();
 
-    Map<String, String> getParameters();
+  Map<String, String> getParameters();
 }

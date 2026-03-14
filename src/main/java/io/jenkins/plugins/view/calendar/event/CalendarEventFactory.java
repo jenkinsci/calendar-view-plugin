@@ -23,6 +23,17 @@
  */
 package io.jenkins.plugins.view.calendar.event;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
 import hudson.Util;
 import hudson.model.Job;
 import hudson.model.ParameterDefinition;
@@ -35,247 +46,231 @@ import io.jenkins.plugins.view.calendar.time.Moment;
 import io.jenkins.plugins.view.calendar.time.MomentRange;
 import io.jenkins.plugins.view.calendar.util.DateUtil;
 
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.TreeMap;
-
 @Restricted(NoExternalUse.class)
 public class CalendarEventFactory {
-    private final transient Moment now;
-    private final transient CalendarEventService calendarEventService;
+  private final transient Moment now;
+  private final transient CalendarEventService calendarEventService;
 
-    public CalendarEventFactory(final Moment now, final CalendarEventService calendarEventService) {
-        this.now = now;
-        this.calendarEventService = calendarEventService;
+  public CalendarEventFactory(final Moment now, final CalendarEventService calendarEventService) {
+    this.now = now;
+    this.calendarEventService = calendarEventService;
+  }
+
+  public ScheduledCalendarEvent createScheduledEvent(final Job job, final Map<String, String> parameters, final Calendar start, final long duration) {
+    return new ScheduledCalendarEventImpl(job, parameters, start, duration);
+  }
+
+  public StartedCalendarEvent createStartedEvent(final Job job, final Run build) {
+    return new StartedCalendarEventImpl(job, build);
+  }
+
+  private abstract class CalendarEventImpl implements CalendarEvent {
+    protected String id;
+    protected Job job;
+    protected Moment start;
+    protected Moment end;
+    protected String title;
+    protected String url;
+    protected long duration;
+    private transient List<StartedCalendarEvent> lastEvents;
+    protected Map<String, String> parameters = new TreeMap<>();
+
+    /* default */ final String initId(final String url, final long startTimeInMillis) {
+      return Objects.requireNonNullElse(url, "").replace("/", "-").toLowerCase(Locale.ENGLISH) + startTimeInMillis;
     }
 
-    public ScheduledCalendarEvent createScheduledEvent(final Job job, final Map<String, String> parameters, final Calendar start, final long duration) {
-        return new ScheduledCalendarEventImpl(job, parameters, start, duration);
+    /* default */ final Moment initEnd(final long timeInMillis, final long duration) {
+      // duration needs to be at least 1sec otherwise
+      // fullcalendar will not properly display the event
+      final long dur = (duration < 1000) ? 1000 : duration;
+      final Calendar end = Calendar.getInstance();
+      end.setTimeInMillis(timeInMillis);
+      end.add(Calendar.SECOND, (int) (dur / 1000));
+      return new Moment(end);
     }
 
-    public StartedCalendarEvent createStartedEvent(final Job job, final Run build) {
-        return new StartedCalendarEventImpl(job, build);
+    @Override
+    public String getId() {
+      return this.id;
     }
 
-    private abstract class CalendarEventImpl implements CalendarEvent {
-        protected String id;
-        protected Job job;
-        protected Moment start;
-        protected Moment end;
-        protected String title;
-        protected String url;
-        protected long duration;
-        private transient List<StartedCalendarEvent> lastEvents;
-        protected Map<String, String> parameters = new TreeMap<String, String>();
-
-        /* default */ final String initId(final String url, final long startTimeInMillis) {
-            return Objects.requireNonNullElse(url, "")
-              .replace("/", "-")
-              .toLowerCase(Locale.ENGLISH) + startTimeInMillis;
-        }
-
-        /* default */ final Moment initEnd(final long timeInMillis, final long duration) {
-            // duration needs to be at least 1sec otherwise
-            // fullcalendar will not properly display the event
-            final long dur = (duration < 1000) ? 1000 : duration;
-            final Calendar end = Calendar.getInstance();
-            end.setTimeInMillis(timeInMillis);
-            end.add(Calendar.SECOND, (int) (dur / 1000));
-            return new Moment(end);
-        }
-
-        @Override
-        public String getId() {
-            return this.id;
-        }
-
-        @Override
-        public Job getJob() {
-            return this.job;
-        }
-
-        @Override
-        public Moment getStart() {
-            return start;
-        }
-
-        @Override
-        public Moment getEnd() {
-            return this.end;
-        }
-
-        @Override
-        public String getUrl() {
-            return this.url;
-        }
-
-        @Override
-        public String getTitle() {
-            return this.title;
-        }
-
-        @Override
-        public long getDuration() {
-            return this.duration;
-        }
-
-        @Override
-        public String getTimestampString() {
-            final long now = new GregorianCalendar().getTimeInMillis();
-            final long difference = Math.abs(now - start.getTimeInMillis());
-            return Util.getPastTimeString(difference);
-        }
-
-        @Override
-        public String getDurationString() {
-            return Util.getTimeSpanString(duration);
-        }
-
-        @Override
-        public boolean isInRange(final MomentRange range) {
-            return
-              (start.compareTo(range.getStart()) >= 0 && start.compareTo(range.getEnd()) < 0) ||
-              (end.compareTo(range.getStart()) > 0 && end.compareTo(range.getEnd()) < 0) ||
-              (start.compareTo(range.getStart()) <= 0 && end.compareTo(range.getEnd()) >= 0);
-        }
-
-        @Override
-        public String toString() {
-            return DateUtil.formatDateTime(start.getTime()) + " - " + DateUtil.formatDateTime(end.getTime()) + ": " + getTitle();
-        }
-
-        @Override
-        public List<StartedCalendarEvent> getLastEvents() {
-            if (this.lastEvents == null) {
-                this.lastEvents = calendarEventService.getLastEvents(this, 5);
-            }
-            return this.lastEvents;
-        }
-
-        @Override
-        public Map<String, String> getParameters() {
-            return this.parameters;
-        }
+    @Override
+    public Job getJob() {
+      return this.job;
     }
 
-    private class ScheduledCalendarEventImpl extends CalendarEventImpl implements ScheduledCalendarEvent {
-        public ScheduledCalendarEventImpl(final Job job, final Map<String, String> parameters, final Calendar start, final long durationInMillis) {
-            super();
-            this.job = job;
-            this.id = initId(job.getUrl(), start.getTimeInMillis());
-            this.title = job.getFullDisplayName();
-            this.url = job.getUrl();
-            this.duration = durationInMillis;
-            this.start = new Moment(start);
-            this.end = initEnd(start.getTimeInMillis(), durationInMillis);
-            ParametersDefinitionProperty parameterDefinitions = (ParametersDefinitionProperty) this.job.getProperty(ParametersDefinitionProperty.class);
-            if (parameterDefinitions != null) {
-              for (ParameterDefinition parameterDefinition : parameterDefinitions.getParameterDefinitions()) {
-                ParameterValue parameterValue = parameterDefinition.getDefaultParameterValue();
-                if (parameterValue != null) {
-                  Object value = parameterValue.getValue();
-                  if (value != null) {
-                    this.parameters.put(parameterValue.getName(), value.toString());
-                  }
-                }
-              }
-            }
-            if (parameters != null) {
-                this.parameters.putAll(parameters);
-            }
-        }
-
-        @Override
-        public CalendarEventState getState() {
-            return CalendarEventState.SCHEDULED;
-        }
-
-        @Override
-        public String getIconClassName() {
-            return "symbol-weather-" + job.getBuildHealth().getIconClassName();
-        }
+    @Override
+    public Moment getStart() {
+      return start;
     }
 
-    private class StartedCalendarEventImpl extends CalendarEventImpl implements StartedCalendarEvent {
-        private final Run build;
-        private final CalendarEventState state;
-
-        private transient StartedCalendarEvent previousEvent;
-        private transient StartedCalendarEvent nextEvent;
-        private transient ScheduledCalendarEvent nextScheduledEvent;
-
-        public StartedCalendarEventImpl(final Job job, final Run build) {
-            super();
-            this.id = initId(job.getUrl(), build.getStartTimeInMillis());
-            this.job = job;
-            this.build = build;
-            this.title = build.getFullDisplayName();
-            this.url = build.getUrl();
-            this.start = new Moment(build.getStartTimeInMillis());
-            if (build.isBuilding()) {
-                this.duration = Math.max(MomentRange.duration(start, now), build.getEstimatedDuration());
-                this.state = CalendarEventState.RUNNING;
-            } else {
-                this.duration = build.getDuration();
-                this.state = CalendarEventState.FINISHED;
-            }
-            this.end = initEnd(start.getTimeInMillis(), this.duration);
-            for (ParameterValue parameterValue : (List<ParameterValue>) build.getParameterValues()) {
-              if (parameterValue != null) {
-                Object value = parameterValue.getValue();
-                if (value != null) {
-                  this.parameters.put(parameterValue.getName(), value.toString());
-                }
-              }
-            }
-        }
-
-        @Override
-        public Run getBuild() {
-            return build;
-        }
-
-        @Override
-        public CalendarEventState getState() {
-            return state;
-        }
-
-        @Override
-        public String getIconClassName() {
-            return "symbol-status-" + build.getIconColor().getIconName();
-        }
-
-        @Override
-        public StartedCalendarEvent getPreviousStartedEvent() {
-            if (previousEvent == null && build != null) {
-                previousEvent = calendarEventService.getPreviousEvent(this);
-            }
-            return previousEvent;
-        }
-
-        @Override
-        public StartedCalendarEvent getNextStartedEvent() {
-            if (nextEvent == null && build != null) {
-                nextEvent = calendarEventService.getNextEvent(this);
-            }
-            return nextEvent;
-        }
-
-        @Override
-        public ScheduledCalendarEvent getNextScheduledEvent(final CalendarViewEventsType eventsType) {
-            if (nextScheduledEvent == null && build != null) {
-                nextScheduledEvent = calendarEventService.getNextScheduledEvent(this, eventsType);
-            }
-            return nextScheduledEvent;
-        }
-
+    @Override
+    public Moment getEnd() {
+      return this.end;
     }
+
+    @Override
+    public String getUrl() {
+      return this.url;
+    }
+
+    @Override
+    public String getTitle() {
+      return this.title;
+    }
+
+    @Override
+    public long getDuration() {
+      return this.duration;
+    }
+
+    @Override
+    public String getTimestampString() {
+      final long now = new GregorianCalendar().getTimeInMillis();
+      final long difference = Math.abs(now - start.getTimeInMillis());
+      return Util.getPastTimeString(difference);
+    }
+
+    @Override
+    public String getDurationString() {
+      return Util.getTimeSpanString(duration);
+    }
+
+    @Override
+    public boolean isInRange(final MomentRange range) {
+      return (start.compareTo(range.getStart()) >= 0 && start.compareTo(range.getEnd()) < 0) || (end.compareTo(range.getStart()) > 0 && end.compareTo(range.getEnd()) < 0)
+          || (start.compareTo(range.getStart()) <= 0 && end.compareTo(range.getEnd()) >= 0);
+    }
+
+    @Override
+    public String toString() {
+      return DateUtil.formatDateTime(start.getTime()) + " - " + DateUtil.formatDateTime(end.getTime()) + ": " + getTitle();
+    }
+
+    @Override
+    public List<StartedCalendarEvent> getLastEvents() {
+      if (this.lastEvents == null) {
+        this.lastEvents = calendarEventService.getLastEvents(this, 5);
+      }
+      return this.lastEvents;
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+      return this.parameters;
+    }
+  }
+
+  private class ScheduledCalendarEventImpl extends CalendarEventImpl implements ScheduledCalendarEvent {
+    public ScheduledCalendarEventImpl(final Job job, final Map<String, String> parameters, final Calendar start, final long durationInMillis) {
+      super();
+      this.job = job;
+      this.id = initId(job.getUrl(), start.getTimeInMillis());
+      this.title = job.getFullDisplayName();
+      this.url = job.getUrl();
+      this.duration = durationInMillis;
+      this.start = new Moment(start);
+      this.end = initEnd(start.getTimeInMillis(), durationInMillis);
+      ParametersDefinitionProperty parameterDefinitions = (ParametersDefinitionProperty) this.job.getProperty(ParametersDefinitionProperty.class);
+      if (parameterDefinitions != null) {
+        for (ParameterDefinition parameterDefinition : parameterDefinitions.getParameterDefinitions()) {
+          ParameterValue parameterValue = parameterDefinition.getDefaultParameterValue();
+          if (parameterValue != null) {
+            Object value = parameterValue.getValue();
+            if (value != null) {
+              this.parameters.put(parameterValue.getName(), value.toString());
+            }
+          }
+        }
+      }
+      if (parameters != null) {
+        this.parameters.putAll(parameters);
+      }
+    }
+
+    @Override
+    public CalendarEventState getState() {
+      return CalendarEventState.SCHEDULED;
+    }
+
+    @Override
+    public String getIconClassName() {
+      return "symbol-weather-" + job.getBuildHealth().getIconClassName();
+    }
+  }
+
+  private class StartedCalendarEventImpl extends CalendarEventImpl implements StartedCalendarEvent {
+    private final Run build;
+    private final CalendarEventState state;
+
+    private transient StartedCalendarEvent previousEvent;
+    private transient StartedCalendarEvent nextEvent;
+    private transient ScheduledCalendarEvent nextScheduledEvent;
+
+    public StartedCalendarEventImpl(final Job job, final Run build) {
+      super();
+      this.id = initId(job.getUrl(), build.getStartTimeInMillis());
+      this.job = job;
+      this.build = build;
+      this.title = build.getFullDisplayName();
+      this.url = build.getUrl();
+      this.start = new Moment(build.getStartTimeInMillis());
+      if (build.isBuilding()) {
+        this.duration = Math.max(MomentRange.duration(start, now), build.getEstimatedDuration());
+        this.state = CalendarEventState.RUNNING;
+      } else {
+        this.duration = build.getDuration();
+        this.state = CalendarEventState.FINISHED;
+      }
+      this.end = initEnd(start.getTimeInMillis(), this.duration);
+      for (ParameterValue parameterValue : (List<ParameterValue>) build.getParameterValues()) {
+        if (parameterValue != null) {
+          Object value = parameterValue.getValue();
+          if (value != null) {
+            this.parameters.put(parameterValue.getName(), value.toString());
+          }
+        }
+      }
+    }
+
+    @Override
+    public Run getBuild() {
+      return build;
+    }
+
+    @Override
+    public CalendarEventState getState() {
+      return state;
+    }
+
+    @Override
+    public String getIconClassName() {
+      return "symbol-status-" + build.getIconColor().getIconName();
+    }
+
+    @Override
+    public StartedCalendarEvent getPreviousStartedEvent() {
+      if (previousEvent == null && build != null) {
+        previousEvent = calendarEventService.getPreviousEvent(this);
+      }
+      return previousEvent;
+    }
+
+    @Override
+    public StartedCalendarEvent getNextStartedEvent() {
+      if (nextEvent == null && build != null) {
+        nextEvent = calendarEventService.getNextEvent(this);
+      }
+      return nextEvent;
+    }
+
+    @Override
+    public ScheduledCalendarEvent getNextScheduledEvent(final CalendarViewEventsType eventsType) {
+      if (nextScheduledEvent == null && build != null) {
+        nextScheduledEvent = calendarEventService.getNextScheduledEvent(this, eventsType);
+      }
+      return nextScheduledEvent;
+    }
+
+  }
 }

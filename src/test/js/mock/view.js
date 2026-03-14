@@ -6,7 +6,7 @@ module.exports = function(builds) {
     intervalStart: moment('2018-06-01'),
     intervalEnd: moment('2018-07-01'),
     calendar: {
-      gotoDate: function() { },
+      gotoDate: function() {},
       clientEvents: function(fn) { return builds.filter(fn); }
     }
   };

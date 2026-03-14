@@ -25,7 +25,7 @@ describe('popup.dom()', function() {
 
   it('should create dom for finished event', function() {
     var event = mock.startedBuild('finished');
-    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+    var html = popup.dom(event, view, { close: function() {} })[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
     expect(html).to.have.string('href="' + event.url + '"');
@@ -42,7 +42,7 @@ describe('popup.dom()', function() {
   it('should create dom for finished event with scheduled build', function() {
     var event = mock.startedBuild('finished');
     event.nextScheduledBuild = mock.scheduledBuild();
-    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+    var html = popup.dom(event, view, { close: function() {} })[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
     expect(html).to.have.string('href="' + event.url + '"');
@@ -59,7 +59,7 @@ describe('popup.dom()', function() {
   it('should create dom for finished event with previous build', function() {
     var event = mock.startedBuild('finished');
     event.previousStartedBuild = mock.build(15, 'finished');
-    var dom = popup.dom(event, view, {close: function() { }});
+    var dom = popup.dom(event, view, { close: function() {} });
     var html = dom[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
@@ -81,7 +81,7 @@ describe('popup.dom()', function() {
   it('should create dom for finished event with next build', function() {
     var event = mock.startedBuild('finished');
     event.nextStartedBuild = mock.build(17, 'finished');
-    var dom = popup.dom(event, view, {close: function() { }});
+    var dom = popup.dom(event, view, { close: function() {} });
     var html = dom[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
@@ -102,7 +102,7 @@ describe('popup.dom()', function() {
 
   it('should create dom for running event', function() {
     var event = mock.startedBuild('running');
-    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+    var html = popup.dom(event, view, { close: function() {} })[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
     expect(html).to.have.string('href="' + event.url + '"');
@@ -117,7 +117,7 @@ describe('popup.dom()', function() {
   it('should create dom for running event with build history', function() {
     var event = mock.startedBuild('running');
     event.builds = [build15, build16, build17];
-    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+    var html = popup.dom(event, view, { close: function() {} })[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
     expect(html).to.have.string('href="' + event.url + '"');
@@ -137,7 +137,7 @@ describe('popup.dom()', function() {
   it('should create dom for scheduled event', function() {
     var event = mock.startedBuild('scheduled');
     event.builds = [];
-    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+    var html = popup.dom(event, view, { close: function() {} })[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
     expect(html).to.have.string('href="' + event.url + '"');
@@ -152,7 +152,7 @@ describe('popup.dom()', function() {
   it('should create dom for scheduled event with build history', function() {
     var event = mock.startedBuild('scheduled');
     event.builds = [build15, build16, build17];
-    var html = popup.dom(event, view, {close: function() { }})[0].outerHTML;
+    var html = popup.dom(event, view, { close: function() {} })[0].outerHTML;
 
     expect(html).to.have.string('>' + event.title + '<');
     expect(html).to.have.string('href="' + event.url + '"');

@@ -23,26 +23,27 @@
  */
 package io.jenkins.plugins.view.calendar.util;
 
+import java.text.ParseException;
+import java.util.Calendar;
+
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest2;
 
-import java.text.ParseException;
-import java.util.Calendar;
-
 @Restricted(NoExternalUse.class)
 public final class RequestUtil {
 
-    private RequestUtil() {}
+  private RequestUtil() {
+  }
 
-    public static Calendar getParamAsCalendar(final StaplerRequest2 req, final String param) throws ParseException {
-        final String dateString = req.getParameter(param);
+  public static Calendar getParamAsCalendar(final StaplerRequest2 req, final String param) throws ParseException {
+    final String dateString = req.getParameter(param);
 
-        final Calendar cal = Calendar.getInstance();
-        cal.setTime(DateUtil.parseDate(dateString));
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.HOUR, 0);
-        return cal;
-    }
+    final Calendar cal = Calendar.getInstance();
+    cal.setTime(DateUtil.parseDate(dateString));
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.HOUR, 0);
+    return cal;
+  }
 }

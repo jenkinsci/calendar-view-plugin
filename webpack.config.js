@@ -17,7 +17,7 @@ module.exports = {
   },
   devtool: 'source-map',
   resolve: {
-    extensions: [ '.js' ]
+    extensions: ['.js']
   },
   optimization: {
     minimizer: [
@@ -44,7 +44,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.IgnorePlugin({resourceRegExp: /^\.\/locale$/, contextRegExp: /moment$/}),
+    new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /moment$/ }),
     new ESLintPlugin(),
     new MiniCssExtractPlugin({
       filename: 'calendar-view.css',

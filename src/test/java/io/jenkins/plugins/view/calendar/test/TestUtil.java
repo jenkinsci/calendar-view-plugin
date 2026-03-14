@@ -23,20 +23,9 @@
  */
 package io.jenkins.plugins.view.calendar.test;
 
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
-import hudson.model.Result;
-import hudson.model.Run;
-import hudson.triggers.SCMTrigger;
-import hudson.triggers.TimerTrigger;
-import hudson.triggers.Trigger;
-import hudson.triggers.TriggerDescriptor;
-import hudson.util.RunList;
-import io.jenkins.plugins.extended_timer_trigger.ExtendedTimerTrigger;
-import io.jenkins.plugins.view.calendar.event.CalendarEvent;
-import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedCronTabList;
-import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
-import org.mockito.stubbing.Answer;
+import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -48,169 +37,174 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static io.jenkins.plugins.view.calendar.test.CalendarUtil.cal;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.jenkinsci.plugins.parameterizedscheduler.ParameterizedTimerTrigger;
+import org.mockito.stubbing.Answer;
+
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.Result;
+import hudson.model.Run;
+import hudson.triggers.SCMTrigger;
+import hudson.triggers.TimerTrigger;
+import hudson.triggers.Trigger;
+import hudson.triggers.TriggerDescriptor;
+import hudson.util.RunList;
+import io.jenkins.plugins.extended_timer_trigger.ExtendedTimerTrigger;
+import io.jenkins.plugins.view.calendar.event.CalendarEvent;
 
 public class TestUtil {
 
-    public static FreeStyleProject mockFreeStyleProject() {
-        return mock(FreeStyleProject.class);
+  public static FreeStyleProject mockFreeStyleProject() {
+    return mock(FreeStyleProject.class);
+  }
+
+  public static FreeStyleProject mockScheduledFreeStyleProject(String name, String spec, long estimatedDuration) {
+    Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers(spec);
+
+    FreeStyleProject project = mock(FreeStyleProject.class);
+    when(project.getFullName()).thenReturn(name);
+    when(project.getFullDisplayName()).thenReturn(name);
+    when(project.getTriggers()).thenReturn(triggers);
+    when(project.getEstimatedDuration()).thenReturn(estimatedDuration);
+    when(project.getBuilds()).thenReturn(new RunList());
+    when(project.isBuilding()).thenReturn(false);
+    when(project.isBuildable()).thenReturn(true);
+    return project;
+  }
+
+  public static FreeStyleProject mockRunningFreeStyleProject(String name, String start, long estimatedDuration) throws ParseException {
+    RunList<FreeStyleBuild> builds = mockBuilds(mockRunningFreeStyleBuild(name, start, estimatedDuration));
+
+    FreeStyleProject project = mock(FreeStyleProject.class);
+    when(project.getFullName()).thenReturn(name);
+    when(project.getFullDisplayName()).thenReturn(name);
+    when(project.getEstimatedDuration()).thenReturn(estimatedDuration);
+    when(project.getBuilds()).thenReturn(builds);
+    when(project.isBuilding()).thenReturn(true);
+    return project;
+  }
+
+  public static FreeStyleProject mockFinishedFreeStyleProject(String name, String start, long duration) throws ParseException {
+    RunList<FreeStyleBuild> builds = mockBuilds(mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS));
+
+    FreeStyleProject project = mock(FreeStyleProject.class);
+    when(project.getFullName()).thenReturn(name);
+    when(project.getFullDisplayName()).thenReturn(name);
+    when(project.getEstimatedDuration()).thenReturn(duration);
+    when(project.getBuilds()).thenReturn(builds);
+    when(project.isBuilding()).thenReturn(false);
+    return project;
+  }
+
+  public static FreeStyleProject mockFinishedFreeStyleProjectWithBuildAndPollingTrigger(String name, String start, long duration, String buildTriggerSpec,
+      String pollingTriggerSpec) throws ParseException {
+    Map<TriggerDescriptor, Trigger<?>> triggers = mockBuildAndPollingTriggers(buildTriggerSpec, pollingTriggerSpec);
+    RunList<FreeStyleBuild> builds = mockBuilds(mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS));
+
+    FreeStyleProject project = mock(FreeStyleProject.class);
+    when(project.getFullName()).thenReturn(name);
+    when(project.getFullDisplayName()).thenReturn(name);
+    when(project.getTriggers()).thenReturn(triggers);
+    when(project.getEstimatedDuration()).thenReturn(duration);
+    when(project.getBuilds()).thenReturn(builds);
+    when(project.isBuilding()).thenReturn(false);
+    when(project.isBuildable()).thenReturn(true);
+    return project;
+  }
+
+  public static Map<TriggerDescriptor, Trigger<?>> mockTriggers(String... specs) {
+    Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
+    for (String spec : specs) {
+      Trigger trigger = mock(Trigger.class);
+      when(trigger.getSpec()).thenReturn(spec);
+      triggers.put(mock(TriggerDescriptor.class), trigger);
     }
+    return triggers;
+  }
 
-    public static FreeStyleProject mockScheduledFreeStyleProject(String name, String spec, long estimatedDuration) {
-        Map<TriggerDescriptor, Trigger<?>> triggers = mockTriggers(spec);
-
-        FreeStyleProject project = mock(FreeStyleProject.class);
-        when(project.getFullName()).thenReturn(name);
-        when(project.getFullDisplayName()).thenReturn(name);
-        when(project.getTriggers()).thenReturn(triggers);
-        when(project.getEstimatedDuration()).thenReturn(estimatedDuration);
-        when(project.getBuilds()).thenReturn(new RunList());
-        when(project.isBuilding()).thenReturn(false);
-        when(project.isBuildable()).thenReturn(true);
-        return project;
+  public static Map<TriggerDescriptor, Trigger<?>> mockParameterizedTriggers(String... specs) {
+    Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
+    for (String spec : specs) {
+      ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
+      when(trigger.getParameterizedSpecification()).thenReturn(spec);
+      triggers.put(mock(TriggerDescriptor.class), trigger);
     }
+    return triggers;
+  }
 
-    public static FreeStyleProject mockRunningFreeStyleProject(String name, String start, long estimatedDuration) throws ParseException {
-        RunList<FreeStyleBuild> builds = mockBuilds(
-                mockRunningFreeStyleBuild(name, start, estimatedDuration)
-        );
-
-        FreeStyleProject project = mock(FreeStyleProject.class);
-        when(project.getFullName()).thenReturn(name);
-        when(project.getFullDisplayName()).thenReturn(name);
-        when(project.getEstimatedDuration()).thenReturn(estimatedDuration);
-        when(project.getBuilds()).thenReturn(builds);
-        when(project.isBuilding()).thenReturn(true);
-        return project;
+  public static Map<TriggerDescriptor, Trigger<?>> mockExtendedTimerTriggers(String... specs) {
+    Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
+    for (String spec : specs) {
+      ExtendedTimerTrigger trigger = mock(ExtendedTimerTrigger.class);
+      when(trigger.getCronSpec()).thenReturn(spec);
+      triggers.put(mock(TriggerDescriptor.class), trigger);
     }
+    return triggers;
+  }
 
-    public static FreeStyleProject mockFinishedFreeStyleProject(String name, String start, long duration) throws ParseException {
-        RunList<FreeStyleBuild> builds = mockBuilds(
-                mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS)
-        );
+  public static Map<TriggerDescriptor, Trigger<?>> mockBuildAndPollingTriggers(String buildSpec, String pollingSpec) {
+    Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
 
-        FreeStyleProject project = mock(FreeStyleProject.class);
-        when(project.getFullName()).thenReturn(name);
-        when(project.getFullDisplayName()).thenReturn(name);
-        when(project.getEstimatedDuration()).thenReturn(duration);
-        when(project.getBuilds()).thenReturn(builds);
-        when(project.isBuilding()).thenReturn(false);
-        return project;
+    Trigger trigger = mock(TimerTrigger.class);
+    when(trigger.getSpec()).thenReturn(buildSpec);
+    triggers.put(mock(TriggerDescriptor.class), trigger);
+
+    trigger = mock(SCMTrigger.class);
+    when(trigger.getSpec()).thenReturn(pollingSpec);
+    triggers.put(mock(TriggerDescriptor.class), trigger);
+
+    return triggers;
+  }
+
+  @SafeVarargs
+  public static <T extends Run> RunList<T> mockBuilds(final T... builds) {
+    RunList runList = mock(RunList.class);
+    when(runList.iterator()).thenAnswer((Answer<Iterator<T>>) invocationOnMock -> Arrays.asList(builds).iterator());
+    return runList;
+  }
+
+  public static FreeStyleBuild mockFinishedFreeStyleBuild(String name, String start, long duration, Result result) throws ParseException {
+    return mockFinishedBuild(FreeStyleBuild.class, name, start, duration, result);
+  }
+
+  public static FreeStyleBuild mockRunningFreeStyleBuild(String name, String start, long duration) throws ParseException {
+    return mockRunningBuild(FreeStyleBuild.class, name, start, duration);
+  }
+
+  public static <T extends Run> T mockFinishedBuild(Class<T> clazz, String name, String start, long duration, Result result) throws ParseException {
+    Calendar startCal = cal(start);
+    T build = mock(clazz);
+    when(build.getFullDisplayName()).thenReturn(name);
+    when(build.getStartTimeInMillis()).thenReturn(startCal.getTimeInMillis());
+    when(build.getDuration()).thenReturn(duration);
+    when(build.getResult()).thenReturn(result);
+    when(build.isBuilding()).thenReturn(false);
+    return build;
+  }
+
+  public static <T extends Run> T mockRunningBuild(Class<T> clazz, String name, String start, long estimatedDuration) throws ParseException {
+    Calendar startCal = cal(start);
+    T build = mock(clazz);
+    when(build.getFullDisplayName()).thenReturn(name);
+    when(build.getStartTimeInMillis()).thenReturn(startCal.getTimeInMillis());
+    when(build.getEstimatedDuration()).thenReturn(estimatedDuration);
+    when(build.isBuilding()).thenReturn(true);
+    return build;
+  }
+
+  public static Set<String> titlesOf(List<? extends CalendarEvent> events) {
+    Set<String> titles = new HashSet<>();
+    for (CalendarEvent event : events) {
+      titles.add(event.getTitle());
     }
+    return titles;
+  }
 
-    public static FreeStyleProject mockFinishedFreeStyleProjectWithBuildAndPollingTrigger(String name, String start, long duration,
-                                                                                          String buildTriggerSpec, String pollingTriggerSpec) throws ParseException {
-        Map<TriggerDescriptor, Trigger<?>> triggers = mockBuildAndPollingTriggers(buildTriggerSpec, pollingTriggerSpec);
-        RunList<FreeStyleBuild> builds = mockBuilds(
-                mockFinishedFreeStyleBuild(name, start, duration, Result.SUCCESS)
-        );
-
-        FreeStyleProject project = mock(FreeStyleProject.class);
-        when(project.getFullName()).thenReturn(name);
-        when(project.getFullDisplayName()).thenReturn(name);
-        when(project.getTriggers()).thenReturn(triggers);
-        when(project.getEstimatedDuration()).thenReturn(duration);
-        when(project.getBuilds()).thenReturn(builds);
-        when(project.isBuilding()).thenReturn(false);
-        when(project.isBuildable()).thenReturn(true);
-        return project;
+  public static Set<String> toStringOf(List<? extends CalendarEvent> events) {
+    Set<String> toStrings = new HashSet<>();
+    for (CalendarEvent event : events) {
+      toStrings.add(event.toString());
     }
-
-    public static Map<TriggerDescriptor, Trigger<?>> mockTriggers(String... specs) {
-        Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
-        for (String spec : specs) {
-            Trigger trigger = mock(Trigger.class);
-            when(trigger.getSpec()).thenReturn(spec);
-            triggers.put(mock(TriggerDescriptor.class), trigger);
-        }
-        return triggers;
-    }
-
-    public static Map<TriggerDescriptor, Trigger<?>> mockParameterizedTriggers(String... specs) {
-        Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
-        for (String spec : specs) {
-            ParameterizedTimerTrigger trigger = mock(ParameterizedTimerTrigger.class);
-            when(trigger.getParameterizedSpecification()).thenReturn(spec);
-            triggers.put(mock(TriggerDescriptor.class), trigger);
-        }
-        return triggers;
-    }
-
-    public static Map<TriggerDescriptor, Trigger<?>> mockExtendedTimerTriggers(String... specs) {
-        Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
-        for (String spec : specs) {
-            ExtendedTimerTrigger trigger = mock(ExtendedTimerTrigger.class);
-            when(trigger.getCronSpec()).thenReturn(spec);
-            triggers.put(mock(TriggerDescriptor.class), trigger);
-        }
-        return triggers;
-    }
-
-    public static Map<TriggerDescriptor, Trigger<?>> mockBuildAndPollingTriggers(String buildSpec, String pollingSpec) {
-        Map<TriggerDescriptor, Trigger<?>> triggers = new HashMap<>();
-
-        Trigger trigger = mock(TimerTrigger.class);
-        when(trigger.getSpec()).thenReturn(buildSpec);
-        triggers.put(mock(TriggerDescriptor.class), trigger);
-
-        trigger = mock(SCMTrigger.class);
-        when(trigger.getSpec()).thenReturn(pollingSpec);
-        triggers.put(mock(TriggerDescriptor.class), trigger);
-
-        return triggers;
-    }
-
-    @SafeVarargs
-    public static <T extends Run> RunList<T> mockBuilds(final T... builds) {
-        RunList runList = mock(RunList.class);
-        when(runList.iterator()).thenAnswer((Answer<Iterator<T>>) invocationOnMock -> Arrays.asList(builds).iterator());
-        return runList;
-    }
-
-    public static FreeStyleBuild mockFinishedFreeStyleBuild(String name, String start, long duration, Result result) throws ParseException {
-        return mockFinishedBuild(FreeStyleBuild.class, name, start, duration, result);
-    }
-
-    public static FreeStyleBuild mockRunningFreeStyleBuild(String name, String start, long duration) throws ParseException {
-        return mockRunningBuild(FreeStyleBuild.class, name, start, duration);
-    }
-
-    public static <T extends Run> T mockFinishedBuild(Class<T> clazz, String name, String start, long duration, Result result) throws ParseException {
-        Calendar startCal = cal(start);
-        T build = mock(clazz);
-        when(build.getFullDisplayName()).thenReturn(name);
-        when(build.getStartTimeInMillis()).thenReturn(startCal.getTimeInMillis());
-        when(build.getDuration()).thenReturn(duration);
-        when(build.getResult()).thenReturn(result);
-        when(build.isBuilding()).thenReturn(false);
-        return build;
-    }
-
-    public static <T extends Run> T mockRunningBuild(Class<T> clazz, String name, String start, long estimatedDuration) throws ParseException {
-        Calendar startCal = cal(start);
-        T build = mock(clazz);
-        when(build.getFullDisplayName()).thenReturn(name);
-        when(build.getStartTimeInMillis()).thenReturn(startCal.getTimeInMillis());
-        when(build.getEstimatedDuration()).thenReturn(estimatedDuration);
-        when(build.isBuilding()).thenReturn(true);
-        return build;
-    }
-
-    public static Set<String> titlesOf(List<? extends CalendarEvent> events) {
-        Set<String> titles = new HashSet<>();
-        for (CalendarEvent event : events) {
-            titles.add(event.getTitle());
-        }
-        return titles;
-    }
-
-    public static Set<String> toStringOf(List<? extends CalendarEvent> events) {
-        Set<String> toStrings = new HashSet<>();
-        for (CalendarEvent event : events) {
-            toStrings.add(event.toString());
-        }
-        return toStrings;
-    }
+    return toStrings;
+  }
 }

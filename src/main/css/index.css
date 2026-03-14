@@ -58,7 +58,7 @@
 }
 
 .fc-event.event-selected {
-  background:#aaa;
+  background: #aaa;
 }
 
 .fc-event.event-result-success {
@@ -112,13 +112,13 @@
 }
 
 @keyframes blink-animation {
-    50% {
-        opacity: 0.2;
-    }
+  50% {
+    opacity: 0.2;
+  }
 }
 
 .fc-unthemed td.fc-today {
-	background: grey;
+  background: grey;
 }
 
 .tippy-tooltip.jenkins-theme {
@@ -146,7 +146,7 @@
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-head .tooltip-title {
-   margin-left: 5px;
+  margin-left: 5px;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-head .tooltip-close {
@@ -165,9 +165,9 @@
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-middle {
-    display: flex;
-    gap: 5px;
-    align-items: top;
+  display: flex;
+  gap: 5px;
+  align-items: top;
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-left {
@@ -197,7 +197,7 @@
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .previous i:after {
-  content:"\25C0";
+  content: "\25C0";
   font-size: 80%;
   font-style: normal;
   margin-right: 2px;
@@ -208,7 +208,7 @@
 }
 
 .tippy-tooltip.jenkins-theme .tooltip-bottom .next i:after {
-  content:"\25B6";
+  content: "\25B6";
   font-size: 80%;
   font-style: normal;
   margin-left: 2px;
@@ -243,7 +243,7 @@
 }
 
 #calendar-view {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 .calendar-view-config-default {
@@ -265,11 +265,11 @@
 }
 
 .calendar-view-config-container {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .calendar-view-config-container .jenkins-radio:not(:last-of-type) {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }

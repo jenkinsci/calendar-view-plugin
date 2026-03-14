@@ -1,45 +1,45 @@
 <?xml version="1.0"?>
 
 <ruleset name="Calendar View Rules"
-    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+  xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
-    <description>
-        Calendar View rules.
-    </description>
+  <description>
+    Calendar View rules.
+  </description>
 
-    <rule ref="category/java/bestpractices.xml">
-        <exclude name="AccessorMethodGeneration" />
-        <exclude name="AvoidReassigningLoopVariables" />
-        <exclude name="WhileLoopWithLiteralBoolean" />
-    </rule>
-    <rule ref="category/java/codestyle.xml">
-        <!-- Operator precedence is hard and parentheses enhance readability -->
-        <exclude name="UselessParentheses" />
-        <!-- Having only one return statement prevents guard clauses -->
-        <exclude name="OnlyOneReturn" />
-        <!-- Unncessary verbosity is the Java way -->
-        <exclude name="UnnecessaryModifier" />
-        <!-- Long variable names are good -->
-        <exclude name="LongVariable" />
-        <!-- No need for empty constructors -->
-        <exclude name="AtLeastOneConstructor" />
-        <!-- This complains about variable names like 'id' -->
-        <exclude name="ShortVariable" />
-    </rule>
-    <rule ref="category/java/design.xml">
-        <exclude name="CognitiveComplexity" />
-        <!-- "Tell, don't ask" is a good design principle, 
+  <rule ref="category/java/bestpractices.xml">
+    <exclude name="AccessorMethodGeneration" />
+    <exclude name="AvoidReassigningLoopVariables" />
+    <exclude name="WhileLoopWithLiteralBoolean" />
+  </rule>
+  <rule ref="category/java/codestyle.xml">
+    <!-- Operator precedence is hard and parentheses enhance readability -->
+    <exclude name="UselessParentheses" />
+    <!-- Having only one return statement prevents guard clauses -->
+    <exclude name="OnlyOneReturn" />
+    <!-- Unncessary verbosity is the Java way -->
+    <exclude name="UnnecessaryModifier" />
+    <!-- Long variable names are good -->
+    <exclude name="LongVariable" />
+    <!-- No need for empty constructors -->
+    <exclude name="AtLeastOneConstructor" />
+    <!-- This complains about variable names like 'id' -->
+    <exclude name="ShortVariable" />
+  </rule>
+  <rule ref="category/java/design.xml">
+    <exclude name="CognitiveComplexity" />
+    <!-- "Tell, don't ask" is a good design principle, 
              but this rule is way too strict about it -->
-        <exclude name="LawOfDemeter" />
-        <exclude name="LoosePackageCoupling" />
-    </rule>
-    <rule ref="category/java/errorprone.xml"/>
-    <rule ref="category/java/multithreading.xml"/>
-    <rule ref="category/java/performance.xml">
-        <exclude name="AvoidCalendarDateCreation" />
-    </rule>
-    <rule ref="category/java/security.xml"/>
+    <exclude name="LawOfDemeter" />
+    <exclude name="LoosePackageCoupling" />
+  </rule>
+  <rule ref="category/java/errorprone.xml" />
+  <rule ref="category/java/multithreading.xml" />
+  <rule ref="category/java/performance.xml">
+    <exclude name="AvoidCalendarDateCreation" />
+  </rule>
+  <rule ref="category/java/security.xml" />
 
 </ruleset>

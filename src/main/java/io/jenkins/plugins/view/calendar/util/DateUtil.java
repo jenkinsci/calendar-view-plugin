@@ -23,27 +23,28 @@
  */
 package io.jenkins.plugins.view.calendar.util;
 
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+
 @Restricted(NoExternalUse.class)
 public final class DateUtil {
-    public static final String FORMAT_DATE = "yyyy-MM-dd";
-    public static final String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
+  public static final String FORMAT_DATE = "yyyy-MM-dd";
+  public static final String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
 
-    private DateUtil() { }
+  private DateUtil() {
+  }
 
-    @SuppressWarnings("PMD.SimpleDateFormatNeedsLocale")
-    public static String formatDateTime(final Date date)  {
-        return new SimpleDateFormat(FORMAT_DATETIME).format(date);
-    }
+  @SuppressWarnings("PMD.SimpleDateFormatNeedsLocale")
+  public static String formatDateTime(final Date date) {
+    return new SimpleDateFormat(FORMAT_DATETIME).format(date);
+  }
 
-    @SuppressWarnings("PMD.SimpleDateFormatNeedsLocale")
-    public static Date parseDate(final String dateString) throws ParseException {
-        return new SimpleDateFormat(FORMAT_DATE).parse(dateString);
-    }
+  @SuppressWarnings("PMD.SimpleDateFormatNeedsLocale")
+  public static Date parseDate(final String dateString) throws ParseException {
+    return new SimpleDateFormat(FORMAT_DATE).parse(dateString);
+  }
 }

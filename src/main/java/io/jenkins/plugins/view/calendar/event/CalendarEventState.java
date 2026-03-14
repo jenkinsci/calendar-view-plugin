@@ -28,5 +28,5 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Restricted(NoExternalUse.class)
 public enum CalendarEventState {
-    FINISHED, RUNNING, SCHEDULED;
+  FINISHED, RUNNING, SCHEDULED;
 }

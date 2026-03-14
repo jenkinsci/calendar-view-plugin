@@ -28,12 +28,13 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Restricted(NoExternalUse.class)
 public final class FieldUtil {
-    private FieldUtil() {}
+  private FieldUtil() {
+  }
 
-    public static <T> T defaultIfNull(final T value, final T defaultValue) {
-        if (value != null) {
-            return value;
-        }
-        return defaultValue;
+  public static <T> T defaultIfNull(final T value, final T defaultValue) {
+    if (value != null) {
+      return value;
     }
+    return defaultValue;
+  }
 }

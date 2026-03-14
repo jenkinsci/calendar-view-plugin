@@ -50,232 +50,234 @@ import io.jenkins.plugins.view.calendar.time.MomentRange;
 @Restricted(NoExternalUse.class)
 public class CalendarEventService {
 
-    private final transient CronJobService cronJobService;
-    private final transient Moment now;
-    private final transient CalendarEventFactory calendarEventFactory;
+  private final transient CronJobService cronJobService;
+  private final transient Moment now;
+  private final transient CalendarEventFactory calendarEventFactory;
 
-    public CalendarEventService(final Moment now, final CronJobService cronJobService) {
-        this.now = now;
-        this.cronJobService = cronJobService;
-        this.calendarEventFactory = new CalendarEventFactory(now, this);
+  public CalendarEventService(final Moment now, final CronJobService cronJobService) {
+    this.now = now;
+    this.cronJobService = cronJobService;
+    this.calendarEventFactory = new CalendarEventFactory(now, this);
+  }
+
+  /**
+   * Collects all the events that overlap the given range. Includes events that
+   * start before the range, but last into the range; also includes events that
+   * end after the range, but start within the range.
+   *
+   * @param jobs           The jobs from which to collect all CalendarEvents
+   * @param inclusionRange The range for which CalendarEvents should be returned
+   * @param eventsType     The type of event that should be filtered on
+   * @return List of events that overlap the range
+   */
+  public List<CalendarEvent> getCalendarEvents(final List<? extends Job> jobs, final MomentRange inclusionRange, final CalendarViewEventsType eventsType) {
+    final List<CalendarEvent> events = new ArrayList<>();
+
+    if (now.isBefore(inclusionRange.getStart())) {
+      events.addAll(getRunningEvents(jobs, inclusionRange, eventsType));
+      if (isValidRange(now.nextMinute(), inclusionRange.getStart().previousMinute())) {
+        events.addAll(getScheduledEventsBackward(jobs, range(now.nextMinute(), inclusionRange.getStart().previousMinute()), inclusionRange, eventsType));
+      }
+      events.addAll(getScheduledEventsForward(jobs, inclusionRange, inclusionRange, eventsType));
+    } else if (now.isSame(inclusionRange.getStart())) {
+      events.addAll(getRunningEvents(jobs, inclusionRange, eventsType));
+      events.addAll(getScheduledEventsForward(jobs, range(now.nextMinute(), inclusionRange.getEnd()), inclusionRange, eventsType));
+    } else if (now.isSame(inclusionRange.getEnd())) {
+      events.addAll(getStartedEvents(jobs, inclusionRange, null, eventsType));
+    } else if (now.isAfter(inclusionRange.getEnd())) {
+      events.addAll(getStartedEvents(jobs, inclusionRange, null, eventsType));
+    } else { // (now.isAfter(inclusionRange.getStart()) &&
+             // now.isBefore(inclusionRange.getEnd())
+      events.addAll(getStartedEvents(jobs, range(inclusionRange.getStart(), now.nextMinute()), null, eventsType));
+      if (isValidRange(now.nextMinute(), inclusionRange.getEnd())) {
+        events.addAll(getScheduledEventsForward(jobs, range(now.nextMinute(), inclusionRange.getEnd()), inclusionRange, eventsType));
+      }
     }
 
-    /**
-     * Collects all the events that overlap the given range. Includes events that start before the range, but
-     * last into the range; also includes events that end after the range, but start within the range.
-     *
-     * @param jobs The jobs from which to collect all CalendarEvents
-     * @param inclusionRange The range for which CalendarEvents should be returned
-     * @param eventsType The type of event that should be filtered on
-     * @return List of events that overlap the range
-     */
-    public List<CalendarEvent> getCalendarEvents(final List<? extends Job> jobs, final MomentRange inclusionRange, final CalendarViewEventsType eventsType) {
-        final List<CalendarEvent> events = new ArrayList<>();
+    Collections.sort(events, new CalendarEventComparator());
 
-        if (now.isBefore(inclusionRange.getStart())) {
-            events.addAll(getRunningEvents(jobs, inclusionRange, eventsType));
-            if (isValidRange(now.nextMinute(), inclusionRange.getStart().previousMinute())) {
-                events.addAll(getScheduledEventsBackward(jobs, range(now.nextMinute(), inclusionRange.getStart().previousMinute()), inclusionRange, eventsType));
-            }
-            events.addAll(getScheduledEventsForward(jobs, inclusionRange, inclusionRange, eventsType));
-        } else if (now.isSame(inclusionRange.getStart())) {
-            events.addAll(getRunningEvents(jobs, inclusionRange, eventsType));
-            events.addAll(getScheduledEventsForward(jobs, range(now.nextMinute(), inclusionRange.getEnd()), inclusionRange, eventsType));
-        } else if (now.isSame(inclusionRange.getEnd())) {
-            events.addAll(getStartedEvents(jobs, inclusionRange, null, eventsType));
-        } else if (now.isAfter(inclusionRange.getEnd())) {
-            events.addAll(getStartedEvents(jobs, inclusionRange, null, eventsType));
-        } else { // (now.isAfter(inclusionRange.getStart()) && now.isBefore(inclusionRange.getEnd())
-            events.addAll(getStartedEvents(jobs, range(inclusionRange.getStart(), now.nextMinute()), null, eventsType));
-            if (isValidRange(now.nextMinute(), inclusionRange.getEnd())) {
-                events.addAll(getScheduledEventsForward(jobs, range(now.nextMinute(), inclusionRange.getEnd()), inclusionRange, eventsType));
-            }
+    return events;
+  }
+
+  public List<ScheduledCalendarEvent> getScheduledEventsForward(final List<? extends Job> jobs, final MomentRange searchRange, final MomentRange inclusionRange,
+      final CalendarViewEventsType eventsType) {
+    return getScheduledEvents(jobs, new ForwardScheduledEventCollector(searchRange, inclusionRange), eventsType);
+  }
+
+  public List<ScheduledCalendarEvent> getScheduledEventsBackward(final List<? extends Job> jobs, final MomentRange searchRange, final MomentRange inclusionRange,
+      final CalendarViewEventsType eventsType) {
+    return getScheduledEvents(jobs, new BackwardScheduledEventCollector(searchRange, inclusionRange), eventsType);
+  }
+
+  public List<ScheduledCalendarEvent> getScheduledEvents(final List<? extends Job> jobs, final ScheduledEventCollector collector, final CalendarViewEventsType eventsType) {
+    for (final Job job : jobs) {
+      if (job.isBuildable()) {
+        final long estimatedDuration = job.getEstimatedDuration();
+        final List<CronWrapper<?>> cronTabs = cronJobService.getCronTabs(job, eventsType);
+        for (final CronWrapper<?> cronTab : cronTabs) {
+          collector.collectEvents(job, cronTab, estimatedDuration);
         }
+      }
+    }
+    return collector.getEvents();
+  }
 
-        Collections.sort(events, new CalendarEventComparator());
+  private abstract class ScheduledEventCollector {
+    private transient final List<ScheduledCalendarEvent> events = new ArrayList<>();
+    protected transient final MomentRange searchRange;
+    private transient final MomentRange inclusionRange;
 
-        return events;
+    public ScheduledEventCollector(final MomentRange searchRange, final MomentRange inclusionRange) {
+      this.searchRange = searchRange;
+      this.inclusionRange = inclusionRange;
     }
 
-    public List<ScheduledCalendarEvent> getScheduledEventsForward(final List<? extends Job> jobs, final MomentRange searchRange, final MomentRange inclusionRange, final CalendarViewEventsType eventsType) {
-        return getScheduledEvents(jobs, new ForwardScheduledEventCollector(searchRange, inclusionRange), eventsType);
+    public void collectEvents(final Job job, final CronWrapper<?> cronTab, final long estimatedDuration) {
+      long timeInMillis = searchStart();
+      do {
+        final Calendar next = nextRun(cronTab, timeInMillis);
+        if (next == null || searchRange.getStart().isAfter(next) || searchRange.getEnd().isBefore(next)) {
+          break;
+        }
+        next.set(Calendar.SECOND, 0);
+        next.set(Calendar.MILLISECOND, 0);
+        @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+        final ScheduledCalendarEvent event = calendarEventFactory.createScheduledEvent(job, cronTab.getParameters(), next, estimatedDuration);
+        if (!event.isInRange(inclusionRange)) {
+          break;
+        }
+        events.add(event);
+        timeInMillis = next.getTimeInMillis() + searchOffset();
+      } while (true);
     }
 
-    public List<ScheduledCalendarEvent> getScheduledEventsBackward(final List<? extends Job> jobs, final MomentRange searchRange, final MomentRange inclusionRange, final CalendarViewEventsType eventsType) {
-        return getScheduledEvents(jobs, new BackwardScheduledEventCollector(searchRange, inclusionRange), eventsType);
+    protected abstract Calendar nextRun(CronWrapper<?> cronTab, long timeInMillis);
+
+    protected abstract long searchStart();
+
+    protected abstract int searchOffset();
+
+    public List<ScheduledCalendarEvent> getEvents() {
+      return events;
+    }
+  }
+
+  private class ForwardScheduledEventCollector extends ScheduledEventCollector {
+    public ForwardScheduledEventCollector(final MomentRange searchRange, final MomentRange inclusionRange) {
+      super(searchRange, inclusionRange);
     }
 
-    public List<ScheduledCalendarEvent> getScheduledEvents(final List<? extends Job> jobs, final ScheduledEventCollector collector, final CalendarViewEventsType eventsType) {
-        for (final Job job: jobs) {
-            if (job.isBuildable()) {
-                final long estimatedDuration = job.getEstimatedDuration();
-                final List<CronWrapper<?>> cronTabs = cronJobService.getCronTabs(job, eventsType);
-                for (final CronWrapper<?> cronTab: cronTabs) {
-                    collector.collectEvents(job, cronTab, estimatedDuration);
-                }
-            }
-        }
-        return collector.getEvents();
+    @Override
+    protected Calendar nextRun(final CronWrapper<?> cronTab, final long timeInMillis) {
+      return cronTab.ceil(timeInMillis);
     }
 
-    private abstract class ScheduledEventCollector {
-        private transient final List<ScheduledCalendarEvent> events = new ArrayList<>();
-        protected transient final MomentRange searchRange;
-        private transient final MomentRange inclusionRange;
-
-        public ScheduledEventCollector( final MomentRange searchRange, final MomentRange inclusionRange) {
-            this.searchRange = searchRange;
-            this.inclusionRange = inclusionRange;
-        }
-
-        public void collectEvents(final Job job, final CronWrapper<?> cronTab, final long estimatedDuration) {
-            long timeInMillis = searchStart();
-            do {
-                final Calendar next = nextRun(cronTab, timeInMillis);
-                if (next == null || searchRange.getStart().isAfter(next) || searchRange.getEnd().isBefore(next)) {
-                    break;
-                }
-                next.set(Calendar.SECOND, 0);
-                next.set(Calendar.MILLISECOND, 0);
-                @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-                final ScheduledCalendarEvent event = calendarEventFactory.createScheduledEvent(job, cronTab.getParameters(), next, estimatedDuration);
-                if (!event.isInRange(inclusionRange)) {
-                    break;
-                }
-                events.add(event);
-                timeInMillis = next.getTimeInMillis() + searchOffset();
-            } while (true);
-        }
-
-        protected abstract Calendar nextRun(CronWrapper<?> cronTab, long timeInMillis);
-
-        protected abstract long searchStart();
-
-        protected abstract int searchOffset();
-
-        public List<ScheduledCalendarEvent> getEvents() {
-            return events;
-        }
+    @Override
+    protected long searchStart() {
+      return searchRange.getStart().getTimeInMillis();
     }
 
-    private class ForwardScheduledEventCollector extends ScheduledEventCollector {
-        public ForwardScheduledEventCollector(final MomentRange searchRange, final MomentRange inclusionRange) {
-            super(searchRange, inclusionRange);
-        }
+    @Override
+    protected int searchOffset() {
+      return 1000 * 60;
+    }
+  }
 
-        @Override
-        protected Calendar nextRun(final CronWrapper<?> cronTab, final long timeInMillis) {
-            return cronTab.ceil(timeInMillis);
-        }
-
-        @Override
-        protected long searchStart() {
-            return searchRange.getStart().getTimeInMillis();
-        }
-
-        @Override
-        protected int searchOffset() {
-            return 1000 * 60;
-        }
+  private class BackwardScheduledEventCollector extends ScheduledEventCollector {
+    public BackwardScheduledEventCollector(final MomentRange searchRange, final MomentRange inclusionRange) {
+      super(searchRange, inclusionRange);
     }
 
-    private class BackwardScheduledEventCollector extends ScheduledEventCollector {
-        public BackwardScheduledEventCollector(final MomentRange searchRange, final MomentRange inclusionRange) {
-            super(searchRange, inclusionRange);
-        }
-
-        @Override
-        protected Calendar nextRun(final CronWrapper<?> cronTab, final long timeInMillis) {
-            return cronTab.floor(timeInMillis);
-        }
-
-        @Override
-        protected long searchStart() {
-            return searchRange.getEnd().getTimeInMillis();
-        }
-
-        @Override
-        protected int searchOffset() {
-            return -1000 * 60;
-        }
+    @Override
+    protected Calendar nextRun(final CronWrapper<?> cronTab, final long timeInMillis) {
+      return cronTab.floor(timeInMillis);
     }
 
-    public List<StartedCalendarEvent> getFinishedEvents(final List<? extends Job> jobs, final MomentRange range, final CalendarViewEventsType eventsType) {
-        return getStartedEvents(jobs, range, CalendarEventState.FINISHED, eventsType);
+    @Override
+    protected long searchStart() {
+      return searchRange.getEnd().getTimeInMillis();
     }
 
-    public List<StartedCalendarEvent> getRunningEvents(final List<? extends Job> jobs, final MomentRange range, final CalendarViewEventsType eventsType) {
-        return getStartedEvents(jobs, range, CalendarEventState.RUNNING, eventsType);
+    @Override
+    protected int searchOffset() {
+      return -1000 * 60;
+    }
+  }
+
+  public List<StartedCalendarEvent> getFinishedEvents(final List<? extends Job> jobs, final MomentRange range, final CalendarViewEventsType eventsType) {
+    return getStartedEvents(jobs, range, CalendarEventState.FINISHED, eventsType);
+  }
+
+  public List<StartedCalendarEvent> getRunningEvents(final List<? extends Job> jobs, final MomentRange range, final CalendarViewEventsType eventsType) {
+    return getStartedEvents(jobs, range, CalendarEventState.RUNNING, eventsType);
+  }
+
+  @SuppressWarnings("PMD.CyclomaticComplexity")
+  public List<StartedCalendarEvent> getStartedEvents(final List<? extends Job> jobs, final MomentRange range, final CalendarEventState state,
+      final CalendarViewEventsType eventsType) {
+    if (state == CalendarEventState.SCHEDULED) {
+      throw new IllegalArgumentException("State for started events cannot be " + CalendarEventState.SCHEDULED);
     }
 
-    @SuppressWarnings("PMD.CyclomaticComplexity")
-    public List<StartedCalendarEvent> getStartedEvents(final List<? extends Job> jobs, final MomentRange range, final CalendarEventState state, final CalendarViewEventsType eventsType) {
-        if (state == CalendarEventState.SCHEDULED) {
-            throw new IllegalArgumentException("State for started events cannot be " + CalendarEventState.SCHEDULED);
+    final List<StartedCalendarEvent> events = new ArrayList<>();
+    if (eventsType != CalendarViewEventsType.POLLINGS) {
+      for (final Job job : jobs) {
+        if (state == CalendarEventState.RUNNING && !job.isBuilding()) {
+          continue;
         }
-
-        final List<StartedCalendarEvent> events = new ArrayList<>();
-        if (eventsType != CalendarViewEventsType.POLLINGS) {
-            for (final Job job: jobs) {
-                if (state == CalendarEventState.RUNNING && !job.isBuilding()) {
-                    continue;
-                }
-                final List<Run> builds = job.getBuilds();
-                for (final Run build : builds) {
-                    if (state == CalendarEventState.RUNNING && !build.isBuilding()) {
-                        continue;
-                    }
-                    if (state == CalendarEventState.FINISHED && build.isBuilding()) {
-                        continue;
-                    }
-                    final StartedCalendarEvent event = calendarEventFactory.createStartedEvent(job, build);
-                    if (event.isInRange(range)) {
-                        events.add(event);
-                    }
-                }
-            }
+        final List<Run> builds = job.getBuilds();
+        for (final Run build : builds) {
+          if ((state == CalendarEventState.RUNNING && !build.isBuilding()) || (state == CalendarEventState.FINISHED && build.isBuilding())) {
+            continue;
+          }
+          final StartedCalendarEvent event = calendarEventFactory.createStartedEvent(job, build);
+          if (event.isInRange(range)) {
+            events.add(event);
+          }
         }
-        return events;
+      }
     }
+    return events;
+  }
 
-    public List<StartedCalendarEvent> getLastEvents(final CalendarEvent event, final int numberOfEvents) {
-        final List<StartedCalendarEvent> lastEvents = new ArrayList<>();
-        final Job job = event.getJob();
-        final List<Run> lastBuilds = job.getLastBuildsOverThreshold(numberOfEvents, Result.ABORTED);
-        for (final Run lastBuild: lastBuilds) {
-            final StartedCalendarEvent lastEvent = calendarEventFactory.createStartedEvent(job, lastBuild);
-            lastEvents.add(lastEvent);
-        }
-        return lastEvents;
+  public List<StartedCalendarEvent> getLastEvents(final CalendarEvent event, final int numberOfEvents) {
+    final List<StartedCalendarEvent> lastEvents = new ArrayList<>();
+    final Job job = event.getJob();
+    final List<Run> lastBuilds = job.getLastBuildsOverThreshold(numberOfEvents, Result.ABORTED);
+    for (final Run lastBuild : lastBuilds) {
+      final StartedCalendarEvent lastEvent = calendarEventFactory.createStartedEvent(job, lastBuild);
+      lastEvents.add(lastEvent);
     }
+    return lastEvents;
+  }
 
-    public StartedCalendarEvent getPreviousEvent(final StartedCalendarEvent event) {
-        if (event.getBuild() != null) {
-            final Run previousBuild = event.getBuild().getPreviousBuild();
-            if (previousBuild != null) {
-                return calendarEventFactory.createStartedEvent(event.getJob(), previousBuild);
-            }
-        }
-        return null;
+  public StartedCalendarEvent getPreviousEvent(final StartedCalendarEvent event) {
+    if (event.getBuild() != null) {
+      final Run previousBuild = event.getBuild().getPreviousBuild();
+      if (previousBuild != null) {
+        return calendarEventFactory.createStartedEvent(event.getJob(), previousBuild);
+      }
     }
+    return null;
+  }
 
-    public StartedCalendarEvent getNextEvent(final StartedCalendarEvent event) {
-        if (event.getBuild() != null) {
-            final Run nextBuild = event.getBuild().getNextBuild();
-            if (nextBuild != null) {
-                return calendarEventFactory.createStartedEvent(event.getJob(), nextBuild);
-            }
-        }
-        return null;
+  public StartedCalendarEvent getNextEvent(final StartedCalendarEvent event) {
+    if (event.getBuild() != null) {
+      final Run nextBuild = event.getBuild().getNextBuild();
+      if (nextBuild != null) {
+        return calendarEventFactory.createStartedEvent(event.getJob(), nextBuild);
+      }
     }
+    return null;
+  }
 
-    public ScheduledCalendarEvent getNextScheduledEvent(final CalendarEvent event, final CalendarViewEventsType eventsType) {
-        final Job job = event.getJob();
-        final Calendar nextStart = cronJobService.getNextStart(job, eventsType);
-        if (nextStart != null) {
-            final long estimatedDuration = job.getEstimatedDuration();
-            return calendarEventFactory.createScheduledEvent(job, Collections.emptyMap(), nextStart, estimatedDuration);
-        }
-        return null;
+  public ScheduledCalendarEvent getNextScheduledEvent(final CalendarEvent event, final CalendarViewEventsType eventsType) {
+    final Job job = event.getJob();
+    final Calendar nextStart = cronJobService.getNextStart(job, eventsType);
+    if (nextStart != null) {
+      final long estimatedDuration = job.getEstimatedDuration();
+      return calendarEventFactory.createScheduledEvent(job, Collections.emptyMap(), nextStart, estimatedDuration);
     }
+    return null;
+  }
 }

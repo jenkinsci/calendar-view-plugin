@@ -4,7 +4,7 @@ var JSDOM = require('jsdom').JSDOM;
 var mockery = require('mockery');
 if (!global.jquery) {
   global.jquery = require('jquery');
-} 
+}
 
 function mockJquery(html) {
   var w = new JSDOM(html).window;

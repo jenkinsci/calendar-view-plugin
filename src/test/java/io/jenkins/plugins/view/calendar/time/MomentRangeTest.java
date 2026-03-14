@@ -23,65 +23,65 @@
  */
 package io.jenkins.plugins.view.calendar.time;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import java.text.ParseException;
-import java.util.TimeZone;
-
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.hours;
 import static io.jenkins.plugins.view.calendar.test.CalendarUtil.mom;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.text.ParseException;
+import java.util.TimeZone;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 class MomentRangeTest {
 
-    private static TimeZone defaultTimeZone;
+  private static TimeZone defaultTimeZone;
 
-    @BeforeAll
-    static void beforeClass() {
-        MomentRangeTest.defaultTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("CET"));
-    }
+  @BeforeAll
+  static void beforeClass() {
+    MomentRangeTest.defaultTimeZone = TimeZone.getDefault();
+    TimeZone.setDefault(TimeZone.getTimeZone("CET"));
+  }
 
-    @AfterAll
-    static void afterClass() {
-        TimeZone.setDefault(MomentRangeTest.defaultTimeZone);
-    }
+  @AfterAll
+  static void afterClass() {
+    TimeZone.setDefault(MomentRangeTest.defaultTimeZone);
+  }
 
-    @Test
-    void testConstructorInvalidRange() {
-        assertThrows(IllegalArgumentException.class, () -> new MomentRange(mom("2018-01-02 00:00:00 UTC"), mom("2018-01-01 23:59:59 UTC")));
-    }
+  @Test
+  void testConstructorInvalidRange() {
+    assertThrows(IllegalArgumentException.class, () -> new MomentRange(mom("2018-01-02 00:00:00 UTC"), mom("2018-01-01 23:59:59 UTC")));
+  }
 
-    @Test
-    void testConstructorInvalidRangeSameMoment() {
-        assertThrows(IllegalArgumentException.class, () -> new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-01 00:00:00 UTC")));
-    }
+  @Test
+  void testConstructorInvalidRangeSameMoment() {
+    assertThrows(IllegalArgumentException.class, () -> new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-01 00:00:00 UTC")));
+  }
 
-    @Test
-    void testConstructorValidRange() throws ParseException {
-        new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC"));
-    }
+  @Test
+  void testConstructorValidRange() throws ParseException {
+    new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC"));
+  }
 
-    @Test
-    void testIsValidRange() throws ParseException {
-        assertThat(MomentRange.isValidRange(mom("2018-01-02 00:00:00 UTC"), mom("2018-01-01 23:59:59 UTC")), is(false));
-        assertThat(MomentRange.isValidRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-01 00:00:00 UTC")), is(false));
-        assertThat(MomentRange.isValidRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC")), is(true));
-    }
+  @Test
+  void testIsValidRange() throws ParseException {
+    assertThat(MomentRange.isValidRange(mom("2018-01-02 00:00:00 UTC"), mom("2018-01-01 23:59:59 UTC")), is(false));
+    assertThat(MomentRange.isValidRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-01 00:00:00 UTC")), is(false));
+    assertThat(MomentRange.isValidRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC")), is(true));
+  }
 
-    @Test
-    void testToString() throws ParseException {
-        String string = new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC")).toString();
-        assertThat(string, is("2018-01-01T01:00:00 - 2018-01-02T01:00:00"));
-    }
+  @Test
+  void testToString() throws ParseException {
+    String string = new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC")).toString();
+    assertThat(string, is("2018-01-01T01:00:00 - 2018-01-02T01:00:00"));
+  }
 
-    @Test
-    void testDuration() throws ParseException {
-        long duration = new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC")).duration();
-        assertThat(duration, is(hours(24)));
-    }
+  @Test
+  void testDuration() throws ParseException {
+    long duration = new MomentRange(mom("2018-01-01 00:00:00 UTC"), mom("2018-01-02 00:00:00 UTC")).duration();
+    assertThat(duration, is(hours(24)));
+  }
 }
