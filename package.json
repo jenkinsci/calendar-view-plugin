@@ -27,7 +27,7 @@
     "css-minimizer-webpack-plugin": "8.0.0",
     "eslint": "9.39.2",
     "eslint-webpack-plugin": "5.0.3",
-    "import-fresh": "3.3.1",
+    "import-fresh": "4.0.0",
     "jsdom": "15.2.1",
     "mini-css-extract-plugin": "2.10.0",
     "mocha": "11.7.5",
