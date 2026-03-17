@@ -39,22 +39,22 @@ var timeout = null;
 
 $(function() {
   const root = document.documentElement;
-  root.style.setProperty('--result-success-color', getColorFor(root, CalendarViewOptions.resultsColors.success));
-  root.style.setProperty('--result-success-text-color', getColorFor(root, CalendarViewOptions.resultsColors.successText));
-  root.style.setProperty('--result-success-selected-color', getColorFor(root, CalendarViewOptions.resultsColors.successSelected));
-  root.style.setProperty('--result-success-selected-text-color', getColorFor(root, CalendarViewOptions.resultsColors.successSelectedText));
-  root.style.setProperty('--result-unstable-color', getColorFor(root, CalendarViewOptions.resultsColors.unstable));
-  root.style.setProperty('--result-unstable-text-color', getColorFor(root, CalendarViewOptions.resultsColors.unstableText));
-  root.style.setProperty('--result-unstable-selected-color', getColorFor(root, CalendarViewOptions.resultsColors.unstableSelected));
-  root.style.setProperty('--result-unstable-selected-text-color', getColorFor(root, CalendarViewOptions.resultsColors.unstableSelectedText));
-  root.style.setProperty('--result-failure-color', getColorFor(root, CalendarViewOptions.resultsColors.failure));
-  root.style.setProperty('--result-failure-text-color', getColorFor(root, CalendarViewOptions.resultsColors.failureText));
-  root.style.setProperty('--result-failure-selected-color', getColorFor(root, CalendarViewOptions.resultsColors.failureSelected));
-  root.style.setProperty('--result-failure-selected-text-color', getColorFor(root, CalendarViewOptions.resultsColors.failureSelectedText));
-  root.style.setProperty('--result-scheduled-color', getColorFor(root, CalendarViewOptions.resultsColors.scheduled));
-  root.style.setProperty('--result-scheduled-text-color', getColorFor(root, CalendarViewOptions.resultsColors.scheduledText));
-  root.style.setProperty('--result-scheduled-selected-color', getColorFor(root, CalendarViewOptions.resultsColors.scheduledSelected));
-  root.style.setProperty('--result-scheduled-selected-text-color', getColorFor(root, CalendarViewOptions.resultsColors.scheduledSelectedText));
+  root.style.setProperty('--result-success-color', CalendarViewOptions.resultsColors.success);
+  root.style.setProperty('--result-success-text-color', CalendarViewOptions.resultsColors.successText);
+  root.style.setProperty('--result-success-selected-color', CalendarViewOptions.resultsColors.successSelected);
+  root.style.setProperty('--result-success-selected-text-color', CalendarViewOptions.resultsColors.successSelectedText);
+  root.style.setProperty('--result-unstable-color', CalendarViewOptions.resultsColors.unstable);
+  root.style.setProperty('--result-unstable-text-color', CalendarViewOptions.resultsColors.unstableText);
+  root.style.setProperty('--result-unstable-selected-color', CalendarViewOptions.resultsColors.unstableSelected);
+  root.style.setProperty('--result-unstable-selected-text-color', CalendarViewOptions.resultsColors.unstableSelectedText);
+  root.style.setProperty('--result-failure-color', CalendarViewOptions.resultsColors.failure);
+  root.style.setProperty('--result-failure-text-color', CalendarViewOptions.resultsColors.failureText);
+  root.style.setProperty('--result-failure-selected-color', CalendarViewOptions.resultsColors.failureSelected);
+  root.style.setProperty('--result-failure-selected-text-color', CalendarViewOptions.resultsColors.failureSelectedText);
+  root.style.setProperty('--result-scheduled-color', CalendarViewOptions.resultsColors.scheduled);
+  root.style.setProperty('--result-scheduled-text-color', CalendarViewOptions.resultsColors.scheduledText);
+  root.style.setProperty('--result-scheduled-selected-color', CalendarViewOptions.resultsColors.scheduledSelected);
+  root.style.setProperty('--result-scheduled-selected-text-color', CalendarViewOptions.resultsColors.scheduledSelectedText);
 
   $('#calendar-view').fullCalendar({
     events: 'events',
@@ -130,7 +130,3 @@ $(function() {
     }
   });
 });
-
-function getColorFor(root, value) {
-  return value.startsWith('--') ? getComputedStyle(root).getPropertyValue(value) : value;
-}
