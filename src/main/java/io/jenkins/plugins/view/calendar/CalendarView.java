@@ -75,40 +75,40 @@ public class CalendarView extends ListView {
 
   public static enum ResultsColors {
     DEFAULT(//
-        "--success-color", // success
-        "--black", // successText
-        "--light-green", // successSelected
-        "--black", // successSelectedText
-        "--warning-color", // unstable
-        "--black", // unstableText
-        "--light-orange", // unstableSelected
-        "--black", // unstableSelectedText
-        "--error-color", // failure
-        "--white", // failureText
-        "--light-red", // failureSelected
-        "--white", // failureSelectedText
-        "--background", // scheduled
-        "--text-color", // scheduledText
-        "--text-color", // scheduledSelected
-        "--background"// scheduledSelectedText
+        "var(--success-color)", // success
+        "var(--black)", // successText
+        "var(--light-green)", // successSelected
+        "var(--black)", // successSelectedText
+        "var(--warning-color)", // unstable
+        "light-dark(var(--white),var(--black))", // unstableText
+        "var(--light-orange)", // unstableSelected
+        "light-dark(var(--white),var(--black))", // unstableSelectedText
+        "var(--error-color)", // failure
+        "var(--white)", // failureText
+        "var(--light-red)", // failureSelected
+        "var(--white)", // failureSelectedText
+        "var(--background)", // scheduled
+        "var(--text-color)", // scheduledText
+        "var(--text-color)", // scheduledSelected
+        "var(--background)"// scheduledSelectedText
     ), //
     LEGACY(//
-        "--blue", // success
-        "--white", // successText
-        "--light-blue", // successSelected
-        "--white", // successSelectedText
-        "--warning-color", // unstable
-        "--black", // unstableText
-        "--light-orange", // unstableSelected
-        "--black", // unstableSelectedText
-        "--error-color", // failure
-        "--white", // failureText
-        "--light-red", // failureSelected
-        "--white", // failureSelectedText
-        "--background", // scheduled
-        "--text-color", // scheduledText
-        "--text-color", // scheduledSelected
-        "--background"// scheduledSelectedText
+        "var(--blue)", // success
+        "var(--white)", // successText
+        "var(--light-blue)", // successSelected
+        "var(--white)", // successSelectedText
+        "var(--warning-color)", // unstable
+        "light-dark(var(--white),var(--black))", // unstableText
+        "var(--light-orange)", // unstableSelected
+        "light-dark(var(--white),var(--black))", // unstableSelectedText
+        "var(--error-color)", // failure
+        "var(--white)", // failureText
+        "var(--light-red)", // failureSelected
+        "var(--white)", // failureSelectedText
+        "var(--background)", // scheduled
+        "var(--text-color)", // scheduledText
+        "var(--text-color)", // scheduledSelected
+        "var(--background)"// scheduledSelectedText
     );
 
     public final String success;

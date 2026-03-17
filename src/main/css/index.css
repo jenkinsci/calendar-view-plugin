@@ -45,26 +45,23 @@
   padding: 5px;
 }
 
-.fc-event-container a,
-.fc-event-container a:link,
-.fc-event-container a:active,
-.fc-event-container a:visited {
-  text-decoration: none;
-}
-
 .fc-event {
-  background-color: #888888;
-  border-color: #888888;
+  background: #888;
+  border-color: #888
 }
 
 .fc-event.event-selected {
   background: #aaa;
 }
 
+.fc-event-container a, .fc-event-container a:link, .fc-event-container a:active, .fc-event-container a:visited {
+  color: white;
+  text-decoration: none;
+}
+
 .fc-event.event-result-success {
-  background-color: var(--result-success-color);
+  background: var(--result-success-color);
   border-color: var(--result-success-color);
-  color: var(--result-success-text-color);
 }
 
 .fc-event.event-result-success.event-selected {
@@ -72,10 +69,13 @@
   color: var(--result-success-selected-text-color);
 }
 
+.fc-event-container a.event-result-success, .fc-event-container a.event-result-success:link, .fc-event-container a.event-result-success:active, .fc-event-container a.event-result-success:visited {
+  color: var(--result-success-text-color);
+}
+
 .fc-event.event-result-failure {
-  background-color: var(--result-failure-color);
+  background: var(--result-failure-color);
   border-color: var(--result-failure-color);
-  color: var(--result-failure-text-color);
 }
 
 .fc-event.event-result-failure.event-selected {
@@ -83,10 +83,13 @@
   color: var(--result-failure-selected-text-color);
 }
 
+.fc-event-container a.event-result-failure, .fc-event-container a.event-result-failure:link, .fc-event-container a.event-result-failure:active, .fc-event-container a.event-result-failure:visited {
+  color: var(--result-failure-text-color);
+}
+
 .fc-event.event-result-unstable {
-  background-color: var(--result-unstable-color);
+  background: var(--result-unstable-color);
   border-color: var(--result-unstable-color);
-  color: var(--result-unstable-text-color);
 }
 
 .fc-event.event-result-unstable.event-selected {
@@ -94,35 +97,46 @@
   color: var(--result-unstable-selected-text-color);
 }
 
+.fc-event-container a.event-result-unstable, .fc-event-container a.event-result-unstable:link, .fc-event-container a.event-result-unstable:active, .fc-event-container a.event-result-unstable:visited {
+  color: var(--result-unstable-text-color);
+}
+
 .fc-event.event-state-scheduled {
-  background-color: var(--result-scheduled-color);
+  background: var(--result-scheduled-color);
   border-color: var(--result-scheduled-text-color);
   border-style: dashed;
-  color: var(--result-scheduled-text-color);
 }
 
 .fc-event.event-state-scheduled.event-selected {
   background: var(--result-scheduled-selected-color);
+}
+
+.fc-event-container a.event-state-scheduled, .fc-event-container a.event-state-scheduled:link, .fc-event-container a.event-state-scheduled:active, .fc-event-container a.event-state-scheduled:visited {
+  color: var(--result-scheduled-text-color);
+}
+
+.fc-event-container a.event-state-scheduled.event-selected, .fc-event-container a.event-state-scheduled.event-selected:link, .fc-event-container a.event-state-scheduled.event-selected:active, .fc-event-container a.event-state-scheduled.event-selected:visited {
   color: var(--result-scheduled-selected-text-color);
 }
 
 .fc-event.event-state-running {
-  border-style: dashed;
   animation: blink-animation 2s both ease-in-out infinite;
+  border-style: dashed;
 }
 
 @keyframes blink-animation {
   50% {
-    opacity: 0.2;
+    background: var(--background);
+    color: var(--text-color);
   }
 }
 
 .fc-unthemed td.fc-today {
-  background: grey;
+  background: light-dark(rgb(0 0 0 / 0.2),rgb(255 255 255 / 0.2));
 }
 
 .tippy-tooltip.jenkins-theme {
-  background-color: var(--background);
+  background: var(--background);
   border: 1px solid var(--card-border-color);
   color: var(--text-color);
   padding: 0;
