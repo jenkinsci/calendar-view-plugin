@@ -75,7 +75,7 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>parameterized-scheduler</artifactId>
         <!-- TODO Until https://github.com/jenkinsci/bom/commit/72bb85360ded90bce299adc93e385795764fc8c2 in BOM used here -->
-        <version>378.va_234d1c44456</version>
+        <version>379.v95c73f233a_df</version>
       </dependency>
       <dependency>
         <groupId>io.jenkins.plugins</groupId>
@@ -117,6 +117,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
+      <version>1571.vb_423c255d6d9</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
