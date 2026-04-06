@@ -26,142 +26,148 @@ THE SOFTWARE.
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
 
-    <j:set var="views" value="${it.owner.views}" />
-    <j:set var="currentView" value="${it}" />
+  <j:set var="views" value="${it.owner.views}" />
+  <j:set var="currentView" value="${it}" />
 
-    <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}" />
-    <j:set var="jobs" value="${it.jobs}"/>
+  <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}" />
+  <j:set var="jobs" value="${it.jobs}" />
 
-    <div class="jenkins-card" id="calendar-view">
-    </div>
+  <div class="jenkins-card" id="calendar-view">
+  </div>
 
-    <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
+  <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
 
-    <st:adjunct includes="io.jenkins.plugins.jquery3"/>
-    <script id="calendar-view-data" type="application/json">{
-        "defaultView": "${it.calendarViewType.name().toLowerCase()}-view",
-        "resultsColors": {
-           "success": "${it.resultsColors.success}",
-           "successText": "${it.resultsColors.successText}",
-           "successSelected": "${it.resultsColors.successSelected}",
-           "successSelectedText": "${it.resultsColors.successSelectedText}",
-           "unstable": "${it.resultsColors.unstable}",
-           "unstableText": "${it.resultsColors.unstableText}",
-           "unstableSelected": "${it.resultsColors.unstableSelected}",
-           "unstableSelectedText": "${it.resultsColors.unstableSelectedText}",
-           "failure": "${it.resultsColors.failure}",
-           "failureText": "${it.resultsColors.failureText}",
-           "failureSelected": "${it.resultsColors.failureSelected}",
-           "failureSelectedText": "${it.resultsColors.failureSelectedText}",
-           "scheduled": "${it.resultsColors.scheduled}",
-           "scheduledText": "${it.resultsColors.scheduledText}",
-           "scheduledSelected": "${it.resultsColors.scheduledSelected}",
-           "scheduledSelectedText": "${it.resultsColors.scheduledSelectedText}"
+  <st:adjunct includes="io.jenkins.plugins.jquery3" />
+  <script id="calendar-view-data" type="application/json">
+    {
+      "defaultView": "${it.calendarViewType.name().toLowerCase()}-view",
+      "colors": {
+        "success": "${it.success}",
+        "successText": "${it.successText}",
+        "successSelected": "${it.successSelected}",
+        "successSelectedText": "${it.successSelectedText}",
+        "unstable": "${it.unstable}",
+        "unstableText": "${it.unstableText}",
+        "unstableSelected": "${it.unstableSelected}",
+        "unstableSelectedText": "${it.unstableSelectedText}",
+        "failure": "${it.failure}",
+        "failureText": "${it.failureText}",
+        "failureSelected": "${it.failureSelected}",
+        "failureSelectedText": "${it.failureSelectedText}",
+        "aborted": "${it.aborted}",
+        "abortedText": "${it.abortedText}",
+        "abortedSelected": "${it.abortedSelected}",
+        "abortedSelectedText": "${it.abortedSelectedText}",
+        "scheduled": "${it.scheduled}",
+        "scheduledText": "${it.scheduledText}",
+        "scheduledSelected": "${it.scheduledSelected}",
+        "scheduledSelectedText": "${it.scheduledSelectedText}"
+      },
+      "buttonText": {
+        "today": "${%ButtonText.Today}",
+        "month-view": "${%ButtonText.Month}",
+        "week-view": "${%ButtonText.Week}",
+        "day-view": "${%ButtonText.Day}"
+      },
+      "popupText": {
+        "build": "${%This build}:",
+        "buildHistory": "${%Build History}:",
+        "buildHistoryEmpty": "${%No past builds}",
+        "project": "${%Project}: ",
+        "nextScheduledBuild": "${%Next build}: ",
+        "parameters": "${%Parameters}:"
+      },
+      "names": {
+        "monthNames": [
+          "${%MonthNames.January}",
+          "${%MonthNames.February}",
+          "${%MonthNames.March}",
+          "${%MonthNames.April}",
+          "${%MonthNames.May}",
+          "${%MonthNames.June}",
+          "${%MonthNames.July}",
+          "${%MonthNames.August}",
+          "${%MonthNames.September}",
+          "${%MonthNames.October}",
+          "${%MonthNames.November}",
+          "${%MonthNames.December}"
+        ],
+        "monthNamesShort": [
+          "${%MonthNamesShort.Jan}",
+          "${%MonthNamesShort.Feb}",
+          "${%MonthNamesShort.Mar}",
+          "${%MonthNamesShort.Apr}",
+          "${%MonthNamesShort.May}",
+          "${%MonthNamesShort.Jun}",
+          "${%MonthNamesShort.Jul}",
+          "${%MonthNamesShort.Aug}",
+          "${%MonthNamesShort.Sep}",
+          "${%MonthNamesShort.Oct}",
+          "${%MonthNamesShort.Nov}",
+          "${%MonthNamesShort.Dec}"
+        ],
+        "dayNames": [
+          "${%DayNames.Sunday}",
+          "${%DayNames.Monday}",
+          "${%DayNames.Tuesday}",
+          "${%DayNames.Wednesday}",
+          "${%DayNames.Thursday}",
+          "${%DayNames.Friday}",
+          "${%DayNames.Saturday}"
+        ],
+        "dayNamesShort": [
+          "${%DayNamesShort.Sun}",
+          "${%DayNamesShort.Mon}",
+          "${%DayNamesShort.Tue}",
+          "${%DayNamesShort.Wed}",
+          "${%DayNamesShort.Thu}",
+          "${%DayNamesShort.Fri}",
+          "${%DayNamesShort.Sat}"
+        ]
+      },
+      "weekSettings": {
+        "weekends": ${(it.useCustomWeekSettings) ? it.weekSettingsShowWeekends : true},
+        "weekNumbers": ${(it.useCustomWeekSettings) ? it.weekSettingsShowWeekNumbers : true},
+        "firstDay": ${(it.useCustomWeekSettings) ? it.weekSettingsFirstDay : 1}
+      },
+      "formats": {
+        "month-view": {
+          "titleFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTitleFormat) : '%Month.TitleFormat'}" />",
+          "columnHeaderFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthColumnHeaderFormat) : '%Month.ColumnHeaderFormat'}" />",
+          "timeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTimeFormat) : '%Month.TimeFormat'}" />",
+          "popupBuildTimeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthPopupBuildTimeFormat) : '%Month.PopupBuildTimeFormat'}" />"
         },
-        "buttonText": {
-           "today": "${%ButtonText.Today}",
-           "month-view": "${%ButtonText.Month}",
-           "week-view": "${%ButtonText.Week}",
-           "day-view": "${%ButtonText.Day}"
-         },
-         "popupText": {
-           "build": "${%This build}:",
-           "buildHistory": "${%Build History}:",
-           "buildHistoryEmpty": "${%No past builds}",
-           "project": "${%Project}: ",
-           "nextScheduledBuild": "${%Next build}: ",
-           "parameters": "${%Parameters}:"
-         },
-         "names": {
-           "monthNames": [
-             "${%MonthNames.January}",
-             "${%MonthNames.February}",
-             "${%MonthNames.March}",
-             "${%MonthNames.April}",
-             "${%MonthNames.May}",
-             "${%MonthNames.June}",
-             "${%MonthNames.July}",
-             "${%MonthNames.August}",
-             "${%MonthNames.September}",
-             "${%MonthNames.October}",
-             "${%MonthNames.November}",
-             "${%MonthNames.December}"
-           ],
-           "monthNamesShort": [
-             "${%MonthNamesShort.Jan}",
-             "${%MonthNamesShort.Feb}",
-             "${%MonthNamesShort.Mar}",
-             "${%MonthNamesShort.Apr}",
-             "${%MonthNamesShort.May}",
-             "${%MonthNamesShort.Jun}",
-             "${%MonthNamesShort.Jul}",
-             "${%MonthNamesShort.Aug}",
-             "${%MonthNamesShort.Sep}",
-             "${%MonthNamesShort.Oct}",
-             "${%MonthNamesShort.Nov}",
-             "${%MonthNamesShort.Dec}"
-           ],
-           "dayNames": [
-             "${%DayNames.Sunday}",
-             "${%DayNames.Monday}",
-             "${%DayNames.Tuesday}",
-             "${%DayNames.Wednesday}",
-             "${%DayNames.Thursday}",
-             "${%DayNames.Friday}",
-             "${%DayNames.Saturday}"
-           ],
-           "dayNamesShort": [
-             "${%DayNamesShort.Sun}",
-             "${%DayNamesShort.Mon}",
-             "${%DayNamesShort.Tue}",
-             "${%DayNamesShort.Wed}",
-             "${%DayNamesShort.Thu}",
-             "${%DayNamesShort.Fri}",
-             "${%DayNamesShort.Sat}"
-           ]
-         },
-         "weekSettings": {
-           "weekends": ${(it.useCustomWeekSettings) ? it.weekSettingsShowWeekends : true},
-           "weekNumbers": ${(it.useCustomWeekSettings) ? it.weekSettingsShowWeekNumbers : true},
-           "firstDay": ${(it.useCustomWeekSettings) ? it.weekSettingsFirstDay : 1}
-         },
-         "formats": {
-           "month-view": {
-             "titleFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTitleFormat) : '%Month.TitleFormat'}"/>",
-             "columnHeaderFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthColumnHeaderFormat) : '%Month.ColumnHeaderFormat'}"/>",
-             "timeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthTimeFormat) : '%Month.TimeFormat'}"/>",
-             "popupBuildTimeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.monthPopupBuildTimeFormat) : '%Month.PopupBuildTimeFormat'}"/>"
-           },
-           "week-view": {
-             "titleFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTitleFormat) : '%Week.TitleFormat'}"/>",
-             "columnHeaderFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekColumnHeaderFormat) : '%Week.ColumnHeaderFormat'}"/>",
-             "timeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTimeFormat) : '%Week.TimeFormat'}"/>",
-             "slotLabelFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekSlotTimeFormat) : '%Week.SlotLabelFormat'}"/>",
-             "popupBuildTimeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekPopupBuildTimeFormat) : '%Week.PopupBuildTimeFormat'}"/>"
-           },
-           "day-view": {
-             "titleFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTitleFormat) : '%Day.TitleFormat'}"/>",
-             "columnHeaderFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayColumnHeaderFormat) : '%Day.ColumnHeaderFormat'}"/>",
-             "timeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : '%Day.TimeFormat'}"/>",
-             "slotLabelFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : '%Day.SlotLabelFormat'}"/>",
-             "popupBuildTimeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayPopupBuildTimeFormat) : '%Day.PopupBuildTimeFormat'}"/>"
-           }
-         },
-         "slotSettings": {
-           "week-view": {
-             "slotDuration": "${it.useCustomSlotSettings ? it.jsonEscape(it.weekSlotDuration) : '00:30:00'}",
-             "minTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.weekMinTime) : '00:00:00'}",
-             "maxTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.weekMaxTime) : '24:00:00'}"
-           },
-           "day-view": {
-             "slotDuration": "${it.useCustomSlotSettings ? it.jsonEscape(it.daySlotDuration) : '00:30:00'}",
-             "minTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.dayMinTime) : '00:00:00'}",
-             "maxTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.dayMaxTime) : '24:00:00'}"
-           }
-         }
-       }</script>
-    <st:adjunct includes="io.jenkins.plugins.view.calendar.CalendarView.resource"/>
+        "week-view": {
+          "titleFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTitleFormat) : '%Week.TitleFormat'}" />",
+          "columnHeaderFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekColumnHeaderFormat) : '%Week.ColumnHeaderFormat'}" />",
+          "timeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekTimeFormat) : '%Week.TimeFormat'}" />",
+          "slotLabelFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekSlotTimeFormat) : '%Week.SlotLabelFormat'}" />",
+          "popupBuildTimeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.weekPopupBuildTimeFormat) : '%Week.PopupBuildTimeFormat'}" />"
+        },
+        "day-view": {
+          "titleFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTitleFormat) : '%Day.TitleFormat'}" />",
+          "columnHeaderFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayColumnHeaderFormat) : '%Day.ColumnHeaderFormat'}" />",
+          "timeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayTimeFormat) : '%Day.TimeFormat'}" />",
+          "slotLabelFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.daySlotTimeFormat) : '%Day.SlotLabelFormat'}" />",
+          "popupBuildTimeFormat": "<j:out value="${it.useCustomFormats ? it.jsonEscape(it.dayPopupBuildTimeFormat) : '%Day.PopupBuildTimeFormat'}" />"
+        }
+      },
+      "slotSettings": {
+        "week-view": {
+          "slotDuration": "${it.useCustomSlotSettings ? it.jsonEscape(it.weekSlotDuration) : '00:30:00'}",
+          "minTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.weekMinTime) : '00:00:00'}",
+          "maxTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.weekMaxTime) : '24:00:00'}"
+        },
+        "day-view": {
+          "slotDuration": "${it.useCustomSlotSettings ? it.jsonEscape(it.daySlotDuration) : '00:30:00'}",
+          "minTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.dayMinTime) : '00:00:00'}",
+          "maxTime": "${it.useCustomSlotSettings ? it.jsonEscape(it.dayMaxTime) : '24:00:00'}"
+        }
+      }
+    }
+  </script>
+  <st:adjunct includes="io.jenkins.plugins.view.calendar.CalendarView.resource" />
 
-    <script type="text/javascript" src="${rootURL}/plugin/calendar-view/bundles/calendar-view.js"></script>
+  <script type="text/javascript" src="${rootURL}/plugin/calendar-view/bundles/calendar-view.js"></script>
 
 </j:jelly>
