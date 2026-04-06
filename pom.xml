@@ -71,18 +71,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>parameterized-scheduler</artifactId>
-        <!-- TODO Until https://github.com/jenkinsci/bom/commit/72bb85360ded90bce299adc93e385795764fc8c2 in BOM used here -->
-        <version>379.v95c73f233a_df</version>
-      </dependency>
-      <dependency>
-        <groupId>io.jenkins.plugins</groupId>
-        <artifactId>extended-timer-trigger</artifactId>
-        <!-- TODO Until BOM updated with plugin in it -->
-        <version>52.v6d7f99f29306</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
