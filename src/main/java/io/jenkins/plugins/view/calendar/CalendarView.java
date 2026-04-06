@@ -87,10 +87,14 @@ public class CalendarView extends ListView {
         "var(--white)", // failureText
         "var(--light-red)", // failureSelected
         "var(--white)", // failureSelectedText
+        "#888", // aborted
+        "var(--white)", // abortedText
+        "#aaa", // abortedSelected
+        "var(--white)", // abortedSelectedText
         "var(--background)", // scheduled
         "var(--text-color)", // scheduledText
         "var(--text-color)", // scheduledSelected
-        "var(--background)"// scheduledSelectedText
+        "var(--background)" // scheduledSelectedText
     ), //
     LEGACY(//
         "var(--blue)", // success
@@ -105,36 +109,46 @@ public class CalendarView extends ListView {
         "var(--white)", // failureText
         "var(--light-red)", // failureSelected
         "var(--white)", // failureSelectedText
+        "#888", // aborted
+        "var(--white)", // abortedText
+        "#aaa", // abortedSelected
+        "var(--white)", // abortedSelectedText
         "var(--background)", // scheduled
         "var(--text-color)", // scheduledText
         "var(--text-color)", // scheduledSelected
-        "var(--background)"// scheduledSelectedText
+        "var(--background)" // scheduledSelectedText
     );
 
-    public final String success;
-    public final String successText;
-    public final String successSelected;
-    public final String successSelectedText;
+    final transient String success;
+    final transient String successText;
+    final transient String successSelected;
+    final transient String successSelectedText;
 
-    public final String unstable;
-    public final String unstableText;
-    public final String unstableSelected;
-    public final String unstableSelectedText;
+    final transient String unstable;
+    final transient String unstableText;
+    final transient String unstableSelected;
+    final transient String unstableSelectedText;
 
-    public final String failure;
-    public final String failureText;
-    public final String failureSelected;
-    public final String failureSelectedText;
+    final transient String failure;
+    final transient String failureText;
+    final transient String failureSelected;
+    final transient String failureSelectedText;
 
-    public final String scheduled;
-    public final String scheduledText;
-    public final String scheduledSelected;
-    public final String scheduledSelectedText;
+    final transient String aborted;
+    final transient String abortedText;
+    final transient String abortedSelected;
+    final transient String abortedSelectedText;
+
+    final transient String scheduled;
+    final transient String scheduledText;
+    final transient String scheduledSelected;
+    final transient String scheduledSelectedText;
 
     ResultsColors( //
         String success, String successText, String successSelected, String successSelectedText, //
         String unstable, String unstableText, String unstableSelected, String unstableSelectedText, //
         String failure, String failureText, String failureSelected, String failureSelectedText, //
+        String aborted, String abortedText, String abortedSelected, String abortedSelectedText, //
         String scheduled, String scheduledText, String scheduledSelected, String scheduledSelectedText //
     ) {
       this.success = success;
@@ -152,6 +166,11 @@ public class CalendarView extends ListView {
       this.failureSelected = failureSelected;
       this.failureSelectedText = failureSelectedText;
 
+      this.aborted = aborted;
+      this.abortedText = abortedText;
+      this.abortedSelected = abortedSelected;
+      this.abortedSelectedText = abortedSelectedText;
+
       this.scheduled = scheduled;
       this.scheduledText = scheduledText;
       this.scheduledSelected = scheduledSelected;
@@ -161,7 +180,34 @@ public class CalendarView extends ListView {
 
   private CalendarViewEventsType calendarViewEventsType;
   private CalendarViewType calendarViewType;
+
   private ResultsColors resultsColors;
+  private Boolean overrideColors;
+
+  private String overrideSuccess;
+  private String overrideSuccessText;
+  private String overrideSuccessSelected;
+  private String overrideSuccessSelectedText;
+
+  private String overrideUnstable;
+  private String overrideUnstableText;
+  private String overrideUnstableSelected;
+  private String overrideUnstableSelectedText;
+
+  private String overrideFailure;
+  private String overrideFailureText;
+  private String overrideFailureSelected;
+  private String overrideFailureSelectedText;
+
+  private String overrideAborted;
+  private String overrideAbortedText;
+  private String overrideAbortedSelected;
+  private String overrideAbortedSelectedText;
+
+  private String overrideScheduled;
+  private String overrideScheduledText;
+  private String overrideScheduledSelected;
+  private String overrideScheduledSelectedText;
 
   private Boolean useCustomFormats;
   private Boolean useCustomWeekSettings;
@@ -223,6 +269,174 @@ public class CalendarView extends ListView {
 
   public void setResultsColors(final ResultsColors resultsColors) {
     this.resultsColors = resultsColors;
+  }
+
+  public Boolean getOverrideColors() {
+    return defaultIfNull(overrideColors, false);
+  }
+
+  public void setOverrideColors(Boolean overrideColors) {
+    this.overrideColors = overrideColors;
+  }
+
+  public String getOverrideSuccess() {
+    return defaultIfNull(overrideSuccess, "");
+  }
+
+  public void setOverrideSuccess(String overrideSuccess) {
+    this.overrideSuccess = overrideSuccess;
+  }
+
+  public String getOverrideSuccessText() {
+    return defaultIfNull(overrideSuccessText, "");
+  }
+
+  public void setOverrideSuccessText(String overrideSuccessText) {
+    this.overrideSuccessText = overrideSuccessText;
+  }
+
+  public String getOverrideSuccessSelected() {
+    return defaultIfNull(overrideSuccessSelected, "");
+  }
+
+  public void setOverrideSuccessSelected(String overrideSuccessSelected) {
+    this.overrideSuccessSelected = overrideSuccessSelected;
+  }
+
+  public String getOverrideSuccessSelectedText() {
+    return defaultIfNull(overrideSuccessSelectedText, "");
+  }
+
+  public void setOverrideSuccessSelectedText(String overrideSuccessSelectedText) {
+    this.overrideSuccessSelectedText = overrideSuccessSelectedText;
+  }
+
+  public String getOverrideUnstable() {
+    return defaultIfNull(overrideUnstable, "");
+  }
+
+  public void setOverrideUnstable(String overrideUnstable) {
+    this.overrideUnstable = overrideUnstable;
+  }
+
+  public String getOverrideUnstableText() {
+    return defaultIfNull(overrideUnstableText, "");
+  }
+
+  public void setOverrideUnstableText(String overrideUnstableText) {
+    this.overrideUnstableText = overrideUnstableText;
+  }
+
+  public String getOverrideUnstableSelected() {
+    return defaultIfNull(overrideUnstableSelected, "");
+  }
+
+  public void setOverrideUnstableSelected(String overrideUnstableSelected) {
+    this.overrideUnstableSelected = overrideUnstableSelected;
+  }
+
+  public String getOverrideUnstableSelectedText() {
+    return defaultIfNull(overrideUnstableSelectedText, "");
+  }
+
+  public void setOverrideUnstableSelectedText(String overrideUnstableSelectedText) {
+    this.overrideUnstableSelectedText = overrideUnstableSelectedText;
+  }
+
+  public String getOverrideFailure() {
+    return defaultIfNull(overrideFailure, "");
+  }
+
+  public void setOverrideFailure(String overrideFailure) {
+    this.overrideFailure = overrideFailure;
+  }
+
+  public String getOverrideFailureText() {
+    return defaultIfNull(overrideFailureText, "");
+  }
+
+  public void setOverrideFailureText(String overrideFailureText) {
+    this.overrideFailureText = overrideFailureText;
+  }
+
+  public String getOverrideFailureSelected() {
+    return defaultIfNull(overrideFailureSelected, "");
+  }
+
+  public void setOverrideFailureSelected(String overrideFailureSelected) {
+    this.overrideFailureSelected = overrideFailureSelected;
+  }
+
+  public String getOverrideFailureSelectedText() {
+    return defaultIfNull(overrideFailureSelectedText, "");
+  }
+
+  public void setOverrideFailureSelectedText(String overrideFailureSelectedText) {
+    this.overrideFailureSelectedText = overrideFailureSelectedText;
+  }
+
+  public String getOverrideAborted() {
+    return defaultIfNull(overrideAborted, "");
+  }
+
+  public void setOverrideAborted(String overrideAborted) {
+    this.overrideAborted = overrideAborted;
+  }
+
+  public String getOverrideAbortedText() {
+    return defaultIfNull(overrideAbortedText, "");
+  }
+
+  public void setOverrideAbortedText(String overrideAbortedText) {
+    this.overrideAbortedText = overrideAbortedText;
+  }
+
+  public String getOverrideAbortedSelected() {
+    return defaultIfNull(overrideAbortedSelected, "");
+  }
+
+  public void setOverrideAbortedSelected(String overrideAbortedSelected) {
+    this.overrideAbortedSelected = overrideAbortedSelected;
+  }
+
+  public String getOverrideAbortedSelectedText() {
+    return defaultIfNull(overrideAbortedSelectedText, "");
+  }
+
+  public void setOverrideAbortedSelectedText(String overrideAbortedSelectedText) {
+    this.overrideAbortedSelectedText = overrideAbortedSelectedText;
+  }
+
+  public String getOverrideScheduled() {
+    return defaultIfNull(overrideScheduled, "");
+  }
+
+  public void setOverrideScheduled(String overrideScheduled) {
+    this.overrideScheduled = overrideScheduled;
+  }
+
+  public String getOverrideScheduledText() {
+    return defaultIfNull(overrideScheduledText, "");
+  }
+
+  public void setOverrideScheduledText(String overrideScheduledText) {
+    this.overrideScheduledText = overrideScheduledText;
+  }
+
+  public String getOverrideScheduledSelected() {
+    return defaultIfNull(overrideScheduledSelected, "");
+  }
+
+  public void setOverrideScheduledSelected(String overrideScheduledSelected) {
+    this.overrideScheduledSelected = overrideScheduledSelected;
+  }
+
+  public String getOverrideScheduledSelectedText() {
+    return defaultIfNull(overrideScheduledSelectedText, "");
+  }
+
+  public void setOverrideScheduledSelectedText(String overrideScheduledSelectedText) {
+    this.overrideScheduledSelectedText = overrideScheduledSelectedText;
   }
 
   public boolean isUseCustomFormats() {
@@ -466,7 +680,34 @@ public class CalendarView extends ListView {
   private void updateFields(final StaplerRequest2 req) {
     setCalendarViewEventsType(CalendarViewEventsType.valueOf(req.getParameter("calendarViewEventsType")));
     setCalendarViewType(CalendarViewType.valueOf(req.getParameter("calendarViewType")));
+
     setResultsColors(ResultsColors.valueOf(req.getParameter("resultsColors")));
+    setOverrideColors(req.getParameter("overrideColors") != null);
+
+    setOverrideSuccess(req.getParameter("overrideSuccess"));
+    setOverrideSuccessText(req.getParameter("overrideSuccessText"));
+    setOverrideSuccessSelected(req.getParameter("overrideSuccessSelected"));
+    setOverrideSuccessSelectedText(req.getParameter("overrideSuccessSelectedText"));
+
+    setOverrideUnstable(req.getParameter("overrideUnstable"));
+    setOverrideUnstableText(req.getParameter("overrideUnstableText"));
+    setOverrideUnstableSelected(req.getParameter("overrideUnstableSelected"));
+    setOverrideUnstableSelectedText(req.getParameter("overrideUnstableSelectedText"));
+
+    setOverrideFailure(req.getParameter("overrideFailure"));
+    setOverrideFailureText(req.getParameter("overrideFailureText"));
+    setOverrideFailureSelected(req.getParameter("overrideFailureSelected"));
+    setOverrideFailureSelectedText(req.getParameter("overrideFailureSelectedText"));
+
+    setOverrideAborted(req.getParameter("overrideAborted"));
+    setOverrideAbortedText(req.getParameter("overrideAbortedText"));
+    setOverrideAbortedSelected(req.getParameter("overrideAbortedSelected"));
+    setOverrideAbortedSelectedText(req.getParameter("overrideAbortedSelectedText"));
+
+    setOverrideScheduled(req.getParameter("overrideScheduled"));
+    setOverrideScheduledText(req.getParameter("overrideScheduledText"));
+    setOverrideScheduledSelected(req.getParameter("overrideScheduledSelected"));
+    setOverrideScheduledSelectedText(req.getParameter("overrideScheduledSelectedText"));
 
     setUseCustomFormats(req.getParameter("useCustomFormats") != null);
     setUseCustomWeekSettings(req.getParameter("useCustomWeekSettings") != null);
@@ -525,6 +766,90 @@ public class CalendarView extends ListView {
 
   public String jsonEscape(final String text) {
     return StringEscapeUtils.escapeEcmaScript(text);
+  }
+
+  public String getSuccess() {
+    return getColor(getResultsColors().success, getOverrideSuccess());
+  }
+
+  public String getSuccessText() {
+    return getColor(getResultsColors().successText, getOverrideSuccessText());
+  }
+
+  public String getSuccessSelected() {
+    return getColor(getResultsColors().successSelected, getOverrideSuccessSelected());
+  }
+
+  public String getSuccessSelectedText() {
+    return getColor(getResultsColors().successSelectedText, getOverrideSuccessSelectedText());
+  }
+
+  public String getUnstable() {
+    return getColor(getResultsColors().unstable, getOverrideUnstable());
+  }
+
+  public String getUnstableText() {
+    return getColor(getResultsColors().unstableText, getOverrideUnstableText());
+  }
+
+  public String getUnstableSelected() {
+    return getColor(getResultsColors().unstableSelected, getOverrideUnstableSelected());
+  }
+
+  public String getUnstableSelectedText() {
+    return getColor(getResultsColors().unstableSelectedText, getOverrideUnstableSelectedText());
+  }
+
+  public String getFailure() {
+    return getColor(getResultsColors().failure, getOverrideFailure());
+  }
+
+  public String getFailureText() {
+    return getColor(getResultsColors().failureText, getOverrideFailureText());
+  }
+
+  public String getFailureSelected() {
+    return getColor(getResultsColors().failureSelected, getOverrideFailureSelected());
+  }
+
+  public String getFailureSelectedText() {
+    return getColor(getResultsColors().failureSelectedText, getOverrideFailureSelectedText());
+  }
+
+  public String getAborted() {
+    return getColor(getResultsColors().aborted, getOverrideAborted());
+  }
+
+  public String getAbortedText() {
+    return getColor(getResultsColors().abortedText, getOverrideAbortedText());
+  }
+
+  public String getAbortedSelected() {
+    return getColor(getResultsColors().abortedSelected, getOverrideAbortedSelected());
+  }
+
+  public String getAbortedSelectedText() {
+    return getColor(getResultsColors().abortedSelectedText, getOverrideAbortedSelectedText());
+  }
+
+  public String getScheduled() {
+    return getColor(getResultsColors().scheduled, getOverrideScheduled());
+  }
+
+  public String getScheduledText() {
+    return getColor(getResultsColors().scheduledText, getOverrideScheduledText());
+  }
+
+  public String getScheduledSelected() {
+    return getColor(getResultsColors().scheduledSelected, getOverrideScheduledSelected());
+  }
+
+  public String getScheduledSelectedText() {
+    return getColor(getResultsColors().scheduledSelectedText, getOverrideScheduledSelectedText());
+  }
+
+  private String getColor(String defaultColor, String overrideColor) {
+    return !overrideColor.equals("") && getOverrideColors().booleanValue() ? overrideColor : defaultColor;
   }
 
   @Extension

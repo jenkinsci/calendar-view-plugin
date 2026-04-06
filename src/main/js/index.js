@@ -39,22 +39,26 @@ var timeout = null;
 
 $(function() {
   const root = document.documentElement;
-  root.style.setProperty('--result-success-color', CalendarViewOptions.resultsColors.success);
-  root.style.setProperty('--result-success-text-color', CalendarViewOptions.resultsColors.successText);
-  root.style.setProperty('--result-success-selected-color', CalendarViewOptions.resultsColors.successSelected);
-  root.style.setProperty('--result-success-selected-text-color', CalendarViewOptions.resultsColors.successSelectedText);
-  root.style.setProperty('--result-unstable-color', CalendarViewOptions.resultsColors.unstable);
-  root.style.setProperty('--result-unstable-text-color', CalendarViewOptions.resultsColors.unstableText);
-  root.style.setProperty('--result-unstable-selected-color', CalendarViewOptions.resultsColors.unstableSelected);
-  root.style.setProperty('--result-unstable-selected-text-color', CalendarViewOptions.resultsColors.unstableSelectedText);
-  root.style.setProperty('--result-failure-color', CalendarViewOptions.resultsColors.failure);
-  root.style.setProperty('--result-failure-text-color', CalendarViewOptions.resultsColors.failureText);
-  root.style.setProperty('--result-failure-selected-color', CalendarViewOptions.resultsColors.failureSelected);
-  root.style.setProperty('--result-failure-selected-text-color', CalendarViewOptions.resultsColors.failureSelectedText);
-  root.style.setProperty('--result-scheduled-color', CalendarViewOptions.resultsColors.scheduled);
-  root.style.setProperty('--result-scheduled-text-color', CalendarViewOptions.resultsColors.scheduledText);
-  root.style.setProperty('--result-scheduled-selected-color', CalendarViewOptions.resultsColors.scheduledSelected);
-  root.style.setProperty('--result-scheduled-selected-text-color', CalendarViewOptions.resultsColors.scheduledSelectedText);
+  root.style.setProperty('--result-success-color', CalendarViewOptions.colors.success);
+  root.style.setProperty('--result-success-text-color', CalendarViewOptions.colors.successText);
+  root.style.setProperty('--result-success-selected-color', CalendarViewOptions.colors.successSelected);
+  root.style.setProperty('--result-success-selected-text-color', CalendarViewOptions.colors.successSelectedText);
+  root.style.setProperty('--result-unstable-color', CalendarViewOptions.colors.unstable);
+  root.style.setProperty('--result-unstable-text-color', CalendarViewOptions.colors.unstableText);
+  root.style.setProperty('--result-unstable-selected-color', CalendarViewOptions.colors.unstableSelected);
+  root.style.setProperty('--result-unstable-selected-text-color', CalendarViewOptions.colors.unstableSelectedText);
+  root.style.setProperty('--result-failure-color', CalendarViewOptions.colors.failure);
+  root.style.setProperty('--result-failure-text-color', CalendarViewOptions.colors.failureText);
+  root.style.setProperty('--result-failure-selected-color', CalendarViewOptions.colors.failureSelected);
+  root.style.setProperty('--result-failure-selected-text-color', CalendarViewOptions.colors.failureSelectedText);
+  root.style.setProperty('--result-aborted-color', CalendarViewOptions.colors.aborted);
+  root.style.setProperty('--result-aborted-text-color', CalendarViewOptions.colors.abortedText);
+  root.style.setProperty('--result-aborted-selected-color', CalendarViewOptions.colors.abortedSelected);
+  root.style.setProperty('--result-aborted-selected-text-color', CalendarViewOptions.colors.abortedSelectedText);
+  root.style.setProperty('--result-scheduled-color', CalendarViewOptions.colors.scheduled);
+  root.style.setProperty('--result-scheduled-text-color', CalendarViewOptions.colors.scheduledText);
+  root.style.setProperty('--result-scheduled-selected-color', CalendarViewOptions.colors.scheduledSelected);
+  root.style.setProperty('--result-scheduled-selected-text-color', CalendarViewOptions.colors.scheduledSelectedText);
 
   $('#calendar-view').fullCalendar({
     events: 'events',

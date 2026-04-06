@@ -28,313 +28,400 @@ Portions of this code copied from the Jenkins Project. See LICENSE.md for notice
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-    <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
-    <st:adjunct includes="io.jenkins.plugins.jquery3"/>
+  <link type="text/css" rel="stylesheet" href="${rootURL}/plugin/calendar-view/bundles/calendar-view.css" />
+  <st:adjunct includes="io.jenkins.plugins.jquery3" />
 
-    <f:section title="${%Calendar Options}" name="calendarOptions">
-        <f:entry title="${%Shown events}" field="calendarViewEventsType">
-          <div class="calendar-view-config-container">
-            <f:radio name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='ALL'}" title="${%All events}"/>
-            <f:radio name="calendarViewEventsType" value="BUILDS" checked="${it.calendarViewEventsType=='BUILDS'}" title="${%Builds}"/>
-            <f:radio name="calendarViewEventsType" value="POLLINGS" checked="${it.calendarViewEventsType=='POLLINGS'}" title="${%Planned polling}"/>
-          </div>
-        </f:entry>
+  <f:section title="${%Calendar Options}" name="calendarOptions">
+    <f:entry title="${%Shown events}" field="calendarViewEventsType">
+      <div class="calendar-view-config-container">
+        <f:radio name="calendarViewEventsType" value="ALL" checked="${it.calendarViewEventsType=='ALL'}" title="${%All events}" />
+        <f:radio name="calendarViewEventsType" value="BUILDS" checked="${it.calendarViewEventsType=='BUILDS'}" title="${%Builds}" />
+        <f:radio name="calendarViewEventsType" value="POLLINGS" checked="${it.calendarViewEventsType=='POLLINGS'}" title="${%Planned polling}" />
+      </div>
+    </f:entry>
 
-        <f:entry title="${%Default View}" field="calendarViewType">
-          <div class="calendar-view-config-container">
-            <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}" title="${%Month}"/>
-            <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}" title="${%Week}"/>
-            <f:radio name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}" title="${%Day}"/>
-          </div>
-        </f:entry>
+    <f:entry title="${%Default View}" field="calendarViewType">
+      <div class="calendar-view-config-container">
+        <f:radio name="calendarViewType" value="MONTH" checked="${it.calendarViewType=='MONTH'}" title="${%Month}" />
+        <f:radio name="calendarViewType" value="WEEK" checked="${it.calendarViewType=='WEEK'}" title="${%Week}" />
+        <f:radio name="calendarViewType" value="DAY" checked="${it.calendarViewType=='DAY'}" title="${%Day}" />
+      </div>
+    </f:entry>
 
-        <f:entry title="${%Colors}" field="resultsColors">
-            <div class="calendar-view-config-container">
-                <f:radio name="resultsColors" value="DEFAULT" checked="${it.resultsColors=='DEFAULT'}" title="${%Colors.Default}"/>
-                <f:radio name="resultsColors" value="LEGACY" checked="${it.resultsColors=='LEGACY'}" title="${%Colors.Legacy}"/>
-            </div>
-        </f:entry>
+    <f:entry title="${%Colors}" field="resultsColors">
+      <f:entry>
+        <div class="calendar-view-config-container">
+          <f:radio name="resultsColors" value="DEFAULT" checked="${it.resultsColors=='DEFAULT'}" title="${%Colors.Default}" />
+          <f:radio name="resultsColors" value="LEGACY" checked="${it.resultsColors=='LEGACY'}" title="${%Colors.Legacy}" />
+        </div>
+      </f:entry>
+      <f:optionalBlock name="overrideColors" title="${%Override colors}" checked="${it.overrideColors}">
+        <table>
+          <tr>
+            <td />
+            <td class="calendar-view-config-color-label first-label">${%Background}</td>
+            <td class="calendar-view-config-color-label first-label">${%Text}</td>
+            <td class="calendar-view-config-color-label first-label">${%Background.hover}</td>
+            <td class="calendar-view-config-color-label first-label">${%Text.hover}</td>
+          </tr>
+          <tr>
+            <td class="calendar-view-config-color-label first-label">${%Success}</td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideSuccess" field="overrideSuccess" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideSuccessText" field="overrideSuccessText" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideSuccessSelected" field="overrideSuccessSelected" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideSuccessSelectedText" field="overrideSuccessSelectedText" />
+            </td>
+          </tr>
+          <tr>
+            <td class="calendar-view-config-color-label first-label">${%Unstable}</td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideUnstable" field="overrideUnstable" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideUnstableText" field="overrideUnstableText" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideUnstableSelected" field="overrideUnstableSelected" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideUnstableSelectedText" field="overrideUnstableSelectedText" />
+            </td>
+          </tr>
+          <tr>
+            <td class="calendar-view-config-color-label first-label">${%Failure}</td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideFailure" field="overrideFailure" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideFailureText" field="overrideFailureText" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideFailureSelected" field="overrideFailureSelected" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideFailureSelectedText" field="overrideFailureSelectedText" />
+            </td>
+          </tr>
+          <tr>
+            <td class="calendar-view-config-color-label first-label">${%Aborted}</td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideAborted" field="overrideAborted" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideAbortedText" field="overrideAbortedText" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideAbortedSelected" field="overrideAbortedSelected" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideAbortedSelectedText" field="overrideAbortedSelectedText" />
+            </td>
+          </tr>
+          <tr>
+            <td class="calendar-view-config-color-label first-label">${%Scheduled}</td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideScheduled" field="overrideScheduled" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideScheduledText" field="overrideScheduledText" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideScheduledSelected" field="overrideScheduledSelected" />
+            </td>
+            <td class="calendar-view-config-color-input">
+              <f:textbox name="overrideScheduledSelectedText" field="overrideScheduledSelectedText" />
+            </td>
+          </tr>
+        </table>
+      </f:optionalBlock>
+    </f:entry>
 
-        <f:optionalBlock name="useCustomWeekSettings" title="${%Use custom week day settings}"
-                         checked="${it.useCustomWeekSettings}">
-            <f:entry title="${%Weeks}">
-              <div class="calendar-view-config-container">
-                    <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends" title="${%Show weekends}"/>
-                    <f:checkbox name="weekSettingsShowWeekNumbers" field="weekSettingsShowWeekNumbers" title="${%Show week numbers}"/>
+    <f:optionalBlock name="useCustomWeekSettings" title="${%Use custom week day settings}" checked="${it.useCustomWeekSettings}">
+      <f:entry title="${%Weeks}">
+        <div class="calendar-view-config-container">
+          <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends" title="${%Show weekends}" />
+          <f:checkbox name="weekSettingsShowWeekNumbers" field="weekSettingsShowWeekNumbers" title="${%Show week numbers}" />
+        </div>
+      </f:entry>
+      <f:entry title="${%First day of week}">
+        <div class="jenkins-select">
+          <select name="weekSettingsFirstDay" class="jenkins-select__input">
+            <f:option value="0" selected="${it.weekSettingsFirstDay==0}">${%Sunday}</f:option>
+            <f:option value="1" selected="${it.weekSettingsFirstDay==1}">${%Monday}</f:option>
+            <f:option value="2" selected="${it.weekSettingsFirstDay==2}">${%Tuesday}</f:option>
+            <f:option value="3" selected="${it.weekSettingsFirstDay==3}">${%Wednesday}</f:option>
+            <f:option value="4" selected="${it.weekSettingsFirstDay==4}">${%Thursday}</f:option>
+            <f:option value="5" selected="${it.weekSettingsFirstDay==5}">${%Friday}</f:option>
+            <f:option value="6" selected="${it.weekSettingsFirstDay==6}">${%Saturday}</f:option>
+          </select>
+        </div>
+      </f:entry>
+      <f:entry title="${%Week numbers}">
+        <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends" title="${%Show week}" />
+      </f:entry>
+    </f:optionalBlock>
+
+    <f:optionalBlock name="useCustomFormats" title="${%Use custom date and time formats}" checked="${it.useCustomFormats}"
+      help="/plugin/calendar-view/help/date-and-time-formats.html">
+      <f:entry title="${%View title}">
+        <table>
+          <tr>
+            <td class="calendar-view-config-label first-label">${%Month}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="monthTitleFormat" field="monthTitleFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Month.TitleFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Week}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="weekTitleFormat" field="weekTitleFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Week.TitleFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Day}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="dayTitleFormat" field="dayTitleFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Day.TitleFormat}</div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+      <f:entry title="${%Day column title}">
+        <table>
+          <tr>
+            <td class="calendar-view-config-label first-label">${%Month}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="monthColumnHeaderFormat" field="monthColumnHeaderFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Month.ColumnHeaderFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Week}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="weekColumnHeaderFormat" field="weekColumnHeaderFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Week.ColumnHeaderFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Day}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="dayColumnHeaderFormat" field="dayColumnHeaderFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Day.ColumnHeaderFormat}</div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+      <f:entry title="${%Events}">
+        <table>
+          <tr>
+            <td class="calendar-view-config-label first-label">${%Month}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="monthTimeFormat" field="monthTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Month.TimeFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Week}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="weekTimeFormat" field="weekTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Week.TimeFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Day}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="dayTimeFormat" field="dayTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Day.TimeFormat}</div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+      <f:entry title="${%Slots}">
+        <table>
+          <tr>
+            <td class="calendar-view-config-label first-label" style="visibility:hidden">${%Month}:</td>
+            <td class="calendar-view-config-input" style="visibility:hidden">
+              <f:textbox name="monthSlotTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}:</div>
+            </td>
+            <td class="calendar-view-config-label">${%Week}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="weekSlotTimeFormat" field="weekSlotTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Week.SlotLabelFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Day}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="daySlotTimeFormat" field="daySlotTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Day.SlotLabelFormat}</div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+      <f:entry title="${%Popups}">
+        <table>
+          <tr>
+            <td class="calendar-view-config-label first-label">${%Month}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="monthPopupBuildTimeFormat" field="monthPopupBuildTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Month.PopupBuildTimeFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Week}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="weekPopupBuildTimeFormat" field="weekPopupBuildTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Week.PopupBuildTimeFormat}</div>
+            </td>
+            <td class="calendar-view-config-label">${%Day}:</td>
+            <td class="calendar-view-config-input">
+              <f:textbox name="dayPopupBuildTimeFormat" field="dayPopupBuildTimeFormat" />
+              <div class="calendar-view-config-default">${%Default}: ${%Day.PopupBuildTimeFormat}</div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+    </f:optionalBlock>
+
+    <f:optionalBlock name="useCustomSlotSettings" title="${%Use custom time slot settings}" checked="${it.useCustomSlotSettings}">
+      <f:entry title="${%Time slot duration}">
+        <table style="width:350px;">
+          <tr>
+            <td style="vertical-align:middle; width:45px;">${%Week}:</td>
+            <td style="vertical-align:middle;">
+              <div class="jenkins-select">
+                <select name="weekSlotDuration" class="jenkins-select__input">
+                  <f:option value="00:05:00" selected="${it.weekSlotDuration=='00:05:00'}">${%5 minutes}</f:option>
+                  <f:option value="00:10:00" selected="${it.weekSlotDuration=='00:10:00'}">${%10 minutes}</f:option>
+                  <f:option value="00:15:00" selected="${it.weekSlotDuration=='00:15:00'}">${%15 minutes}</f:option>
+                  <f:option value="00:20:00" selected="${it.weekSlotDuration=='00:20:00'}">${%20 minutes}</f:option>
+                  <f:option value="00:30:00" selected="${it.weekSlotDuration=='00:30:00'}">${%30 minutes}</f:option>
+                  <f:option value="01:00:00" selected="${it.weekSlotDuration=='01:00:00'}">${%1 hour}</f:option>
+                </select>
               </div>
-            </f:entry>
-            <f:entry title="${%First day of week}">
-                <div class="jenkins-select">
-                    <select name="weekSettingsFirstDay" class="jenkins-select__input">
-                        <f:option value="0" selected="${it.weekSettingsFirstDay==0}">${%Sunday}</f:option>
-                        <f:option value="1" selected="${it.weekSettingsFirstDay==1}">${%Monday}</f:option>
-                        <f:option value="2" selected="${it.weekSettingsFirstDay==2}">${%Tuesday}</f:option>
-                        <f:option value="3" selected="${it.weekSettingsFirstDay==3}">${%Wednesday}</f:option>
-                        <f:option value="4" selected="${it.weekSettingsFirstDay==4}">${%Thursday}</f:option>
-                        <f:option value="5" selected="${it.weekSettingsFirstDay==5}">${%Friday}</f:option>
-                        <f:option value="6" selected="${it.weekSettingsFirstDay==6}">${%Saturday}</f:option>
-                    </select>
-                </div>
-            </f:entry>
-            <f:entry title="${%Week numbers}">
-                <f:checkbox name="weekSettingsShowWeekends" field="weekSettingsShowWeekends" title="${%Show week}"/>
-            </f:entry>
-        </f:optionalBlock>
+            </td>
+            <td style="vertical-align:middle; padding-left: 10px; width:40px;">${%Day}:</td>
+            <td style="vertical-align:middle;">
+              <div class="jenkins-select">
+                <select name="daySlotDuration" class="jenkins-select__input">
+                  <f:option value="00:05:00" selected="${it.daySlotDuration=='00:05:00'}">${%5 minutes}</f:option>
+                  <f:option value="00:10:00" selected="${it.daySlotDuration=='00:10:00'}">${%10 minutes}</f:option>
+                  <f:option value="00:15:00" selected="${it.daySlotDuration=='00:15:00'}">${%15 minutes}</f:option>
+                  <f:option value="00:20:00" selected="${it.daySlotDuration=='00:20:00'}">${%20 minutes}</f:option>
+                  <f:option value="00:30:00" selected="${it.daySlotDuration=='00:30:00'}">${%30 minutes}</f:option>
+                  <f:option value="01:00:00" selected="${it.daySlotDuration=='01:00:00'}">${%1 hour}</f:option>
+                </select>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+      <f:entry title="${%Time slot start}">
+        <table style="width:270px;">
+          <tr>
+            <td style="vertical-align:middle; width: 45px;">${%Week}:</td>
+            <td>
+              <div class="jenkins-select">
+                <select name="weekMinTime" class="jenkins-select__input">
+                  <j:forEach var="hour" begin="0" end="24">
+                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00" />
+                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00" />
+                    <f:option value="${timeSecs}" selected="${it.weekMinTime==timeSecs}">${timeMins}</f:option>
+                  </j:forEach>
+                </select>
+              </div>
+            </td>
+            <td style="vertical-align:middle; padding-left:10px; width:40px">${%Day}:</td>
+            <td>
+              <div class="jenkins-select">
+                <select name="dayMinTime" class="jenkins-select__input">
+                  <j:forEach var="hour" begin="0" end="24">
+                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00" />
+                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00" />
+                    <f:option value="${timeSecs}" selected="${it.dayMinTime==timeSecs}">${timeMins}</f:option>
+                  </j:forEach>
+                </select>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+      <f:entry title="${%Time slot end}">
+        <table style="width:270px;">
+          <tr>
+            <td style="vertical-align:middle; width:45px;">${%Week}:</td>
+            <td>
+              <div class="jenkins-select">
+                <select name="weekMaxTime" class="jenkins-select__input">
+                  <j:forEach var="hour" begin="0" end="24">
+                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00" />
+                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00" />
+                    <f:option value="${timeSecs}" selected="${it.weekMaxTime==timeSecs}">${timeMins}</f:option>
+                  </j:forEach>
+                </select>
+              </div>
+            </td>
+            <td style="vertical-align:middle; padding-left:10px; width: 40px">${%Day}:</td>
+            <td>
+              <div class="jenkins-select">
+                <select name="dayMaxTime" class="jenkins-select__input">
+                  <j:forEach var="hour" begin="0" end="24">
+                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00" />
+                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00" />
+                    <f:option value="${timeSecs}" selected="${it.dayMaxTime==timeSecs}">${timeMins}</f:option>
+                  </j:forEach>
+                </select>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </f:entry>
+    </f:optionalBlock>
+  </f:section>
 
-        <f:optionalBlock name="useCustomFormats" title="${%Use custom date and time formats}"
-                         checked="${it.useCustomFormats}" help="/plugin/calendar-view/help/date-and-time-formats.html">
-            <f:entry title="${%View title}">
-                <table>
-                    <tr>
-                        <td class="calendar-view-config-label first-label">${%Month}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="monthTitleFormat" field="monthTitleFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Month.TitleFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Week}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="weekTitleFormat" field="weekTitleFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Week.TitleFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Day}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="dayTitleFormat" field="dayTitleFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Day.TitleFormat}</div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-            <f:entry title="${%Day column title}">
-                <table>
-                    <tr>
-                        <td class="calendar-view-config-label first-label">${%Month}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="monthColumnHeaderFormat" field="monthColumnHeaderFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Month.ColumnHeaderFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Week}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="weekColumnHeaderFormat" field="weekColumnHeaderFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Week.ColumnHeaderFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Day}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="dayColumnHeaderFormat" field="dayColumnHeaderFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Day.ColumnHeaderFormat}</div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-            <f:entry title="${%Events}">
-                <table>
-                    <tr>
-                        <td class="calendar-view-config-label first-label">${%Month}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="monthTimeFormat" field="monthTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Month.TimeFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Week}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="weekTimeFormat" field="weekTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Week.TimeFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Day}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="dayTimeFormat" field="dayTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Day.TimeFormat}</div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-            <f:entry title="${%Slots}">
-                <table>
-                    <tr>
-                        <td class="calendar-view-config-label first-label" style="visibility:hidden">${%Month}:</td>
-                        <td class="calendar-view-config-input" style="visibility:hidden">
-                            <f:textbox name="monthSlotTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}:</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Week}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="weekSlotTimeFormat" field="weekSlotTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Week.SlotLabelFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Day}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="daySlotTimeFormat" field="daySlotTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Day.SlotLabelFormat}</div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-            <f:entry title="${%Popups}">
-                <table>
-                    <tr>
-                        <td class="calendar-view-config-label first-label">${%Month}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="monthPopupBuildTimeFormat" field="monthPopupBuildTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Month.PopupBuildTimeFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Week}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="weekPopupBuildTimeFormat" field="weekPopupBuildTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Week.PopupBuildTimeFormat}</div>
-                        </td>
-                        <td class="calendar-view-config-label">${%Day}:</td>
-                        <td class="calendar-view-config-input">
-                            <f:textbox name="dayPopupBuildTimeFormat" field="dayPopupBuildTimeFormat" />
-                            <div class="calendar-view-config-default">${%Default}: ${%Day.PopupBuildTimeFormat}</div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-        </f:optionalBlock>
+  <f:section title="${%Job Filters}">
 
-        <f:optionalBlock name="useCustomSlotSettings" title="${%Use custom time slot settings}"
-                         checked="${it.useCustomSlotSettings}">
-            <f:entry title="${%Time slot duration}">
-                <table style="width:350px;">
-                    <tr>
-                        <td style="vertical-align:middle; width:45px;">${%Week}:</td>
-                        <td style="vertical-align:middle;">
-                          <div class="jenkins-select">
-                            <select name="weekSlotDuration" class="jenkins-select__input">
-                                <f:option value="00:05:00" selected="${it.weekSlotDuration=='00:05:00'}">${%5 minutes}</f:option>
-                                <f:option value="00:10:00" selected="${it.weekSlotDuration=='00:10:00'}">${%10 minutes}</f:option>
-                                <f:option value="00:15:00" selected="${it.weekSlotDuration=='00:15:00'}">${%15 minutes}</f:option>
-                                <f:option value="00:20:00" selected="${it.weekSlotDuration=='00:20:00'}">${%20 minutes}</f:option>
-                                <f:option value="00:30:00" selected="${it.weekSlotDuration=='00:30:00'}">${%30 minutes}</f:option>
-                                <f:option value="01:00:00" selected="${it.weekSlotDuration=='01:00:00'}">${%1 hour}</f:option>
-                            </select>
-                          </div>
-                        </td>
-                        <td style="vertical-align:middle; padding-left: 10px; width:40px;">${%Day}:</td>
-                        <td style="vertical-align:middle;">
-                          <div class="jenkins-select">
-                            <select name="daySlotDuration" class="jenkins-select__input">
-                                <f:option value="00:05:00" selected="${it.daySlotDuration=='00:05:00'}">${%5 minutes}</f:option>
-                                <f:option value="00:10:00" selected="${it.daySlotDuration=='00:10:00'}">${%10 minutes}</f:option>
-                                <f:option value="00:15:00" selected="${it.daySlotDuration=='00:15:00'}">${%15 minutes}</f:option>
-                                <f:option value="00:20:00" selected="${it.daySlotDuration=='00:20:00'}">${%20 minutes}</f:option>
-                                <f:option value="00:30:00" selected="${it.daySlotDuration=='00:30:00'}">${%30 minutes}</f:option>
-                                <f:option value="01:00:00" selected="${it.daySlotDuration=='01:00:00'}">${%1 hour}</f:option>
-                            </select>
-                          </div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-            <f:entry title="${%Time slot start}">
-                <table style="width:270px;">
-                    <tr>
-                        <td style="vertical-align:middle; width: 45px;">${%Week}:</td>
-                        <td>
-                          <div class="jenkins-select">
-                            <select name="weekMinTime" class="jenkins-select__input">
-                                <j:forEach var="hour" begin="0" end="24">
-                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
-                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
-                                    <f:option value="${timeSecs}" selected="${it.weekMinTime==timeSecs}">${timeMins}</f:option>
-                                </j:forEach>
-                            </select>
-                          </div>
-                        </td>
-                        <td style="vertical-align:middle; padding-left:10px; width:40px">${%Day}:</td>
-                        <td>
-                          <div class="jenkins-select">
-                            <select name="dayMinTime" class="jenkins-select__input">
-                                <j:forEach var="hour" begin="0" end="24">
-                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
-                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
-                                    <f:option value="${timeSecs}" selected="${it.dayMinTime==timeSecs}">${timeMins}</f:option>
-                                </j:forEach>
-                            </select>
-                          </div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-            <f:entry title="${%Time slot end}">
-                <table style="width:270px;">
-                    <tr>
-                        <td style="vertical-align:middle; width:45px;">${%Week}:</td>
-                        <td>
-                          <div class="jenkins-select">
-                            <select name="weekMaxTime" class="jenkins-select__input">
-                                <j:forEach var="hour" begin="0" end="24">
-                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
-                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
-                                    <f:option value="${timeSecs}" selected="${it.weekMaxTime==timeSecs}">${timeMins}</f:option>
-                                </j:forEach>
-                            </select>
-                          </div>
-                        </td>
-                        <td style="vertical-align:middle; padding-left:10px; width: 40px">${%Day}:</td>
-                        <td>
-                          <div class="jenkins-select">
-                            <select name="dayMaxTime" class="jenkins-select__input">
-                                <j:forEach var="hour" begin="0" end="24">
-                                    <j:set var="timeMins" value="${hour lt 10 ? '0' : ''}${hour}:00"/>
-                                    <j:set var="timeSecs" value="${hour lt 10 ? '0' : ''}${hour}:00:00"/>
-                                    <f:option value="${timeSecs}" selected="${it.dayMaxTime==timeSecs}">${timeMins}</f:option>
-                                </j:forEach>
-                            </select>
-                          </div>
-                        </td>
-                    </tr>
-                </table>
-            </f:entry>
-        </f:optionalBlock>
-    </f:section>
+    <f:entry title="${%Status Filter}" help="/help/view-config/statusFilter.html">
+      <div class="jenkins-select">
+        <select name="statusFilter" class="jenkins-select__input">
+          <f:option value="" selected="${it.statusFilter==null}">${%All selected jobs}</f:option>
+          <f:option value="1" selected="${it.statusFilter==true}">${%Enabled jobs only}</f:option>
+          <f:option value="2" selected="${it.statusFilter==false}">${%Disabled jobs only}</f:option>
+        </select>
+      </div>
+    </f:entry>
 
-    <f:section title="${%Job Filters}">
+    <f:entry title="${%Recurse in subfolders}" field="recurse">
+      <f:checkbox id="recurse" />
+    </f:entry>
 
-        <f:entry title="${%Status Filter}" help="/help/view-config/statusFilter.html">
-          <div class="jenkins-select">
-            <select name="statusFilter" class="jenkins-select__input">
-                <f:option value="" selected="${it.statusFilter==null}">${%All selected jobs}</f:option>
-                <f:option value="1" selected="${it.statusFilter==true}">${%Enabled jobs only}</f:option>
-                <f:option value="2" selected="${it.statusFilter==false}">${%Disabled jobs only}</f:option>
-            </select>
-          </div>
-        </f:entry>
+    <f:entry title="${%Jobs}">
+      <div class="listview-jobs">
+        <j:forEach var="job" items="${h.getAllTopLevelItems(it.ownerItemGroup)}">
+          <j:set var="spanClass" value="" />
+          <j:set var="spanStyle" value="" />
+          <j:if test="${job.parent!=it.ownerItemGroup}">
+            <j:set var="spanClass" value="nested" />
+            <j:set var="spanStyle" value="${it.recurse?'':'display:none'}" />
+          </j:if>
+          <span class="${spanClass}" style="${spanStyle}">
+            <f:checkbox name="item_${job.getRelativeNameFromGroup(it.ownerItemGroup)}" checked="${it.jobNamesContains(job)}"
+              title="${h.getRelativeDisplayNameFrom(job,it.ownerItemGroup)}" tooltip="${job.fullName}" json="true" />
+            <br />
+          </span>
+        </j:forEach>
+      </div>
+    </f:entry>
 
-        <f:entry title="${%Recurse in subfolders}" field="recurse">
-            <f:checkbox id="recurse"/>
-        </f:entry>
+    <f:optionalBlock name="useincluderegex" title="${%Use a regular expression to include jobs into the view}" checked="${it.includeRegex != null}"
+      help="/help/view-config/includeregex.html">
+      <f:entry title="${%Regular expression}">
+        <f:textbox name="includeRegex" field="includeRegex" />
+      </f:entry>
+    </f:optionalBlock>
 
-        <f:entry title="${%Jobs}">
-            <div class="listview-jobs">
-                <j:forEach var="job" items="${h.getAllTopLevelItems(it.ownerItemGroup)}">
-                    <j:set var="spanClass" value=""/>
-                    <j:set var="spanStyle" value=""/>
-                    <j:if test="${job.parent!=it.ownerItemGroup}">
-                        <j:set var="spanClass" value="nested"/>
-                        <j:set var="spanStyle" value="${it.recurse?'':'display:none'}"/>
-                    </j:if>
-                    <span class="${spanClass}" style="${spanStyle}">
-                        <f:checkbox name="item_${job.getRelativeNameFromGroup(it.ownerItemGroup)}" checked="${it.jobNamesContains(job)}" title="${h.getRelativeDisplayNameFrom(job,it.ownerItemGroup)}" tooltip="${job.fullName}" json="true"/>
-                        <br/>
-                    </span>
-                </j:forEach>
-            </div>
-        </f:entry>
+    <j:if test="${it.hasJobFilterExtensions()}">
+      <f:block>
+        <f:repeatableHeteroProperty field="jobFilters" hasHeader="true" addCaption="${%Add Job Filter}" />
+      </f:block>
+    </j:if>
 
-        <f:optionalBlock name="useincluderegex" title="${%Use a regular expression to include jobs into the view}"
-                         checked="${it.includeRegex != null}" help="/help/view-config/includeregex.html">
-            <f:entry title="${%Regular expression}">
-                <f:textbox name="includeRegex" field="includeRegex" />
-            </f:entry>
-        </f:optionalBlock>
+  </f:section>
 
-        <j:if test="${it.hasJobFilterExtensions()}">
-            <f:block>
-                <f:repeatableHeteroProperty field="jobFilters" hasHeader="true" addCaption="${%Add Job Filter}" />
-            </f:block>
-        </j:if>
-
-    </f:section>
-
-    <st:adjunct includes="hudson.model.ListView.configure-entries-resources"/>
+  <st:adjunct includes="hudson.model.ListView.configure-entries-resources" />
 
 </j:jelly>

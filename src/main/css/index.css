@@ -46,17 +46,21 @@
 }
 
 .fc-event {
-  background: #888;
-  border-color: #888
-}
-
-.fc-event.event-selected {
-  background: #aaa;
+  background: var(--result-aborted-color);
+  border-color: var(--result-aborted-color);
 }
 
 .fc-event-container a, .fc-event-container a:link, .fc-event-container a:active, .fc-event-container a:visited {
-  color: white;
+  color: var(--result-aborted-text-color);
   text-decoration: none;
+}
+
+.fc-event.event-selected {
+  background: var(--result-aborted-selected-color);
+}
+
+.fc-event-container a.event-selected, .fc-event-container a.event-selected:link, .fc-event-container a.event-selected:active, .fc-event-container a.event-selected:visited {
+  color: var(--result-aborted-selected-text-color);
 }
 
 .fc-event.event-result-success {
@@ -64,13 +68,16 @@
   border-color: var(--result-success-color);
 }
 
-.fc-event.event-result-success.event-selected {
-  background: var(--result-success-selected-color);
-  color: var(--result-success-selected-text-color);
-}
-
 .fc-event-container a.event-result-success, .fc-event-container a.event-result-success:link, .fc-event-container a.event-result-success:active, .fc-event-container a.event-result-success:visited {
   color: var(--result-success-text-color);
+}
+
+.fc-event.event-result-success.event-selected {
+  background: var(--result-success-selected-color);
+}
+
+.fc-event-container a.event-result-success.event-selected, .fc-event-container a.event-result-success.event-selected:link, .fc-event-container a.event-result-success.event-selected:active, .fc-event-container a.event-result-success.event-selected:visited {
+  color: var(--result-success-selected-text-color);
 }
 
 .fc-event.event-result-failure {
@@ -78,13 +85,16 @@
   border-color: var(--result-failure-color);
 }
 
-.fc-event.event-result-failure.event-selected {
-  background: var(--result-failure-selected-color);
-  color: var(--result-failure-selected-text-color);
-}
-
 .fc-event-container a.event-result-failure, .fc-event-container a.event-result-failure:link, .fc-event-container a.event-result-failure:active, .fc-event-container a.event-result-failure:visited {
   color: var(--result-failure-text-color);
+}
+
+.fc-event.event-result-failure.event-selected {
+  background: var(--result-failure-selected-color);
+}
+
+.fc-event-container a.event-result-failure.event-selected, .fc-event-container a.event-result-failure.event-selected:link, .fc-event-container a.event-result-failure.event-selected:active, .fc-event-container a.event-result-failure.event-selected:visited {
+  color: var(--result-failure-selected-text-color);
 }
 
 .fc-event.event-result-unstable {
@@ -92,13 +102,16 @@
   border-color: var(--result-unstable-color);
 }
 
-.fc-event.event-result-unstable.event-selected {
-  background: var(--result-unstable-selected-color);
-  color: var(--result-unstable-selected-text-color);
-}
-
 .fc-event-container a.event-result-unstable, .fc-event-container a.event-result-unstable:link, .fc-event-container a.event-result-unstable:active, .fc-event-container a.event-result-unstable:visited {
   color: var(--result-unstable-text-color);
+}
+
+.fc-event.event-result-unstable.event-selected {
+  background: var(--result-unstable-selected-color);
+}
+
+.fc-event-container a.event-result-unstable.event-selected, .fc-event-container a.event-result-unstable.event-selected:link, .fc-event-container a.event-result-unstable.event-selected:active, .fc-event-container a.event-result-unstable.event-selected:visited {
+  color: var(--result-unstable-selected-text-color);
 }
 
 .fc-event.event-state-scheduled {
@@ -107,12 +120,12 @@
   border-style: dashed;
 }
 
-.fc-event.event-state-scheduled.event-selected {
-  background: var(--result-scheduled-selected-color);
-}
-
 .fc-event-container a.event-state-scheduled, .fc-event-container a.event-state-scheduled:link, .fc-event-container a.event-state-scheduled:active, .fc-event-container a.event-state-scheduled:visited {
   color: var(--result-scheduled-text-color);
+}
+
+.fc-event.event-state-scheduled.event-selected {
+  background: var(--result-scheduled-selected-color);
 }
 
 .fc-event-container a.event-state-scheduled.event-selected, .fc-event-container a.event-state-scheduled.event-selected:link, .fc-event-container a.event-state-scheduled.event-selected:active, .fc-event-container a.event-state-scheduled.event-selected:visited {
@@ -265,6 +278,11 @@
   color: var(--text-color-secondary);
 }
 
+.calendar-view-config-color-label {
+  vertical-align: middle;
+  padding: 0px 10px 0px 10px;
+}
+
 .calendar-view-config-label {
   vertical-align: middle;
   padding: 0px 10px 20px 10px;
@@ -272,6 +290,10 @@
 
 .calendar-view-config-label.first-label {
   padding-left: 0px;
+}
+
+.calendar-view-config-color-input {
+  width: 22%;
 }
 
 .calendar-view-config-input {
