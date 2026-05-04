@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "7.29.2",
-    "@babel/register": "7.28.6",
+    "@babel/register": "7.29.3",
     "babel-loader": "10.1.1",
     "chai": "6.2.2",
     "css-loader": "7.1.4",
