@@ -297,7 +297,7 @@ class CalendarEventServiceTest {
               // valid scheduled job
               mockScheduledFreeStyleProject("#valid", "0 12 * * *", minutes(10)),
 
-              // leap day schedule that should trigger RareOrImpossibleDateException
+              // scheduled job on leap day will trigger RareOrImpossibleDateException, and be caught
               mockScheduledFreeStyleProject("#leapday", "0 0 29 2 *", minutes(10)));
 
       List<CalendarEvent> events =
@@ -305,6 +305,8 @@ class CalendarEventServiceTest {
 
       assertThat(events, hasSize(1));
       assertThat(titlesOf(events), containsInAnyOrder("#valid"));
+      // catching the exception allows the calendar to render
+      assertThat(titlesOf(events), Matchers.not(containsInAnyOrder("#leapday")));
     }
   @Nested
   class GetCalendarEventsTestScheduledStart {
