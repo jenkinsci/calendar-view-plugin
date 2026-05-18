@@ -287,7 +287,25 @@ class CalendarEventServiceTest {
       assertThat(titlesOf(events), containsInAnyOrder("#3", "#4", "#5", "#6", "#9", "#10"));
     }
   }
+  @Test
+    void testRareJobDoesNotBreakCalendar() throws ParseException{
+      Calendar now = cal("2024-03-01 00:00:00 CET");
+      Calendar start = cal("2024-03-01 00:00:00 CET");
+      Calendar end = cal("2024-03-01 23:59:59 CET");
 
+      List<FreeStyleProject> projects = asList(
+              // valid scheduled job
+              mockScheduledFreeStyleProject("#valid", "0 12 * * *", minutes(10)),
+
+              // leap day schedule that should trigger RareOrImpossibleDateException
+              mockScheduledFreeStyleProject("#leapday", "0 0 29 2 *", minutes(10)));
+
+      List<CalendarEvent> events =
+              getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
+
+      assertThat(events, hasSize(1));
+      assertThat(titlesOf(events), containsInAnyOrder("#valid"));
+    }
   @Nested
   class GetCalendarEventsTestScheduledStart {
     @Test
