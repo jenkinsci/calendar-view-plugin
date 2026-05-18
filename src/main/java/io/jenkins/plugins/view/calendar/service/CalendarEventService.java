@@ -115,7 +115,10 @@ public class CalendarEventService {
         final long estimatedDuration = job.getEstimatedDuration();
         final List<CronWrapper<?>> cronTabs = cronJobService.getCronTabs(job, eventsType);
         for (final CronWrapper<?> cronTab : cronTabs) {
+          try{
           collector.collectEvents(job, cronTab, estimatedDuration);
+          }catch(hudson.scheduler.RareOrImpossibleDateException ignored){
+          }
         }
       }
     }
