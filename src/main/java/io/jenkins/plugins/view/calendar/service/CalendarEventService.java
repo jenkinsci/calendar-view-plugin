@@ -31,6 +31,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -115,7 +116,12 @@ public class CalendarEventService {
         final long estimatedDuration = job.getEstimatedDuration();
         final List<CronWrapper<?>> cronTabs = cronJobService.getCronTabs(job, eventsType);
         for (final CronWrapper<?> cronTab : cronTabs) {
+          try{
           collector.collectEvents(job, cronTab, estimatedDuration);
+          } catch(hudson.scheduler.RareOrImpossibleDateException e){
+            final String msg = "Ignoring RareOrImpossibleDateException: ";
+            Logger.getLogger(this.getClass()).debug(msg, e);
+          }
         }
       }
     }

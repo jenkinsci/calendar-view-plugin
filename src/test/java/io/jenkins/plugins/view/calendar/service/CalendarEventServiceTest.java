@@ -41,11 +41,7 @@ import static io.jenkins.plugins.view.calendar.test.TestUtil.toStringOf;
 import static io.jenkins.plugins.view.calendar.time.MomentRange.range;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,6 +55,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -287,7 +284,27 @@ class CalendarEventServiceTest {
       assertThat(titlesOf(events), containsInAnyOrder("#3", "#4", "#5", "#6", "#9", "#10"));
     }
   }
+  @Test
+    void testRareJobDoesNotBreakCalendar() throws ParseException{
+      Calendar now = cal("2024-03-01 00:00:00 CET");
+      Calendar start = cal("2024-03-01 00:00:00 CET");
+      Calendar end = cal("2024-03-01 23:59:59 CET");
 
+      List<FreeStyleProject> projects = asList(
+              // valid scheduled job
+              mockScheduledFreeStyleProject("#valid", "0 12 * * *", minutes(10)),
+
+              // scheduled job on leap day will trigger RareOrImpossibleDateException, and be caught
+              mockScheduledFreeStyleProject("#leapday", "0 0 29 2 *", minutes(10)));
+
+      List<CalendarEvent> events =
+              getCalendarEventService(now).getCalendarEvents(projects, range(start, end), CalendarViewEventsType.ALL);
+
+      assertThat(events, hasSize(1));
+      assertThat(titlesOf(events), containsInAnyOrder("#valid"));
+      // catching the exception allows the calendar to render
+      assertThat(titlesOf(events), Matchers.not(containsInAnyOrder("#leapday")));
+    }
   @Nested
   class GetCalendarEventsTestScheduledStart {
     @Test
