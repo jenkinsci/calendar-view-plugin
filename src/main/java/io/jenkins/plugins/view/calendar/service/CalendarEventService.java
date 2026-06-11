@@ -118,9 +118,8 @@ public class CalendarEventService {
         for (final CronWrapper<?> cronTab : cronTabs) {
           try{
           collector.collectEvents(job, cronTab, estimatedDuration);
-          } catch(hudson.scheduler.RareOrImpossibleDateException e){
-            final String msg = "Ignoring RareOrImpossibleDateException: ";
-            Logger.getLogger(this.getClass()).debug(msg, e);
+          } catch(hudson.scheduler.RareOrImpossibleDateException e) {
+            Logger.getLogger(this.getClass()).info(String.format("Ignoring RareOrImpossibleDateException for job '%s'", job.getName()));
           }
         }
       }
