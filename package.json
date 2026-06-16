@@ -30,7 +30,7 @@
     "import-fresh": "3.3.1",
     "jsdom": "15.2.1",
     "mini-css-extract-plugin": "2.10.2",
-    "mocha": "11.7.5",
+    "mocha": "11.7.6",
     "mockery": "2.1.0",
     "nyc": "18.0.0",
     "terser-webpack-plugin": "5.6.1",
