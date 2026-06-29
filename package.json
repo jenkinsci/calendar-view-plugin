@@ -35,7 +35,7 @@
     "nyc": "18.0.0",
     "terser-webpack-plugin": "5.6.1",
     "webpack": "5.107.2",
-    "webpack-cli": "7.0.3"
+    "webpack-cli": "7.1.0"
   },
   "engines": {
     "node": ">=24"
