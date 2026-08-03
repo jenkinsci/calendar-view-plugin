@@ -524,7 +524,7 @@ public class CalendarView extends ListView {
   }
 
   public String jsonEscape(final String text) {
-    return StringEscapeUtils.escapeEcmaScript(text);
+    return StringEscapeUtils.escapeJson(text);
   }
 
   @Extension
